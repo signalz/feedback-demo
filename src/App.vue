@@ -1,21 +1,23 @@
 <template>
   <div id="app">
-    <Home />
-    <DatePicker />
+    <Header />
+    <div class="body">
+      <Home />
+    </div>
   </div>
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
 import Home from "./components/Home.vue";
-import { DatePicker } from "ant-design-vue";
+import Header from './components/Header.vue'
+
 import "ant-design-vue/dist/antd.css"
 
 export default {
   name: 'App',
   components: {
+    Header,
     Home,
-    DatePicker
   }
 }
 </script>
@@ -27,6 +29,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  /* margin-top: 60px; */
+}
+
+.body {
+  padding-top: 60px;
 }
 </style>
