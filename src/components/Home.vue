@@ -1,7 +1,11 @@
 <template>
   <div>
     123456
-    <FeedbackIcon type="home" selected />
+    <FeedbackIcon type="dislike" selected />
+    <FeedbackIcon type="frown" selected />
+    <FeedbackIcon type="meh" selected />
+    <FeedbackIcon type="smile" selected />
+    <FeedbackIcon type="like" selected />
   </div>
 </template>
 
