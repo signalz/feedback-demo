@@ -32,6 +32,8 @@ export default {
 }
 
 .body {
-  padding-top: 60px;
+  padding-top: 100px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 </style>
