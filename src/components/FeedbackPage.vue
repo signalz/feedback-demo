@@ -51,18 +51,23 @@
                   />
                 </div>
               </div>
-              <div>Average section point: </div>
+              <div>Average section point:</div>
             </div>
           </Panel>
         </Collapse>
-        <div class="project-point">Average point: </div>
+        <div class="project-point">Average point:</div>
       </div>
+    </div>
+    <div class="buttons-bar">
+      <Button type="primary" @click="handleButtonClick('Saved')">Save as draft</Button>
+      <Button type="primary" @click="handleButtonClick('Submitted')">Submit</Button>
+      <Button type="primary" shape="circle" icon="plus" @click="addProject" />
     </div>
   </div>
 </template>
 
 <script>
-import { Collapse, Icon, Select } from "ant-design-vue";
+import { Button, Collapse, Icon, Select } from "ant-design-vue";
 import FeedbackIcon from "./FeedbackIcon.vue";
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
@@ -78,6 +83,7 @@ const defaultProject = {
 export default {
   name: "FeedbackPage",
   components: {
+    Button,
     Collapse,
     FeedbackIcon,
     Icon,
@@ -92,7 +98,11 @@ export default {
       listSelectProjects: PROJECTS,
       questions: QUESTIONS,
       projects: [defaultProject],
-      activeKeys: ["section-process", "section-communication", "section-delivery"]
+      activeKeys: [
+        "section-process",
+        "section-communication",
+        "section-delivery"
+      ]
     };
   },
   methods: {
@@ -148,6 +158,14 @@ export default {
           })
         );
       }
+    },
+
+    handleButtonClick(val) {
+      alert(val)
+    },
+
+    addProject() {
+      this.projects = this.projects.concat(defaultProject)
     }
   }
 };
@@ -157,6 +175,7 @@ export default {
 .collapse-panel {
   color: rgba(0, 0, 0, 0.65);
   min-width: 768px;
+  margin-bottom: 20px;
 }
 
 .collapse-header {
@@ -217,5 +236,17 @@ export default {
 
 .project-point {
   margin-top: 20px;
+}
+
+.buttons-bar {
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  bottom: 5%;
+  width: 95%;
+}
+
+.buttons-bar>button {
+  margin-left: 10px;
 }
 </style>
