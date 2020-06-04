@@ -24,6 +24,7 @@ export default {
   align-items: center;
   padding-left: 20px;
   font-size: 24px;
+  z-index: 999;
 }
 
 .logo {
