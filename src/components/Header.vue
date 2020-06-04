@@ -18,7 +18,6 @@ export default {
   position: fixed;
   width: 100%;
   height: 60px;
-  color: fuchsia;
   background-color: aliceblue;
   display: flex;
   justify-content: left;

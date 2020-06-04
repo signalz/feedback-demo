@@ -1,5 +1,5 @@
 <template>
-  <icon :type="type" v-bind:class="{selected: selected}" />
+  <Icon :type="type" :theme="selected ? 'twoTone': 'outlined'" class="rating-icon" @click="rating" />
 </template>
 
 <script>
@@ -11,13 +11,19 @@ export default {
   },
   props: {
     type: String,
-    selected: Boolean
+    selected: Boolean,
+    ratingId: Number
+  },
+  methods: {
+    rating() {
+      this.$emit("ratechange", { ratingId: this.ratingId });
+    }
   }
 };
 </script>
 
 <style scoped>
-.selected {
-  background-color: red;
+.rating-icon {
+  cursor: pointer;
 }
 </style>
