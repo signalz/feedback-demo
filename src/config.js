@@ -30,21 +30,45 @@ export const SECTIONS = [
   {
     id: 1,
     order: 1,
-    key: "process",
-    label: "Process",
+    key: "skills",
+    label: "Skills",
   },
   {
     id: 2,
     order: 2,
-    key: "delivery",
-    label: "Delivery",
+    key: "quality",
+    label: "Quality",
   },
   {
     id: 3,
     order: 3,
+    key: "understanding",
+    label: "Understanding",
+  },
+  {
+    id: 4,
+    order: 4,
+    key: "productivity",
+    label: "Productivity",
+  },
+  {
+    id: 5,
+    order: 5,
     key: "communication",
     label: "Communication",
   },
+  {
+    id: 6,
+    order: 6,
+    key: "happiness",
+    label: "Happiness",
+  },
+  {
+    id: 7,
+    order: 7,
+    key: "engagement",
+    label: "Engagement",
+  }
 ];
 
 export const PROJECTS = [
@@ -54,46 +78,70 @@ export const PROJECTS = [
 ];
 
 export const QUESTIONS = {
-  process: [
+  skills: [
     {
       id: 1,
       order: 1,
       text:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Overall assetment about coding skill",
     },
     {
       id: 2,
       order: 2,
       text:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Is CI/CD tools real time ?",
     },
   ],
-  delivery: [
+  quality: [
     {
       id: 3,
       order: 1,
       text:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Is story estimation acceptable ?",
     },
     {
       id: 4,
       order: 2,
       text:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Coding quality",
     },
   ],
-  communication: [
+  understanding: [
     {
       id: 5,
       order: 1,
       text:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Do the team understand about business ?",
     },
     {
       id: 6,
       order: 2,
       text:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    },
+  ],
+  productivity: [
+    {
+      id: 7,
+      order: 1,
+      text:
+        "Is amount of stories in each sprint acceptable ?",
+    },
+  ],
+  communication: [
+    {
+      id: 8,
+      order: 1,
+      text:
+        "Is communication between team smooth ?",
+    },
+  ],
+  happiness: [
+    {
+      id: 9,
+      order: 1,
+      text:
+        "Overall happiness ?",
     },
   ],
 };

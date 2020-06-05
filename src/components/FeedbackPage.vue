@@ -99,9 +99,7 @@ export default {
       questions: QUESTIONS,
       projects: [defaultProject],
       activeKeys: [
-        "section-process",
-        "section-communication",
-        "section-delivery"
+        "section-skills",
       ]
     };
   },
