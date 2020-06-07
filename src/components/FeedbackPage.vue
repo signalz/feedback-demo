@@ -1,68 +1,70 @@
 <template>
   <div>
     <Header />
-    <div
-      class="collapse-panel"
-      v-for="(project, idx) in projects"
-      :key="`list-projects-${project.id}`"
-    >
-      <div class="collapse-header">
-        <div class="collapse-left-header">
-          <Icon :type="project.isCollapsed ? 'right' : 'down'" @click="handleClickCollapse(idx)" />
-          <span>Rating for project:</span>
-          <Select
-            v-model="project.id"
-            :defaultValue="listSelectProjects[0].id"
-            @change="handleChangeProject(idx, $event)"
-          >
-            <Option
-              v-for="selectProject in listSelectProjects"
-              :key="`select-project-${selectProject.id}`"
-              :value="selectProject.id"
-            >{{selectProject.name}}</Option>
-          </Select>
+    <div class="panels-wrapper">
+      <div
+        class="collapse-panel"
+        v-for="(project, idx) in projects"
+        :key="`list-projects-${project.id}`"
+      >
+        <div class="collapse-header">
+          <div class="collapse-left-header">
+            <Icon :type="project.isCollapsed ? 'right' : 'down'" @click="handleClickCollapse(idx)" />
+            <span>Rating for project:</span>
+            <Select
+              v-model="project.id"
+              :defaultValue="listSelectProjects[0].id"
+              @change="handleChangeProject(idx, $event)"
+            >
+              <Option
+                v-for="selectProject in listSelectProjects"
+                :key="`select-project-${selectProject.id}`"
+                :value="selectProject.id"
+              >{{selectProject.name}}</Option>
+            </Select>
+          </div>
+          <div class="collapse-right-header">
+            <span>Average point:</span>
+          </div>
         </div>
-        <div class="collapse-right-header">
-          <span>Average point:</span>
-        </div>
-      </div>
-      <div class="collapse-body" v-if="!project.isCollapsed">
-        <Collapse v-model="activeKeys">
-          <Panel
-            v-for="section in sections"
-            :key="`section-${section.key}`"
-            :header="section.label"
-          >
-            <div>
-              <div
-                v-for="(question, questionIdx) in questions[section.key]"
-                :key="`question-${section.key}-${question.id}`"
-                class="question-row"
-              >
-                <div class="question-number">{{questionIdx + 1}}</div>
-                <div class="question-text">{{question.text}}</div>
-                <div class="question-rating">
-                  <FeedbackIcon
-                    v-for="rating in ratings"
-                    :ratingId="rating.id"
-                    :key="`rating-${rating.id}`"
-                    :type="rating.icon"
-                    :selected="isRatingSelected({ratingId: rating.id, questionId: question.id, projectIdx: idx})"
-                    @ratechange="handleRateChange({questionId: question.id, projectIdx: idx}, $event)"
-                  />
+        <div class="collapse-body" v-if="!project.isCollapsed">
+          <Collapse v-model="activeKeys">
+            <Panel
+              v-for="section in sections"
+              :key="`section-${section.key}`"
+              :header="section.label"
+            >
+              <div>
+                <div
+                  v-for="(question, questionIdx) in questions[section.key]"
+                  :key="`question-${section.key}-${question.id}`"
+                  class="question-row"
+                >
+                  <div class="question-number">{{questionIdx + 1}}</div>
+                  <div class="question-text">{{question.text}}</div>
+                  <div class="question-rating">
+                    <FeedbackIcon
+                      v-for="rating in ratings"
+                      :ratingId="rating.id"
+                      :key="`rating-${rating.id}`"
+                      :type="rating.icon"
+                      :selected="isRatingSelected({ratingId: rating.id, questionId: question.id, projectIdx: idx})"
+                      @ratechange="handleRateChange({questionId: question.id, projectIdx: idx}, $event)"
+                    />
+                  </div>
                 </div>
+                <div>Average section point:</div>
               </div>
-              <div>Average section point:</div>
-            </div>
-          </Panel>
-        </Collapse>
-        <div class="project-point">Average point:</div>
+            </Panel>
+          </Collapse>
+          <div class="project-point">Average point:</div>
+        </div>
       </div>
-    </div>
-    <div class="buttons-bar">
-      <Button type="primary" @click="handleButtonClick('Saved')">Save as draft</Button>
-      <Button type="primary" @click="handleButtonClick('Submitted')">Submit</Button>
-      <Button type="primary" shape="circle" icon="plus" @click="addProject" />
+      <div class="buttons-bar">
+        <Button type="primary" @click="handleButtonClick('Saved')">Save as draft</Button>
+        <Button type="primary" @click="handleButtonClick('Submitted')">Submit</Button>
+        <Button type="primary" shape="circle" icon="plus" @click="addProject" />
+      </div>
     </div>
   </div>
 </template>
@@ -70,7 +72,7 @@
 <script>
 import { Button, Collapse, Icon, Select } from "ant-design-vue";
 
-import Header from './Header.vue'
+import Header from "./Header.vue";
 import FeedbackIcon from "./FeedbackIcon.vue";
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
@@ -102,9 +104,7 @@ export default {
       listSelectProjects: PROJECTS,
       questions: QUESTIONS,
       projects: [defaultProject],
-      activeKeys: [
-        "section-skills",
-      ]
+      activeKeys: ["section-skills"]
     };
   },
   methods: {
@@ -163,17 +163,23 @@ export default {
     },
 
     handleButtonClick(val) {
-      alert(val)
+      alert(val);
     },
 
     addProject() {
-      this.projects = this.projects.concat(defaultProject)
+      this.projects = this.projects.concat(defaultProject);
     }
   }
 };
 </script>
 
 <style scoped>
+.panels-wrapper{
+  padding-top: 100px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 .collapse-panel {
   color: rgba(0, 0, 0, 0.65);
   min-width: 768px;
@@ -248,7 +254,7 @@ export default {
   width: 95%;
 }
 
-.buttons-bar>button {
+.buttons-bar > button {
   margin-left: 10px;
 }
 </style>
