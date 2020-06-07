@@ -1,16 +1,18 @@
 <template>
   <div class="header">
-    <img alt="logo" src="../assets/logo.png" class="logo">
-    Feedback
+    <img alt="logo" src="../assets/logo-big.png" class="header-logo" />
+    <div class="header-nav">
+      <router-link to="/">Feedback</router-link>
+      <router-link to="/dashboard">Dashboard</router-link>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Header',
-  components: {
-  }
-}
+  name: "Header",
+  components: {}
+};
 </script>
 
 <style scoped>
@@ -25,9 +27,25 @@ export default {
   padding-left: 20px;
   font-size: 24px;
   z-index: 999;
+  display: flex;
+  justify-content: space-between;
 }
 
-.logo {
+.header-logo {
   height: 100%;
+}
+
+.header-nav {
+  padding: 30px;
+}
+
+.header-nav a {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-left: 20px;
+}
+
+.header-nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>

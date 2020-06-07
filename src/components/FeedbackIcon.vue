@@ -5,7 +5,7 @@
 <script>
 import { Icon } from "ant-design-vue";
 export default {
-  name: "FeecbackIcon",
+  name: "FeedbackIcon",
   components: {
     Icon
   },
