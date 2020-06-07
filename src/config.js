@@ -83,13 +83,13 @@ export const QUESTIONS = {
       id: 1,
       order: 1,
       text:
-        "Overall assetment about coding skill",
+        "How do you think about coding skill of the team ?",
     },
     {
       id: 2,
       order: 2,
       text:
-        "Is CI/CD tools real time ?",
+        "Does CI/CD script build on time ?",
     },
   ],
   quality: [
@@ -103,7 +103,7 @@ export const QUESTIONS = {
       id: 4,
       order: 2,
       text:
-        "Coding quality",
+        "What do you think about coding quality ?",
     },
   ],
   understanding: [
@@ -112,12 +112,6 @@ export const QUESTIONS = {
       order: 1,
       text:
         "Do the team understand about business ?",
-    },
-    {
-      id: 6,
-      order: 2,
-      text:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
   ],
   productivity: [
