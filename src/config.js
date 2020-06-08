@@ -28,6 +28,12 @@ export const RATINGS = [
 
 export const SECTIONS = [
   {
+    id: 6,
+    order: 6,
+    key: "happiness",
+    label: "Happiness",
+  },
+  {
     id: 1,
     order: 1,
     key: "skills",
@@ -39,12 +45,12 @@ export const SECTIONS = [
     key: "quality",
     label: "Quality",
   },
-  {
-    id: 3,
-    order: 3,
-    key: "understanding",
-    label: "Understanding",
-  },
+  // {
+  //   id: 3,
+  //   order: 3,
+  //   key: "understanding",
+  //   label: "Understanding",
+  // },
   {
     id: 4,
     order: 4,
@@ -56,12 +62,6 @@ export const SECTIONS = [
     order: 5,
     key: "communication",
     label: "Communication",
-  },
-  {
-    id: 6,
-    order: 6,
-    key: "happiness",
-    label: "Happiness",
   },
   {
     id: 7,
@@ -83,13 +83,13 @@ export const QUESTIONS = {
       id: 1,
       order: 1,
       text:
-        "How satisfied are you with coding skill of the team ?",
+        "Your evaluation about coding skill of Vietnam team ?",
     },
     {
       id: 2,
       order: 2,
       text:
-        "How satisfied are you with our CI/CD ?",
+        "Your evaluation about technical knowledge of Vietnam team ?",
     },
   ],
   quality: [
@@ -97,13 +97,13 @@ export const QUESTIONS = {
       id: 3,
       order: 1,
       text:
-        "How satisfied are you with our story estimation ?",
+        "Your evalutaion about estimation capability of Vietnam team ?",
     },
     {
       id: 4,
       order: 2,
       text:
-        "How satisfied are you with our coding quality ?",
+        "Your evalutaion about quality of deliverables from Vietnam team ?",
     },
   ],
   understanding: [
@@ -119,7 +119,7 @@ export const QUESTIONS = {
       id: 7,
       order: 1,
       text:
-        "How satisfied are you with amount of stories in each sprint ?",
+        "Your evalutaion about performance of Vietnam team ?",
     },
   ],
   communication: [
@@ -127,7 +127,7 @@ export const QUESTIONS = {
       id: 8,
       order: 1,
       text:
-        "How satisfied are you with communication ?",
+        "Your evalutaion about communication efficiency of Vietnam team ?",
     },
   ],
   happiness: [
@@ -135,7 +135,21 @@ export const QUESTIONS = {
       id: 9,
       order: 1,
       text:
-        "How satisfied are you with the team ?",
+        "Your satisfaction about Vietnam team in the whole ?",
     },
   ],
+  engagement: [
+    {
+      id: 10,
+      order: 1,
+      text:
+        "Your evalutaion about commitment of Vietnam team ?",
+    },
+    {
+      id: 11,
+      order: 1,
+      text:
+        "Your evalutaion about integration capability of Vietnam team ?",
+    },
+  ]
 };

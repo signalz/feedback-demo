@@ -10,7 +10,7 @@
         <div class="collapse-header">
           <div class="collapse-left-header">
             <Icon :type="project.isCollapsed ? 'right' : 'down'" @click="handleClickCollapse(idx)" />
-            <span>Rating for project:</span>
+            <span>Feedback on project:</span>
             <Select
               v-model="project.id"
               :defaultValue="listSelectProjects[0].id"
@@ -53,7 +53,7 @@
                     />
                   </div>
                 </div>
-                <div>Average section point:</div>
+                <!-- <div>Average section point:</div> -->
               </div>
             </Panel>
           </Collapse>
@@ -104,7 +104,7 @@ export default {
       listSelectProjects: PROJECTS,
       questions: QUESTIONS,
       projects: [defaultProject],
-      activeKeys: ["section-skills"],
+      activeKeys: ["section-happiness"],
     };
   },
   methods: {
