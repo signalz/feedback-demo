@@ -104,7 +104,7 @@ export default {
       listSelectProjects: PROJECTS,
       questions: QUESTIONS,
       projects: [defaultProject],
-      activeKeys: ["section-happiness"],
+      activeKeys: SECTIONS.map(section => `section-${section.key}`),
     };
   },
   methods: {
