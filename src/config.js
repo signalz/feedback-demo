@@ -83,13 +83,13 @@ export const QUESTIONS = {
       id: 1,
       order: 1,
       text:
-        "How do you think about coding skill of the team ?",
+        "How satisfied are you with coding skill of the team ?",
     },
     {
       id: 2,
       order: 2,
       text:
-        "Does CI/CD script build on time ?",
+        "How satisfied are you with our CI/CD ?",
     },
   ],
   quality: [
@@ -97,13 +97,13 @@ export const QUESTIONS = {
       id: 3,
       order: 1,
       text:
-        "Is story estimation acceptable ?",
+        "How satisfied are you with our story estimation ?",
     },
     {
       id: 4,
       order: 2,
       text:
-        "What do you think about coding quality ?",
+        "How satisfied are you with our coding quality ?",
     },
   ],
   understanding: [
@@ -111,7 +111,7 @@ export const QUESTIONS = {
       id: 5,
       order: 1,
       text:
-        "Do the team understand about business ?",
+        "How satisfied are you with team's understand about business ?",
     },
   ],
   productivity: [
@@ -119,7 +119,7 @@ export const QUESTIONS = {
       id: 7,
       order: 1,
       text:
-        "Is amount of stories in each sprint acceptable ?",
+        "How satisfied are you with amount of stories in each sprint ?",
     },
   ],
   communication: [
@@ -127,7 +127,7 @@ export const QUESTIONS = {
       id: 8,
       order: 1,
       text:
-        "Is communication between team smooth ?",
+        "How satisfied are you with communication ?",
     },
   ],
   happiness: [
@@ -135,7 +135,7 @@ export const QUESTIONS = {
       id: 9,
       order: 1,
       text:
-        "Overall happiness ?",
+        "How satisfied are you with the team ?",
     },
   ],
 };
