@@ -62,7 +62,7 @@
       </div>
       <div class="buttons-bar">
         <Button type="primary" @click="handleButtonClick('Saved')">Save as draft</Button>
-        <Button type="primary" @click="handleButtonClick('Submitted')">Submit</Button>
+        <Button type="primary" @click="handleButtonClick('Thank you for your evaluation')">Submit</Button>
         <Button type="primary" shape="circle" icon="plus" @click="addProject" />
       </div>
     </div>
