@@ -1,14 +1,12 @@
 <template>
-  <Icon :type="type" :theme="selected ? 'twoTone': 'outlined'" class="rating-icon" @click="rating" />
+<div>
+  <img v-bind:src="getImgSrc(type, selected)" @click="rating" />
+</div>
 </template>
 
 <script>
-import { Icon } from "ant-design-vue";
 export default {
   name: "FeedbackIcon",
-  components: {
-    Icon
-  },
   props: {
     type: String,
     selected: Boolean,
@@ -17,13 +15,49 @@ export default {
   methods: {
     rating() {
       this.$emit("ratechange", { ratingId: this.ratingId });
+    },
+
+    getImgSrc(type, selected) {
+      switch(type) {
+        case '1':
+          if (selected) {
+            return require('../assets/icons/zero-circle-selected.png')
+          } else {
+            return require('../assets/icons/zero-circle.png')
+          }
+        case '2':
+          if (selected) {
+            return require('../assets/icons/90-circle-selected.png')
+          } else {
+            return require('../assets/icons/90-circle.png')
+          }
+        case '3':
+          if (selected) {
+            return require('../assets/icons/180-circle-selected.png')
+          } else {
+            return require('../assets/icons/180-circle.png')
+          }
+        case '4':
+          if (selected) {
+            return require('../assets/icons/270-circle-selected.png')
+          } else {
+            return require('../assets/icons/270-circle.png')
+          }
+        case '5':
+          if (selected) {
+            return require('../assets/icons/full-circle-selected.png')
+          } else {
+            return require('../assets/icons/full-circle.png')
+          }
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-.rating-icon {
+img {
+  width: 25px;
   cursor: pointer;
 }
 </style>

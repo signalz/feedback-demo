@@ -2,27 +2,27 @@ export const RATINGS = [
   {
     id: 1,
     rate: 1,
-    icon: "dislike",
+    icon: "1",
   },
   {
     id: 2,
     rate: 2,
-    icon: "frown",
+    icon: "2",
   },
   {
     id: 3,
     rate: 3,
-    icon: "meh",
+    icon: "3",
   },
   {
     id: 4,
     rate: 4,
-    icon: "smile",
+    icon: "4",
   },
   {
     id: 5,
     rate: 5,
-    icon: "like",
+    icon: "5",
   },
 ];
 

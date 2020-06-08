@@ -60,7 +60,6 @@
           <div class="project-point">Average point:</div>
         </div>
       </div>
-      <!-- <Icon :component="Circle" /> -->
       <div class="buttons-bar">
         <Button type="primary" @click="handleButtonClick('Saved')">Save as draft</Button>
         <Button type="primary" @click="handleButtonClick('Submitted')">Submit</Button>
@@ -75,7 +74,6 @@ import { Button, Collapse, Icon, Select } from "ant-design-vue";
 
 import Header from "./Header.vue";
 import FeedbackIcon from "./FeedbackIcon.vue";
-import Circle from './Circle'
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
 const { Panel } = Collapse;
@@ -91,7 +89,6 @@ export default {
   name: "FeedbackPage",
   components: {
     Button,
-    // Circle,
     Collapse,
     FeedbackIcon,
     Header,
@@ -108,7 +105,6 @@ export default {
       questions: QUESTIONS,
       projects: [defaultProject],
       activeKeys: ["section-skills"],
-      Circle
     };
   },
   methods: {
