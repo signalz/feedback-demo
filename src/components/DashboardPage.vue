@@ -187,6 +187,9 @@ export default {
       },
       lineChartOptions: {
         maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
         scales: {
           yAxes: [
             {
