@@ -123,19 +123,19 @@ export default {
           {
             data: [1, 1, 1],
             backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)"
+              "#dcdcdc",
+              "#e9f57f",
+              "#a0b2c6 "
             ],
-            borderColor: [
-              "rgba(255,99,132,1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)"
-            ],
+            // borderColor: [
+            //   "rgba(255,99,132,1)",
+            //   "rgba(54, 162, 235, 1)",
+            //   "rgba(255, 206, 86, 1)"
+            // ],
             borderWidth: 1
           }
         ],
-        labels: ["CRITICAL", "GOOD", "OK"]
+        labels: ["SILVER", "GOLD", "PLATIN"]
       },
       pieChartOptions: {
         maintainAspectRatio: false

@@ -135,7 +135,7 @@ export const QUESTIONS = {
       id: 9,
       order: 1,
       text:
-        "Your satisfaction about Vietnam team in the whole ?",
+        "Your overall satisfaction about Vietnam team ?",
     },
   ],
   engagement: [

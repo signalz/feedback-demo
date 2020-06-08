@@ -1,6 +1,7 @@
 <template>
   <div class="header">
     <img alt="logo" src="../assets/logo-big.png" class="header-logo" />
+    <div class="banner-text">Vietnam shoring initiative evaluation</div>
     <div class="header-nav">
       <router-link to="/">Feedback</router-link>
       <router-link to="/dashboard">Dashboard</router-link>
@@ -47,5 +48,9 @@ export default {
 
 .header-nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.banner-text {
+  text-transform: uppercase;
 }
 </style>
