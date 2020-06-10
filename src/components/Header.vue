@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <img alt="logo" src="../assets/logo-big.png" class="header-logo" />
-    <div class="banner-text">Vietnam shoring team customer feedback</div>
+    <div class="banner-text">Vietnam shoring team initiative evaluation</div>
     <div class="header-nav">
       <router-link to="/">Feedback</router-link>
       <router-link to="/dashboard">Dashboard</router-link>
