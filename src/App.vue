@@ -1,15 +1,18 @@
 <template>
   <div id="app">
+    <Header />
     <router-view/>
   </div>
 </template>
 <script>
 
 import "ant-design-vue/dist/antd.css"
+import Header from "./components/Header";
 
 export default {
   name: 'App',
   components: {
+    Header
   }
 }
 </script>

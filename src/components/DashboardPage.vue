@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <!-- <Header /> -->
     <div class="dashboards-wrapper">
       <Collapse v-model="activeKeys">
         <Panel header="Projects Overview" key="prj-overview">
@@ -97,7 +97,7 @@ import PieChart from "./PieChart";
 import HorizontalBar from "./HorizontalBar";
 import LineChart from "./LineChart";
 
-import Header from "./Header.vue";
+// import Header from "./Header.vue";
 import { SECTIONS, PROJECTS } from "../config";
 
 const { Panel } = Collapse;
@@ -108,7 +108,7 @@ export default {
   components: {
     HorizontalBar,
     Collapse,
-    Header,
+    // Header,
     LineChart,
     Panel,
     PieChart,

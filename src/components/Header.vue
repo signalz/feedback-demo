@@ -1,12 +1,14 @@
 <template>
+<div>
   <div class="header">
     <img alt="logo" src="../assets/logo-big.png" class="header-logo" />
-    <div class="banner-text">Vietnam shoring team initiative evaluation</div>
+    <div class="header-banner-text">Vietnam shoring team initiative evaluation</div>
     <div class="header-nav">
       <router-link to="/">Feedback</router-link>
       <router-link to="/dashboard">Dashboard</router-link>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -16,41 +18,39 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .header {
+  height: $header-height;
   position: fixed;
   width: 100%;
-  height: 60px;
   background-color: aliceblue;
   display: flex;
-  justify-content: left;
   align-items: center;
+  justify-content: space-between;
   padding-left: 20px;
   font-size: 24px;
   z-index: 999;
-  display: flex;
-  justify-content: space-between;
-}
 
-.header-logo {
-  height: 100%;
-}
+  .header-logo {
+    height: 100%;
+  }
 
-.header-nav {
-  padding: 30px;
-}
+  .header-banner-text {
+    text-transform: uppercase;
+  }
 
-.header-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-  margin-left: 20px;
-}
+  .header-nav {
+    padding: 30px;
 
-.header-nav a.router-link-exact-active {
-  color: #42b983;
-}
+     a {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-left: 20px;
+    }
 
-.banner-text {
-  text-transform: uppercase;
+    a.router-link-exact-active {
+      color: #42b983;
+    }
+  }
 }
 </style>

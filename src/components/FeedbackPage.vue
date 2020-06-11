@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <!-- <Header /> -->
     <div class="panels-wrapper">
       <div
         class="collapse-panel"
@@ -72,7 +72,7 @@
 <script>
 import { Button, Collapse, Icon, Select } from "ant-design-vue";
 
-import Header from "./Header.vue";
+// import Header from "./Header.vue";
 import FeedbackIcon from "./FeedbackIcon.vue";
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
@@ -91,7 +91,7 @@ export default {
     Button,
     Collapse,
     FeedbackIcon,
-    Header,
+    // Header,
     Icon,
     Option,
     Panel,
