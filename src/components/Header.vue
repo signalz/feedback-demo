@@ -2,7 +2,7 @@
 <div>
   <div class="header">
     <img alt="logo" src="../assets/logo-big.png" class="header-logo" />
-    <div class="header-banner-text">Vietnam shoring team initiative evaluation</div>
+    <div class="header-banner-text">{{$t('header.banner.text')}}</div>
     <div class="header-nav">
       <router-link to="/">Feedback</router-link>
       <router-link to="/dashboard">Dashboard</router-link>
