@@ -182,7 +182,7 @@ export default {
 
 .collapse-panel {
   color: rgba(0, 0, 0, 0.65);
-  min-width: 768px;
+  /* min-width: 768px; */
   margin-bottom: 20px;
 }
 
