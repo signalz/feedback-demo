@@ -1,7 +1,11 @@
 {
   "header": {
     "banner": {
-      "text": "Vietnam shoring team initiative evaluation"
+      "text": "Vietnam shoring team evaluation"
+    },
+    "nav": {
+      "feedback": "Feedback",
+      "dashboard": "Dashboard"
     }
   }
 }
