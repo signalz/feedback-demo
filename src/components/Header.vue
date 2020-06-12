@@ -7,7 +7,7 @@
         <router-link to="/">{{$t('header.nav.feedback')}}</router-link>
         <router-link to="/dashboard">{{$t('header.nav.dashboard')}}</router-link>
       </div>
-      <MobileMenu
+      <MobileMenuButton
         class="header-nav-mobile"
         :isClicked="isMobileMenuClicked"
         @click.native="onMobileMenuClick"
@@ -24,12 +24,12 @@
 </template>
 
 <script>
-import MobileMenu from "./MobileMenu";
+import MobileMenuButton from "./MobileMenuButton";
 
 export default {
   name: "Header",
   components: {
-    MobileMenu
+    MobileMenuButton
   },
   data: () => {
     return {
@@ -49,6 +49,7 @@ export default {
   min-width: $min-width;
 
   .header {
+    min-width: $min-width;
     height: $header-height;
     position: fixed;
     width: 100%;
@@ -130,7 +131,7 @@ export default {
 
   }
 
-  @media screen and (max-width: $pivot-width) {
+  @media screen and (max-width: $desktop-width) {
     .header-banner-text,
     .header-nav {
       display: none;
@@ -142,7 +143,7 @@ export default {
     }
   }
 
-  @media screen and (min-width: $pivot-width) {
+  @media screen and (min-width: $desktop-width) {
     .header-banner-mobile-text,
     .header-nav-mobile,
     .menu-mobile-wrapper {

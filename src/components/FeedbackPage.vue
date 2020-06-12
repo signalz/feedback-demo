@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <Header /> -->
     <div class="panels-wrapper">
       <div
         class="collapse-panel"
@@ -72,7 +71,6 @@
 <script>
 import { Button, Collapse, Icon, Select } from "ant-design-vue";
 
-// import Header from "./Header.vue";
 import FeedbackIcon from "./FeedbackIcon.vue";
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
@@ -91,7 +89,6 @@ export default {
     Button,
     Collapse,
     FeedbackIcon,
-    // Header,
     Icon,
     Option,
     Panel,
@@ -173,88 +170,87 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .panels-wrapper{
   padding-top: 100px;
   margin-left: 20px;
   margin-right: 20px;
-}
 
-.collapse-panel {
-  color: rgba(0, 0, 0, 0.65);
-  /* min-width: 768px; */
-  margin-bottom: 20px;
-}
+  .collapse-panel {
+    color: rgba(0, 0, 0, 0.65);
+    margin-bottom: 20px;
 
-.collapse-header {
-  background-color: #fafafa;
-  font-size: 20px;
-  height: 48px;
-  padding-left: 20px;
-  padding-right: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px 4px 0 0;
-}
+    .collapse-header {
+      background-color: #fafafa;
+      font-size: 20px;
+      height: 48px;
+      padding-left: 20px;
+      padding-right: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px 4px 0 0;
 
-.collapse-left-header {
-  display: flex;
-  align-items: center;
-}
+      .collapse-left-header {
+        display: flex;
+        align-items: center;
 
-.collapse-left-header > span {
-  margin-left: 10px;
-  margin-right: 10px;
-}
+        span {
+          margin-left: 10px;
+          margin-right: 10px;
+        }
+      }
 
-.collapse-right-header {
-  font-size: 14px;
-}
+      .collapse-right-header {
+        font-size: 14px;
+      }
+    }
 
-.collapse-body {
-  border: 1px solid #d9d9d9;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  padding: 20px;
-}
+    .collapse-body {
+      border: 1px solid #d9d9d9;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      padding: 20px;
 
-.question-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+      .question-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
 
-.question-number {
-  width: 5%;
-}
+        .question-number {
+          width: 5%;
+        }
 
-.question-text {
-  width: 75%;
-}
+        .question-text {
+          width: 75%;
+        }
 
-.question-rating {
-  width: 20%;
-  display: flex;
-  justify-content: space-between;
-  font-size: 20px;
-}
+        .question-rating {
+          width: 20%;
+          display: flex;
+          justify-content: space-between;
+          font-size: 20px;
+        }
+      }
 
-.project-point {
-  margin-top: 20px;
-}
+      .project-point {
+        margin-top: 20px;
+      }
+    }
+  }
 
-.buttons-bar {
-  display: flex;
-  justify-content: flex-end;
-  position: fixed;
-  bottom: 5%;
-  width: 95%;
-}
+  .buttons-bar {
+    display: flex;
+    justify-content: flex-end;
+    position: fixed;
+    bottom: 5%;
+    width: 95%;
 
-.buttons-bar > button {
-  margin-left: 10px;
+    button {
+      margin-left: 10px;
+    }
+  }
 }
 </style>

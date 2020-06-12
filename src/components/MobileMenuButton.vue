@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: "MobileMenu",
+  name: "MobileMenuButton",
   props: {
     isClicked: Boolean
   }

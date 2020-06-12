@@ -121,11 +121,18 @@ export default {
       pieChartData: {
         datasets: [
           {
-            data: [1, 1, 1],
+            data: [1, 1, 1, 1],
             backgroundColor: [
-              "#dcdcdc",
-              "#e9f57f",
-              "#a0b2c6 "
+              "#cd7f32 ",
+              "#aaa9ad",
+              "#faf369",
+              "#e5e4e2"
+            ],
+            hoverBackgroundColor: [
+              "#cd7f32 ",
+              "#aaa9ad",
+              "#faf369",
+              "#e5e4e2"
             ],
             // borderColor: [
             //   "rgba(255,99,132,1)",
@@ -135,7 +142,7 @@ export default {
             borderWidth: 1
           }
         ],
-        labels: ["SILVER", "GOLD", "PLATIN"]
+        labels: ["BRONZE", "SILVER", "GOLD", "PLATIN"]
       },
       pieChartOptions: {
         maintainAspectRatio: false
@@ -144,11 +151,12 @@ export default {
         datasets: [
           {
             backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(54, 162, 235, 0.2)"
+              "#cd7f32 ",
+              "#aaa9ad",
+              "#faf369",
+              "#e5e4e2"
             ],
-            data: [2, 4, 5]
+            data: [2, 3, 4, 5]
           }
         ],
         labels: PROJECTS.map(prj => prj.name)

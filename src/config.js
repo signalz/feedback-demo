@@ -19,11 +19,11 @@ export const RATINGS = [
     rate: 4,
     icon: "4",
   },
-  {
-    id: 5,
-    rate: 5,
-    icon: "5",
-  },
+  // {
+  //   id: 5,
+  //   rate: 5,
+  //   icon: "5",
+  // },
 ];
 
 export const SECTIONS = [
@@ -75,6 +75,7 @@ export const PROJECTS = [
   { id: '1', name: "Project 1" },
   { id: '2', name: "Project 2" },
   { id: '3', name: "Project 3" },
+  { id: '4', name: "Project 4" },
 ];
 
 export const QUESTIONS = {

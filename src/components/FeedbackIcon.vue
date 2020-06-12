@@ -21,33 +21,27 @@ export default {
       switch(type) {
         case '1':
           if (selected) {
-            return require('../assets/icons/zero-circle-selected.png')
+            return require('../assets/icons/bronze-medal-selected.png')
           } else {
-            return require('../assets/icons/zero-circle.png')
+            return require('../assets/icons/bronze-medal.png')
           }
         case '2':
           if (selected) {
-            return require('../assets/icons/90-circle-selected.png')
+            return require('../assets/icons/silver-medal-selected.png')
           } else {
-            return require('../assets/icons/90-circle.png')
+            return require('../assets/icons/silver-medal.png')
           }
         case '3':
           if (selected) {
-            return require('../assets/icons/180-circle-selected.png')
+            return require('../assets/icons/gold-medal-selected.png')
           } else {
-            return require('../assets/icons/180-circle.png')
+            return require('../assets/icons/gold-medal.png')
           }
         case '4':
           if (selected) {
-            return require('../assets/icons/270-circle-selected.png')
+            return require('../assets/icons/trophy-selected.png')
           } else {
-            return require('../assets/icons/270-circle.png')
-          }
-        case '5':
-          if (selected) {
-            return require('../assets/icons/full-circle-selected.png')
-          } else {
-            return require('../assets/icons/full-circle.png')
+            return require('../assets/icons/trophy.png')
           }
       }
     }
