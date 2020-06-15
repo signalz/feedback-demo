@@ -14,6 +14,7 @@
               v-model="project.id"
               :defaultValue="listSelectProjects[0].id"
               @change="handleChangeProject(idx, $event)"
+              class="select-project"
             >
               <Option
                 v-for="selectProject in listSelectProjects"
@@ -34,7 +35,7 @@
               :header="section.label"
             >
               <div>
-                <div
+                <!-- <div
                   v-for="(question, questionIdx) in questions[section.key]"
                   :key="`question-${section.key}-${question.id}`"
                   class="question-row"
@@ -51,8 +52,16 @@
                       @ratechange="handleRateChange({questionId: question.id, projectIdx: idx}, $event)"
                     />
                   </div>
-                </div>
+                </div> -->
                 <!-- <div>Average section point:</div> -->
+                <QuestionRow
+                  v-for="(question, qIdx) in questions[section.key]"
+                  :key="`question-${section.key}-${question.id}`"
+                  :ratings="ratings"
+                  :question="{...question, index: qIdx + 1}"
+                  :projectIdx="idx"
+                  @ratechange="handleRateChange"
+                />
               </div>
             </Panel>
           </Collapse>
@@ -71,7 +80,8 @@
 <script>
 import { Button, Collapse, Icon, Select } from "ant-design-vue";
 
-import FeedbackIcon from "./FeedbackIcon.vue";
+// import FeedbackIcon from "./FeedbackIcon.vue";
+import QuestionRow from './QuestionRow.vue'
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
 const { Panel } = Collapse;
@@ -88,10 +98,11 @@ export default {
   components: {
     Button,
     Collapse,
-    FeedbackIcon,
+    // FeedbackIcon,
     Icon,
     Option,
     Panel,
+    QuestionRow,
     Select
   },
   data: () => {
@@ -128,7 +139,8 @@ export default {
       return false;
     },
 
-    handleRateChange({ questionId, projectIdx }, { ratingId }) {
+    handleRateChange({ questionId, projectIdx, ratingId }) {
+      console.log(questionId, projectIdx, ratingId, '???')
       const project = this.projects[projectIdx];
       const { questions } = project;
       const answer = questions.find(q => q.questionId === questionId);
@@ -157,6 +169,8 @@ export default {
           })
         );
       }
+      console.log(this.projects)
+      this.$forceUpdate();
     },
 
     handleButtonClick(val) {
@@ -166,19 +180,56 @@ export default {
     addProject() {
       this.projects = this.projects.concat(defaultProject);
     }
+  },
+  watch: {
+    projects(newValue) {
+      console.log(newValue);
+    }
   }
 };
 </script>
 
 <style scoped lang="scss">
+
+@media screen and(max-width: $desktop-width){
+  .panels-wrapper{
+    padding-top: 30px;
+
+    .collapse-panel {
+      .collapse-header {
+        .collapse-left-header {
+          span {
+            display: none;
+          }
+
+          .select-project {
+            margin-left: 10px;
+          }
+        }
+
+        .collapse-right-header {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media screen and(min-width: $desktop-width){
+  .panels-wrapper{
+    padding-top: 100px;
+  }
+}
+
 .panels-wrapper{
-  padding-top: 100px;
   margin-left: 20px;
   margin-right: 20px;
+  min-width: $min-width;
 
   .collapse-panel {
     color: rgba(0, 0, 0, 0.65);
     margin-bottom: 20px;
+    min-width: $min-width;
 
     .collapse-header {
       background-color: #fafafa;

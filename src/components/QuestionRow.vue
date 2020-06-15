@@ -8,7 +8,7 @@
         :key="`rating-${rating.id}`"
         :ratingId="rating.id"
         :type="rating.icon"
-        :selected="question.answer === rating.id"
+        :selected="question.ratingId === rating.id"
         @ratechange="handleRateChange"
       />
     </div>
@@ -24,15 +24,24 @@ export default {
     FeedbackIcon
   },
   props: {
-    ratings: [],
-    question: {},
-    prjId: String
+    ratings: Array,
+    question: Object,
+    projectIdx: Number
   },
   methods: {
-    handleRateChange(val) {
-      console.log(val);
+    handleRateChange({ ratingId }) {
+      this.$emit("ratechange", {
+        ratingId,
+        questionId: this.question.id,
+        projectIdx: this.projectIdx
+      });
     }
-  }
+  },
+  // watch: {
+  //   question(newValue) {
+  //     console.log(newValue);
+  //   }
+  // }
 };
 </script>
 

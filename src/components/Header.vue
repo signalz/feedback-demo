@@ -105,6 +105,7 @@ export default {
     top: $header-height;
     width: 100%;
     height: 90px;
+    z-index: 99;
 
     .menu-mobile {
       display: flex;

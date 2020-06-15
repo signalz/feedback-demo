@@ -1,7 +1,7 @@
 <template>
-<div>
-  <img v-bind:src="getImgSrc(type, selected)" @click="rating" />
-</div>
+  <div class="feedback-icon" :draggable="false">
+    <img v-bind:src="getImgSrc(type, selected)" @click="rating" :draggable="false" />
+  </div>
 </template>
 
 <script>
@@ -18,30 +18,30 @@ export default {
     },
 
     getImgSrc(type, selected) {
-      switch(type) {
-        case '1':
+      switch (type) {
+        case "1":
           if (selected) {
-            return require('../assets/icons/bronze-medal-selected.png')
+            return require("../assets/icons/bronze-medal-selected.png");
           } else {
-            return require('../assets/icons/bronze-medal.png')
+            return require("../assets/icons/bronze-medal.png");
           }
-        case '2':
+        case "2":
           if (selected) {
-            return require('../assets/icons/silver-medal-selected.png')
+            return require("../assets/icons/silver-medal-selected.png");
           } else {
-            return require('../assets/icons/silver-medal.png')
+            return require("../assets/icons/silver-medal.png");
           }
-        case '3':
+        case "3":
           if (selected) {
-            return require('../assets/icons/gold-medal-selected.png')
+            return require("../assets/icons/gold-medal-selected.png");
           } else {
-            return require('../assets/icons/gold-medal.png')
+            return require("../assets/icons/gold-medal.png");
           }
-        case '4':
+        case "4":
           if (selected) {
-            return require('../assets/icons/trophy-selected.png')
+            return require("../assets/icons/trophy-selected.png");
           } else {
-            return require('../assets/icons/trophy.png')
+            return require("../assets/icons/trophy.png");
           }
       }
     }
@@ -49,9 +49,18 @@ export default {
 };
 </script>
 
-<style scoped>
-img {
-  width: 25px;
-  cursor: pointer;
+<style lang="scss" scoped>
+.feedback-icon {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  img {
+    width: 25px;
+    cursor: pointer;
+  }
 }
 </style>
