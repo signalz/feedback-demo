@@ -1,7 +1,7 @@
 <template>
   <div class="header-wrapper">
     <div class="header">
-      <img alt="logo" src="../assets/logo-big.png" class="header-logo" />
+      <img alt="logo" src="../assets/logo.png" class="header-logo" />
       <div class="header-banner-text">{{$t('header.banner.text')}}</div>
       <div class="header-nav">
         <router-link to="/">{{$t('header.nav.feedback')}}</router-link>
