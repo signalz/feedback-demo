@@ -1,5 +1,11 @@
 <template>
   <div>
+    <Modal v-model="visible" title="Information" class="modal">
+      <template slot="footer">
+        <Button @click="handleOk" type="primary">OK</Button>
+      </template>
+      <p class="modal-info">Thank you for your evaluation</p>
+    </Modal>
     <div class="panels-wrapper">
       <div
         class="collapse-panel"
@@ -47,8 +53,7 @@
         </div>
       </div>
       <div class="buttons-bar">
-        <!-- <Button type="primary" @click="handleButtonClick('Thank you for your evaluation')">Submit</Button> -->
-        <Button type="primary" @click="handleButtonClick('Thank you for your evaluation')"  shape="circle" icon="save" />
+        <Button type="primary" @click="onClickSubmit" shape="circle" icon="save" />
         <Button type="primary" shape="circle" icon="plus" @click="addProject" />
       </div>
     </div>
@@ -56,9 +61,9 @@
 </template>
 
 <script>
-import { Button, Collapse, Icon, Select } from "ant-design-vue";
+import { Button, Collapse, Icon, Select, Modal } from "ant-design-vue";
 
-import QuestionRow from './QuestionRow.vue'
+import QuestionRow from "./QuestionRow.vue";
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
 const { Panel } = Collapse;
@@ -68,7 +73,7 @@ const defaultProject = {
   ...PROJECTS[0],
   isCollapsed: false,
   questions: QUESTIONS,
-  sections: SECTIONS,
+  sections: SECTIONS
 };
 
 export default {
@@ -77,6 +82,7 @@ export default {
     Button,
     Collapse,
     Icon,
+    Modal,
     Option,
     Panel,
     QuestionRow,
@@ -88,13 +94,14 @@ export default {
       listSelectProjects: PROJECTS,
       projects: [defaultProject],
       activeKeys: SECTIONS.map(section => `section-${section.key}`),
+      visible: false
     };
   },
   methods: {
     handleChangeProject(idx, val) {
       this.$set(this.projects, idx, {
         ...defaultProject,
-        ...this.listSelectProjects.find(prj => prj.id === val),
+        ...this.listSelectProjects.find(prj => prj.id === val)
       });
     },
 
@@ -115,31 +122,42 @@ export default {
               return {
                 ...q,
                 ratingId
-              }
+              };
             }
 
-            return q
+            return q;
           })
         }
-      }
+      };
       this.$forceUpdate();
     },
 
-    handleButtonClick(val) {
-      alert(val);
+    onClickSubmit() {
+      this.visible = true;
     },
 
     addProject() {
       this.projects = this.projects.concat(defaultProject);
+    },
+
+    handleOk() {
+      this.visible = false;
     }
-  },
+  }
 };
 </script>
 
 <style scoped lang="scss">
+.ant-modal-title {
+  font-weight: bold;
+}
+
+.modal-info {
+  font-size: 24px;
+}
 
 @media screen and(max-width: $phone-width) {
-  .panels-wrapper{
+  .panels-wrapper {
     padding-top: 30px;
 
     .collapse-panel {
@@ -158,13 +176,13 @@ export default {
   }
 }
 
-@media screen and(min-width: $desktop-width){
-  .panels-wrapper{
+@media screen and(min-width: $desktop-width) {
+  .panels-wrapper {
     padding-top: 100px;
   }
 }
 
-.panels-wrapper{
+.panels-wrapper {
   margin-left: 20px;
   margin-right: 20px;
   min-width: $min-width;
