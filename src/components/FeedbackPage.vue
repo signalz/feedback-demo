@@ -23,9 +23,9 @@
               >{{selectProject.name}}</Option>
             </Select>
           </div>
-          <div class="collapse-right-header">
+          <!-- <div class="collapse-right-header">
             <span>Average point:</span>
-          </div>
+          </div> -->
         </div>
         <div class="collapse-body" v-if="!project.isCollapsed">
           <Collapse v-model="activeKeys">
@@ -65,7 +65,7 @@
               </div>
             </Panel>
           </Collapse>
-          <div class="project-point">Average point:</div>
+          <!-- <div class="project-point">Average point:</div> -->
         </div>
       </div>
       <div class="buttons-bar">
@@ -191,7 +191,7 @@ export default {
 
 <style scoped lang="scss">
 
-@media screen and(max-width: $desktop-width){
+@media screen and(max-width: $phone-width) {
   .panels-wrapper{
     padding-top: 30px;
 
@@ -207,9 +207,9 @@ export default {
           }
         }
 
-        .collapse-right-header {
-          display: none;
-        }
+        // .collapse-right-header {
+        //   display: none;
+        // }
       }
     }
   }
@@ -253,9 +253,9 @@ export default {
         }
       }
 
-      .collapse-right-header {
-        font-size: 14px;
-      }
+      // .collapse-right-header {
+      //   font-size: 14px;
+      // }
     }
 
     .collapse-body {
@@ -286,9 +286,9 @@ export default {
         }
       }
 
-      .project-point {
-        margin-top: 20px;
-      }
+      // .project-point {
+      //   margin-top: 20px;
+      // }
     }
   }
 

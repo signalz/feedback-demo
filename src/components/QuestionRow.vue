@@ -1,7 +1,7 @@
 <template>
   <div class="question-row-wrapper">
     <div class="question-number">{{question.index}}</div>
-    <div class="question-text">{{question.text}}</div>
+    <div class="question-text"><span>{{question.index}}.</span>{{question.text}}</div>
     <div class="question-rating">
       <FeedbackIcon
         v-for="rating in ratings"
@@ -37,15 +37,39 @@ export default {
       });
     }
   },
-  // watch: {
-  //   question(newValue) {
-  //     console.log(newValue);
-  //   }
-  // }
 };
 </script>
 
 <style scoped lang="scss">
+
+@media screen and(max-width: $phone-width) {
+  .question-row-wrapper {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .question-number {
+      display: none;
+    }
+
+    .question-text {
+      width: 100% !important;
+      background-color: aliceblue;
+      padding: 10px;
+
+      span {
+        display: inline-block !important;
+        margin-right: 5px;
+      }
+    }
+
+    .question-rating {
+      width: 60% !important;
+      margin-top: 20px;
+    }
+  }
+}
+
 .question-row-wrapper {
   display: flex;
   justify-content: space-between;
@@ -58,6 +82,10 @@ export default {
 
   .question-text {
     width: 75%;
+
+    span {
+      display: none;
+    }
   }
 
   .question-rating {
