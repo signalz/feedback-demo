@@ -26,14 +26,17 @@ export default {
   props: {
     ratings: Array,
     question: Object,
-    projectIdx: Number
+    projectIdx: Number,
+    section: String,
   },
   methods: {
     handleRateChange({ ratingId }) {
+      const { section, projectIdx, question } = this
       this.$emit("ratechange", {
         ratingId,
-        questionId: this.question.id,
-        projectIdx: this.projectIdx
+        questionId: question.id,
+        projectIdx: projectIdx,
+        section,
       });
     }
   },

@@ -4,7 +4,7 @@
       <div
         class="collapse-panel"
         v-for="(project, idx) in projects"
-        :key="`list-projects-${project.id}`"
+        :key="`list-projects-${project.id}-${idx}`"
       >
         <div class="collapse-header">
           <div class="collapse-left-header">
@@ -12,7 +12,7 @@
             <span>Feedback on project:</span>
             <Select
               v-model="project.id"
-              :defaultValue="listSelectProjects[0].id"
+              :defaultValue="project.id"
               @change="handleChangeProject(idx, $event)"
               class="select-project"
             >
@@ -23,41 +23,20 @@
               >{{selectProject.name}}</Option>
             </Select>
           </div>
-          <!-- <div class="collapse-right-header">
-            <span>Average point:</span>
-          </div> -->
         </div>
         <div class="collapse-body" v-if="!project.isCollapsed">
           <Collapse v-model="activeKeys">
             <Panel
-              v-for="section in sections"
+              v-for="section in project.sections"
               :key="`section-${section.key}`"
               :header="section.label"
             >
               <div>
-                <!-- <div
-                  v-for="(question, questionIdx) in questions[section.key]"
-                  :key="`question-${section.key}-${question.id}`"
-                  class="question-row"
-                >
-                  <div class="question-number">{{questionIdx + 1}}</div>
-                  <div class="question-text">{{question.text}}</div>
-                  <div class="question-rating">
-                    <FeedbackIcon
-                      v-for="rating in ratings"
-                      :ratingId="rating.id"
-                      :key="`rating-${rating.id}`"
-                      :type="rating.icon"
-                      :selected="isRatingSelected({ratingId: rating.id, questionId: question.id, projectIdx: idx})"
-                      @ratechange="handleRateChange({questionId: question.id, projectIdx: idx}, $event)"
-                    />
-                  </div>
-                </div> -->
-                <!-- <div>Average section point:</div> -->
                 <QuestionRow
-                  v-for="(question, qIdx) in questions[section.key]"
+                  v-for="(question, qIdx) in project.questions[section.key]"
                   :key="`question-${section.key}-${question.id}`"
                   :ratings="ratings"
+                  :section="section.key"
                   :question="{...question, index: qIdx + 1}"
                   :projectIdx="idx"
                   @ratechange="handleRateChange"
@@ -65,7 +44,6 @@
               </div>
             </Panel>
           </Collapse>
-          <!-- <div class="project-point">Average point:</div> -->
         </div>
       </div>
       <div class="buttons-bar">
@@ -80,7 +58,6 @@
 <script>
 import { Button, Collapse, Icon, Select } from "ant-design-vue";
 
-// import FeedbackIcon from "./FeedbackIcon.vue";
 import QuestionRow from './QuestionRow.vue'
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
@@ -90,7 +67,8 @@ const { Option } = Select;
 const defaultProject = {
   ...PROJECTS[0],
   isCollapsed: false,
-  questions: []
+  questions: QUESTIONS,
+  sections: SECTIONS,
 };
 
 export default {
@@ -98,7 +76,6 @@ export default {
   components: {
     Button,
     Collapse,
-    // FeedbackIcon,
     Icon,
     Option,
     Panel,
@@ -108,9 +85,7 @@ export default {
   data: () => {
     return {
       ratings: RATINGS,
-      sections: SECTIONS,
       listSelectProjects: PROJECTS,
-      questions: QUESTIONS,
       projects: [defaultProject],
       activeKeys: SECTIONS.map(section => `section-${section.key}`),
     };
@@ -118,8 +93,8 @@ export default {
   methods: {
     handleChangeProject(idx, val) {
       this.$set(this.projects, idx, {
-        ...this.projects[idx],
-        ...this.listSelectProjects.find(prj => prj.id === val)
+        ...defaultProject,
+        ...this.listSelectProjects.find(prj => prj.id === val),
       });
     },
 
@@ -130,46 +105,23 @@ export default {
       });
     },
 
-    isRatingSelected({ ratingId, questionId, projectIdx }) {
-      const { questions } = this.projects[projectIdx];
-      const answer = questions.find(q => q.questionId === questionId) || {};
-      if (answer.ratingId === ratingId) {
-        return true;
-      }
-      return false;
-    },
-
-    handleRateChange({ questionId, projectIdx, ratingId }) {
-      console.log(questionId, projectIdx, ratingId, '???')
-      const project = this.projects[projectIdx];
-      const { questions } = project;
-      const answer = questions.find(q => q.questionId === questionId);
-      if (answer) {
-        this.$set(
-          this.projects[projectIdx],
-          "questions",
-          this.projects[projectIdx].questions.map(q => {
-            if (q.questionId === questionId) {
+    handleRateChange({ questionId, projectIdx, ratingId, section }) {
+      this.projects[projectIdx] = {
+        ...this.projects[projectIdx],
+        questions: {
+          ...this.projects[projectIdx].questions,
+          [section]: this.projects[projectIdx].questions[section].map(q => {
+            if (q.id === questionId) {
               return {
                 ...q,
                 ratingId
-              };
-            } else {
-              return q;
+              }
             }
+
+            return q
           })
-        );
-      } else {
-        this.$set(
-          this.projects[projectIdx],
-          "questions",
-          this.projects[projectIdx].questions.concat({
-            questionId,
-            ratingId
-          })
-        );
+        }
       }
-      console.log(this.projects)
       this.$forceUpdate();
     },
 
@@ -181,11 +133,6 @@ export default {
       this.projects = this.projects.concat(defaultProject);
     }
   },
-  watch: {
-    projects(newValue) {
-      console.log(newValue);
-    }
-  }
 };
 </script>
 
@@ -206,10 +153,6 @@ export default {
             margin-left: 10px;
           }
         }
-
-        // .collapse-right-header {
-        //   display: none;
-        // }
       }
     }
   }
@@ -252,10 +195,6 @@ export default {
           margin-right: 10px;
         }
       }
-
-      // .collapse-right-header {
-      //   font-size: 14px;
-      // }
     }
 
     .collapse-body {
@@ -285,10 +224,6 @@ export default {
           font-size: 20px;
         }
       }
-
-      // .project-point {
-      //   margin-top: 20px;
-      // }
     }
   }
 
