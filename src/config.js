@@ -3,27 +3,26 @@ export const RATINGS = [
     id: 1,
     rate: 1,
     icon: "1",
+    label: "Bronze",
   },
   {
     id: 2,
     rate: 2,
     icon: "2",
+    label: "Silver",
   },
   {
     id: 3,
     rate: 3,
     icon: "3",
+    label: "Gold",
   },
   {
     id: 4,
     rate: 4,
     icon: "4",
+    label: "Platin",
   },
-  // {
-  //   id: 5,
-  //   rate: 5,
-  //   icon: "5",
-  // },
 ];
 
 export const SECTIONS = [
@@ -45,12 +44,6 @@ export const SECTIONS = [
     key: "quality",
     label: "Quality",
   },
-  // {
-  //   id: 3,
-  //   order: 3,
-  //   key: "understanding",
-  //   label: "Understanding",
-  // },
   {
     id: 4,
     order: 4,

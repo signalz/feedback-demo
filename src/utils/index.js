@@ -6,6 +6,7 @@ export function getIconImgSrc(type, selected) {
       } else {
         return require("../assets/icons/bronze-medal.png");
       }
+      // return require("../assets/bronze.png");
     case "2":
       if (selected) {
         return require("../assets/icons/silver-medal-selected.png");

@@ -9,6 +9,7 @@
         :ratingId="rating.id"
         :type="rating.icon"
         :selected="question.ratingId === rating.id"
+        :label="rating.label"
         @ratechange="handleRateChange"
       />
     </div>

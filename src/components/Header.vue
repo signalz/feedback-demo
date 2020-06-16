@@ -92,7 +92,7 @@ export default {
 
   .header-banner-mobile-text {
     padding-top: $header-height;
-    font-size: 15px;
+    font-size: 22px;
     font-weight: bold;
     text-transform: uppercase;
     text-align: center;

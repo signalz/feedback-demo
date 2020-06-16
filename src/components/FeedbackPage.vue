@@ -47,8 +47,8 @@
         </div>
       </div>
       <div class="buttons-bar">
-        <Button type="primary" @click="handleButtonClick('Saved')">Save as draft</Button>
-        <Button type="primary" @click="handleButtonClick('Thank you for your evaluation')">Submit</Button>
+        <!-- <Button type="primary" @click="handleButtonClick('Thank you for your evaluation')">Submit</Button> -->
+        <Button type="primary" @click="handleButtonClick('Thank you for your evaluation')"  shape="circle" icon="save" />
         <Button type="primary" shape="circle" icon="plus" @click="addProject" />
       </div>
     </div>
@@ -231,11 +231,11 @@ export default {
     display: flex;
     justify-content: flex-end;
     position: fixed;
-    bottom: 5%;
+    bottom: 3%;
     width: 95%;
 
     button {
-      margin-left: 10px;
+      margin-right: 10px;
     }
   }
 }

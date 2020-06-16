@@ -1,18 +1,29 @@
 <template>
   <div class="feedback-icon" :draggable="false">
-    <img v-bind:src="getImgSrc(type, selected)" @click="rating" :draggable="false" />
+    <Tooltip>
+      <template slot="title">
+        <span>{{label}}</span>
+      </template>
+      <img v-bind:src="getImgSrc(type, selected)" @click="rating" :draggable="false" />
+    </Tooltip>
   </div>
 </template>
 
 <script>
+import { Tooltip } from "ant-design-vue";
+
 import { getIconImgSrc } from "../utils";
 
 export default {
   name: "FeedbackIcon",
+  components: {
+    Tooltip
+  },
   props: {
     type: String,
     selected: Boolean,
-    ratingId: Number
+    ratingId: Number,
+    label: String,
   },
   methods: {
     rating() {
@@ -33,6 +44,8 @@ export default {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+
+  background-image: url("../assets/medals.png");
 
   img {
     width: 25px;
