@@ -1,10 +1,16 @@
 <template>
   <div>
+    <Modal v-model="visible" title="Information" class="modal">
+      <template slot="footer">
+        <Button @click="handleOk" type="primary">OK</Button>
+      </template>
+      <p class="modal-info">Thank you for your evaluation</p>
+    </Modal>
     <div class="panels-wrapper">
       <div
         class="collapse-panel"
         v-for="(project, idx) in projects"
-        :key="`list-projects-${project.id}`"
+        :key="`list-projects-${project.id}-${idx}`"
       >
         <div class="collapse-header">
           <div class="collapse-left-header">
@@ -12,8 +18,9 @@
             <span>Feedback on project:</span>
             <Select
               v-model="project.id"
-              :defaultValue="listSelectProjects[0].id"
+              :defaultValue="project.id"
               @change="handleChangeProject(idx, $event)"
+              class="select-project"
             >
               <Option
                 v-for="selectProject in listSelectProjects"
@@ -22,46 +29,31 @@
               >{{selectProject.name}}</Option>
             </Select>
           </div>
-          <div class="collapse-right-header">
-            <span>Average point:</span>
-          </div>
         </div>
         <div class="collapse-body" v-if="!project.isCollapsed">
           <Collapse v-model="activeKeys">
             <Panel
-              v-for="section in sections"
+              v-for="section in project.sections"
               :key="`section-${section.key}`"
               :header="section.label"
             >
               <div>
-                <div
-                  v-for="(question, questionIdx) in questions[section.key]"
+                <QuestionRow
+                  v-for="(question, qIdx) in project.questions[section.key]"
                   :key="`question-${section.key}-${question.id}`"
-                  class="question-row"
-                >
-                  <div class="question-number">{{questionIdx + 1}}</div>
-                  <div class="question-text">{{question.text}}</div>
-                  <div class="question-rating">
-                    <FeedbackIcon
-                      v-for="rating in ratings"
-                      :ratingId="rating.id"
-                      :key="`rating-${rating.id}`"
-                      :type="rating.icon"
-                      :selected="isRatingSelected({ratingId: rating.id, questionId: question.id, projectIdx: idx})"
-                      @ratechange="handleRateChange({questionId: question.id, projectIdx: idx}, $event)"
-                    />
-                  </div>
-                </div>
-                <!-- <div>Average section point:</div> -->
+                  :ratings="ratings"
+                  :section="section.key"
+                  :question="{...question, index: qIdx + 1}"
+                  :projectIdx="idx"
+                  @ratechange="handleRateChange"
+                />
               </div>
             </Panel>
           </Collapse>
-          <div class="project-point">Average point:</div>
         </div>
       </div>
       <div class="buttons-bar">
-        <Button type="primary" @click="handleButtonClick('Saved')">Save as draft</Button>
-        <Button type="primary" @click="handleButtonClick('Thank you for your evaluation')">Submit</Button>
+        <Button type="primary" @click="onClickSubmit" shape="circle" icon="save" />
         <Button type="primary" shape="circle" icon="plus" @click="addProject" />
       </div>
     </div>
@@ -69,9 +61,9 @@
 </template>
 
 <script>
-import { Button, Collapse, Icon, Select } from "ant-design-vue";
+import { Button, Collapse, Icon, Select, Modal } from "ant-design-vue";
 
-import FeedbackIcon from "./FeedbackIcon.vue";
+import QuestionRow from "./QuestionRow.vue";
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
 const { Panel } = Collapse;
@@ -80,7 +72,8 @@ const { Option } = Select;
 const defaultProject = {
   ...PROJECTS[0],
   isCollapsed: false,
-  questions: []
+  questions: QUESTIONS,
+  sections: SECTIONS
 };
 
 export default {
@@ -88,26 +81,26 @@ export default {
   components: {
     Button,
     Collapse,
-    FeedbackIcon,
     Icon,
+    Modal,
     Option,
     Panel,
+    QuestionRow,
     Select
   },
   data: () => {
     return {
       ratings: RATINGS,
-      sections: SECTIONS,
       listSelectProjects: PROJECTS,
-      questions: QUESTIONS,
       projects: [defaultProject],
       activeKeys: SECTIONS.map(section => `section-${section.key}`),
+      visible: false
     };
   },
   methods: {
     handleChangeProject(idx, val) {
       this.$set(this.projects, idx, {
-        ...this.projects[idx],
+        ...defaultProject,
         ...this.listSelectProjects.find(prj => prj.id === val)
       });
     },
@@ -119,66 +112,85 @@ export default {
       });
     },
 
-    isRatingSelected({ ratingId, questionId, projectIdx }) {
-      const { questions } = this.projects[projectIdx];
-      const answer = questions.find(q => q.questionId === questionId) || {};
-      if (answer.ratingId === ratingId) {
-        return true;
-      }
-      return false;
-    },
-
-    handleRateChange({ questionId, projectIdx }, { ratingId }) {
-      const project = this.projects[projectIdx];
-      const { questions } = project;
-      const answer = questions.find(q => q.questionId === questionId);
-      if (answer) {
-        this.$set(
-          this.projects[projectIdx],
-          "questions",
-          this.projects[projectIdx].questions.map(q => {
-            if (q.questionId === questionId) {
+    handleRateChange({ questionId, projectIdx, ratingId, section }) {
+      this.projects[projectIdx] = {
+        ...this.projects[projectIdx],
+        questions: {
+          ...this.projects[projectIdx].questions,
+          [section]: this.projects[projectIdx].questions[section].map(q => {
+            if (q.id === questionId) {
               return {
                 ...q,
                 ratingId
               };
-            } else {
-              return q;
             }
+
+            return q;
           })
-        );
-      } else {
-        this.$set(
-          this.projects[projectIdx],
-          "questions",
-          this.projects[projectIdx].questions.concat({
-            questionId,
-            ratingId
-          })
-        );
-      }
+        }
+      };
+      this.$forceUpdate();
     },
 
-    handleButtonClick(val) {
-      alert(val);
+    onClickSubmit() {
+      this.visible = true;
     },
 
     addProject() {
       this.projects = this.projects.concat(defaultProject);
+    },
+
+    handleOk() {
+      this.visible = false;
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-.panels-wrapper{
-  padding-top: 100px;
+.ant-modal-title {
+  font-weight: bold;
+}
+
+.modal-info {
+  font-size: 24px;
+}
+
+@media screen and(max-width: $phone-width) {
+  .panels-wrapper {
+    padding-top: 30px;
+
+    .collapse-panel {
+      .collapse-header {
+        .collapse-left-header {
+          span {
+            display: none;
+          }
+
+          .select-project {
+            margin-left: 10px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and(min-width: $desktop-width) {
+  .panels-wrapper {
+    padding-top: 100px;
+  }
+}
+
+.panels-wrapper {
   margin-left: 20px;
   margin-right: 20px;
+  min-width: $min-width;
 
   .collapse-panel {
     color: rgba(0, 0, 0, 0.65);
     margin-bottom: 20px;
+    min-width: $min-width;
 
     .collapse-header {
       background-color: #fafafa;
@@ -200,10 +212,6 @@ export default {
           margin-left: 10px;
           margin-right: 10px;
         }
-      }
-
-      .collapse-right-header {
-        font-size: 14px;
       }
     }
 
@@ -234,10 +242,6 @@ export default {
           font-size: 20px;
         }
       }
-
-      .project-point {
-        margin-top: 20px;
-      }
     }
   }
 
@@ -245,11 +249,11 @@ export default {
     display: flex;
     justify-content: flex-end;
     position: fixed;
-    bottom: 5%;
+    bottom: 3%;
     width: 95%;
 
     button {
-      margin-left: 10px;
+      margin-right: 10px;
     }
   }
 }

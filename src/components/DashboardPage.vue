@@ -1,11 +1,10 @@
 <template>
   <div>
-    <!-- <Header /> -->
     <div class="dashboards-wrapper">
       <Collapse v-model="activeKeys">
         <Panel header="Projects Overview" key="prj-overview">
           <div class="pie-description">
-            <div class="pie-description-text">Projects overview by:</div>
+            <div class="pie-description-text">Overview by:</div>
             <Select defaultValue="default" class="pie-chart-select">
               <Option key="select-section-default" value="default">Overall</Option>
               <Option
@@ -27,7 +26,7 @@
         <Panel header="Projects Comparison" key="prj-comparison">
           <div class="bar-description">
             <div class="bar-description-left">
-              <div class="bar-description-text">Projects comparison by:</div>
+              <div class="bar-description-text">Comparison by:</div>
               <Select defaultValue="default" class="bar-chart-select">
                 <Option key="select-section-default" value="default">Overall</Option>
                 <Option
@@ -69,7 +68,7 @@
             </div>
             <div class="line-description-right">
               <div class="line-description-text">History of:</div>
-              <Select defaultValue="default" class="bar-chart-select">
+              <Select defaultValue="default" class="line-chart-select">
                 <Option key="select-section-default" value="default">Overall</Option>
                 <Option
                   v-for="section in sections"
@@ -97,7 +96,6 @@ import PieChart from "./PieChart";
 import HorizontalBar from "./HorizontalBar";
 import LineChart from "./LineChart";
 
-// import Header from "./Header.vue";
 import { SECTIONS, PROJECTS } from "../config";
 
 const { Panel } = Collapse;
@@ -108,7 +106,6 @@ export default {
   components: {
     HorizontalBar,
     Collapse,
-    // Header,
     LineChart,
     Panel,
     PieChart,
@@ -122,23 +119,8 @@ export default {
         datasets: [
           {
             data: [1, 1, 1, 1],
-            backgroundColor: [
-              "#cd7f32 ",
-              "#aaa9ad",
-              "#faf369",
-              "#e5e4e2"
-            ],
-            hoverBackgroundColor: [
-              "#cd7f32 ",
-              "#aaa9ad",
-              "#faf369",
-              "#e5e4e2"
-            ],
-            // borderColor: [
-            //   "rgba(255,99,132,1)",
-            //   "rgba(54, 162, 235, 1)",
-            //   "rgba(255, 206, 86, 1)"
-            // ],
+            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
+            hoverBackgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
             borderWidth: 1
           }
         ],
@@ -150,12 +132,7 @@ export default {
       barChartData: {
         datasets: [
           {
-            backgroundColor: [
-              "#cd7f32 ",
-              "#aaa9ad",
-              "#faf369",
-              "#e5e4e2"
-            ],
+            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
             data: [2, 3, 4, 5]
           }
         ],
@@ -213,73 +190,98 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@media screen and(max-width: $phone-width) {
+  .dashboards-wrapper {
+    padding-top: 30px;
+  }
+
+  .pie-description,
+  .bar-description-left,
+  .bar-description-right,
+  .line-description-left,
+  .line-description-right   {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+}
+
+@media screen and(min-width: $desktop-width) {
+  .dashboards-wrapper {
+    padding-top: 100px;
+  }
+}
+
 .dashboards-wrapper {
-  padding-top: 100px;
   margin-left: 20px;
   margin-right: 20px;
+
+  .pie-description {
+    display: flex;
+    align-items: center;
+
+    .pie-description-text {
+      margin-right: 10px;
+    }
+
+    .pie-chart-select {
+      width: 150px;
+    }
+  }
+
+  .bar-description {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    min-width: $min-width;
+
+    .bar-description-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .bar-description-text {
+      margin-right: 10px;
+    }
+
+    .bar-description-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .bar-chart-select {
+      width: 150px;
+    }
+  }
+
+  .line-description {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    min-width: $min-width;
+
+    .line-description-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .line-description-text {
+      margin-right: 10px;
+    }
+
+    .line-description-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .line-chart-select {
+      width: 150px;
+    }
+  }
 }
 
 .dashboards-wrapper > div {
   margin-bottom: 20px;
-}
-
-.pie-description {
-  display: flex;
-  align-items: center;
-}
-
-.pie-description-text {
-  margin-right: 10px;
-}
-
-.pie-chart-select {
-  width: 150px;
-}
-
-.bar-description {
-  display: flex;
-  justify-content: space-between;
-}
-
-.bar-description-left {
-  display: flex;
-  align-items: center;
-}
-
-.bar-description-text {
-  margin-right: 10px;
-}
-
-.bar-description-right {
-  display: flex;
-  align-items: center;
-}
-
-.bar-chart-select {
-  width: 150px;
-}
-
-.line-description {
-  display: flex;
-  justify-content: space-between;
-}
-
-.line-description-left {
-  display: flex;
-  align-items: center;
-}
-
-.line-description-text {
-  margin-right: 10px;
-}
-
-.line-description-right {
-  display: flex;
-  align-items: center;
-}
-
-.line-chart-select {
-  width: 150px;
 }
 </style>
