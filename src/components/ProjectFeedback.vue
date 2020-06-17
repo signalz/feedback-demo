@@ -19,6 +19,10 @@
         </div>
       </div>
     </div>
+    <div>
+      <div>Write a feedback</div>
+      <div><textarea placeholder="Write a feedback"/></div>
+    </div>
   </div>
 </template>
 <script>
