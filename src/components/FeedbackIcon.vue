@@ -4,7 +4,12 @@
       <template slot="title">
         <span>{{label}}</span>
       </template>
-      <img v-bind:src="getImgSrc(type, selected)" @click="rating" :draggable="false" />
+      <img
+        v-bind:src="getImgSrc(type)"
+        v-bind:class="{selected}"
+        @click="rating"
+        :draggable="false"
+      />
     </Tooltip>
   </div>
 </template>
@@ -23,14 +28,14 @@ export default {
     type: String,
     selected: Boolean,
     ratingId: Number,
-    label: String,
+    label: String
   },
   methods: {
     rating() {
       this.$emit("ratechange", { ratingId: this.ratingId });
     },
     getImgSrc(type, selected) {
-      return getIconImgSrc(type, selected)
+      return getIconImgSrc(type, selected);
     }
   }
 };
@@ -48,8 +53,13 @@ export default {
   background-image: url("../assets/medals.png");
 
   img {
-    width: 25px;
+    width: 50px;
     cursor: pointer;
+    opacity: 0.5;
+  }
+
+  img.selected {
+    opacity: 1;
   }
 }
 </style>

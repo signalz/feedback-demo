@@ -1,3 +1,5 @@
+export const END_POINT = "https://serene-dusk-06867.herokuapp.com/api/";
+
 export const RATINGS = [
   {
     id: 1,

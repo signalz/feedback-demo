@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Loading />
     <Modal v-model="visible" title="Information" class="modal">
       <template slot="footer">
         <Button @click="handleOk" type="primary">OK</Button>
@@ -63,6 +64,7 @@
 <script>
 import { Button, Collapse, Icon, Select, Modal } from "ant-design-vue";
 
+import Loading from "./Loading";
 import QuestionRow from "./QuestionRow.vue";
 import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
 
@@ -82,6 +84,7 @@ export default {
     Button,
     Collapse,
     Icon,
+    Loading,
     Modal,
     Option,
     Panel,

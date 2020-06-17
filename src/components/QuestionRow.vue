@@ -85,7 +85,7 @@ export default {
   }
 
   .question-text {
-    width: 75%;
+    width: 60%;
 
     span {
       display: none;
@@ -93,7 +93,7 @@ export default {
   }
 
   .question-rating {
-    width: 20%;
+    width: 35%;
     display: flex;
     justify-content: space-between;
     font-size: 20px;

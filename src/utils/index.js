@@ -1,29 +1,12 @@
-export function getIconImgSrc(type, selected) {
+export function getIconImgSrc(type) {
   switch (type) {
     case "1":
-      if (selected) {
-        return require("../assets/icons/bronze-medal-selected.png");
-      } else {
-        return require("../assets/icons/bronze-medal.png");
-      }
-      // return require("../assets/bronze.png");
+      return require("../assets/bronze.png");
     case "2":
-      if (selected) {
-        return require("../assets/icons/silver-medal-selected.png");
-      } else {
-        return require("../assets/icons/silver-medal.png");
-      }
+      return require("../assets/silver.png");
     case "3":
-      if (selected) {
-        return require("../assets/icons/gold-medal-selected.png");
-      } else {
-        return require("../assets/icons/gold-medal.png");
-      }
+      return require("../assets/gold.png");
     case "4":
-      if (selected) {
-        return require("../assets/icons/trophy-selected.png");
-      } else {
-        return require("../assets/icons/trophy.png");
-      }
+      return require("../assets/platinum.png");
   }
 }
