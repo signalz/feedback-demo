@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <SideMenu />
+    <!-- <SideMenu /> -->
     <router-view/>
   </div>
 </template>
@@ -8,13 +8,13 @@
 
 import "ant-design-vue/dist/antd.css"
 // import Header from "./components/Header";
-import SideMenu from "./components/SideMenu";
+// import SideMenu from "./components/SideMenu";
 
 export default {
   name: 'App',
   components: {
     // Header,
-    SideMenu
+    // SideMenu
   }
 }
 </script>

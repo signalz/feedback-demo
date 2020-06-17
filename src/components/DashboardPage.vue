@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Menu />
     <div class="dashboards-wrapper">
       <Collapse v-model="activeKeys">
         <Panel header="Projects Overview" key="prj-overview">
@@ -96,6 +97,8 @@ import PieChart from "./PieChart";
 import HorizontalBar from "./HorizontalBar";
 import LineChart from "./LineChart";
 
+// import SideMenu from "./SideMenu";
+import Menu from "./Menu";
 import { SECTIONS, PROJECTS } from "../config";
 
 const { Panel } = Collapse;
@@ -110,6 +113,7 @@ export default {
     Panel,
     PieChart,
     Option,
+    Menu,
     Select
   },
   data: () => {

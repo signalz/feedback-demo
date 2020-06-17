@@ -1,13 +1,13 @@
 <template>
-  <div class="project-item" @click="select">
-    <div class="project-item-name">{{name}}</div>
-    <div v-if="selected" class="project-item-selected"></div>
+  <div class="selectable-item" @click="select">
+    <div class="selectable-item-name">{{name}}</div>
+    <div v-if="selected" class="selectable-item-selected"></div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "ProjectItem",
+  name: "SelectableItem",
   props: {
     name: String,
     id: String,
@@ -16,14 +16,14 @@ export default {
   methods: {
     select() {
       const { id } = this;
-      this.$emit("projectSelect", { id });
+      this.$emit("itemSelect", { id });
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-.project-item {
+.selectable-item {
   padding: 10px 5px 10px 5px;
   display: flex;
   align-items: center;
@@ -32,19 +32,19 @@ export default {
   font-weight: bold;
   cursor: pointer;
 
-  .project-item-name {
+  .selectable-item-name {
     color: $default-color;
   }
 
-  .project-item-selected {
+  .selectable-item-selected {
     height: 10px;
     width: 10px;
-    background-color: green;
+    background-color: #42b983;
     border-radius: 50%;
   }
 }
 
-.project-item:hover {
+.selectable-item:hover {
   background-color: #22282d;
   opacity: 0.5;
 }

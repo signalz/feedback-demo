@@ -27,8 +27,7 @@ export const RATINGS = [
   },
 ];
 
-export const SECTIONS = [
-  {
+export const SECTIONS = [{
     id: 6,
     order: 6,
     key: "happiness",
@@ -66,86 +65,90 @@ export const SECTIONS = [
   }
 ];
 
-export const PROJECTS = [
-  { id: '1', name: "Project 1" },
-  { id: '2', name: "Project 2" },
-  { id: '3', name: "Project 3" },
-  { id: '4', name: "Project 4" },
+export const PROJECTS = [{
+    id: '1',
+    name: "Project 1"
+  },
+  {
+    id: '2',
+    name: "Project 2"
+  },
+  {
+    id: '3',
+    name: "Project 3"
+  },
+  {
+    id: '4',
+    name: "Project 4"
+  },
 ];
 
 export const QUESTIONS = {
-  skills: [
-    {
+  skills: [{
       id: 1,
       order: 1,
-      text:
-        "Your evaluation about coding skill of Vietnam team ?",
+      text: "Your evaluation about coding skill of Vietnam team ?",
     },
     {
       id: 2,
       order: 2,
-      text:
-        "Your evaluation about technical knowledge of Vietnam team ?",
+      text: "Your evaluation about technical knowledge of Vietnam team ?",
     },
   ],
-  quality: [
-    {
+  quality: [{
       id: 3,
       order: 1,
-      text:
-        "Your evalutaion about estimation capability of Vietnam team ?",
+      text: "Your evalutaion about estimation capability of Vietnam team ?",
     },
     {
       id: 4,
       order: 2,
-      text:
-        "Your evalutaion about quality of deliverables from Vietnam team ?",
+      text: "Your evalutaion about quality of deliverables from Vietnam team ?",
     },
   ],
-  understanding: [
-    {
-      id: 5,
-      order: 1,
-      text:
-        "How satisfied are you with team's understand about business ?",
-    },
-  ],
-  productivity: [
-    {
-      id: 7,
-      order: 1,
-      text:
-        "Your evalutaion about performance of Vietnam team ?",
-    },
-  ],
-  communication: [
-    {
-      id: 8,
-      order: 1,
-      text:
-        "Your evalutaion about communication efficiency of Vietnam team ?",
-    },
-  ],
-  happiness: [
-    {
-      id: 9,
-      order: 1,
-      text:
-        "Your overall satisfaction about Vietnam team ?",
-    },
-  ],
-  engagement: [
-    {
+  understanding: [{
+    id: 5,
+    order: 1,
+    text: "How satisfied are you with team's understand about business ?",
+  }, ],
+  productivity: [{
+    id: 7,
+    order: 1,
+    text: "Your evalutaion about performance of Vietnam team ?",
+  }, ],
+  communication: [{
+    id: 8,
+    order: 1,
+    text: "Your evalutaion about communication efficiency of Vietnam team ?",
+  }, ],
+  happiness: [{
+    id: 9,
+    order: 1,
+    text: "Your overall satisfaction about Vietnam team ?",
+  }, ],
+  engagement: [{
       id: 10,
       order: 1,
-      text:
-        "Your evalutaion about commitment of Vietnam team ?",
+      text: "Your evalutaion about commitment of Vietnam team ?",
     },
     {
       id: 11,
       order: 1,
-      text:
-        "Your evalutaion about integration capability of Vietnam team ?",
+      text: "Your evalutaion about integration capability of Vietnam team ?",
     },
   ]
 };
+
+export const DASHBOARD_SECTIONS = [{
+    id: 'dashboard-section-overview',
+    label: 'dashboard.section.overview'
+  },
+  {
+    id: 'dashboard-section-comparison',
+    label: 'dashboard.section.comparison'
+  },
+  {
+    id: 'dashboard-section-history',
+    label: 'dashboard.section.history'
+  }
+]

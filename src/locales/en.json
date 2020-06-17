@@ -10,5 +10,12 @@
       "feedback": "Feedback",
       "dashboard": "Dashboard"
     }
+  },
+  "dashboard": {
+    "section": {
+      "overview": "Overview",
+      "comparison": "Comparison",
+      "history": "History"
+    }
   }
 }

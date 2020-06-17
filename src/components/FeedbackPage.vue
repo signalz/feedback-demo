@@ -1,6 +1,7 @@
 <template>
   <div>
     <Loading v-if="isLoading" />
+    <Menu />
     <Modal v-model="visible" title="Information" class="modal">
       <template slot="footer">
         <Button @click="handleOk" type="primary">OK</Button>
@@ -61,6 +62,7 @@
 import { Button, Collapse, Icon, Select, Modal, message } from "ant-design-vue";
 
 import Loading from "./Loading";
+import Menu from "./Menu";
 import QuestionRow from "./QuestionRow.vue";
 import { RATINGS, END_POINT } from "../config";
 
@@ -75,6 +77,7 @@ export default {
     Icon,
     Loading,
     Modal,
+    Menu,
     Option,
     Panel,
     QuestionRow,
@@ -214,7 +217,7 @@ export default {
 
 @media screen and(max-width: $phone-width) {
   .panels-wrapper {
-    padding-top: 30px;
+    padding-top: 100px;
 
     .collapse-panel {
       .collapse-header {
@@ -242,6 +245,7 @@ export default {
   margin-left: 20px;
   margin-right: 20px;
   min-width: $min-width;
+  padding-top: 100px;
 
   .collapse-panel {
     color: rgba(0, 0, 0, 0.65);
