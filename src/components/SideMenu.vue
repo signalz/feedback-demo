@@ -4,10 +4,16 @@
       <img alt="logo" src="../assets/logo.png" class="side-menu-logo" />
       <div class="side-menu-app-name">{{$t('app.name')}}</div>
     </div>
+    <div>
+      <select>
+        <option>123</option>
+        <option>456</option>
+      </select>
+    </div>
     <div class="side-menu-search">
       <div>Your projects:</div>
       <input placeholder="Search a project" />
-      <div>
+      <div class="side-menu-projects">
         <ProjectItem
           v-for="project in projects"
           :key="project.id"
@@ -37,19 +43,19 @@ export default {
   },
   methods: {
     handleProjectSelect({ id }) {
-      this.projects = this.projects.map( prj => {
+      this.projects = this.projects.map(prj => {
         if (prj.id === id) {
           return {
             ...prj,
             selected: true
-          }
+          };
         }
 
         return {
-            ...prj,
-            selected: false
-          }
-      })
+          ...prj,
+          selected: false
+        };
+      });
     }
   }
 };
@@ -100,6 +106,22 @@ export default {
       outline: none;
     }
   }
+
+  .side-menu-projects {
+    overflow-y: auto;
+    height: 100%;
+    margin-top: 5px;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  background: #424242;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #616161;
+  border-radius: 20px;
 }
 </style>
 
