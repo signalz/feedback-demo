@@ -30,37 +30,37 @@ export const SECTIONS = [{
     id: 6,
     order: 6,
     key: "happiness",
-    label: "Happiness",
+    title: "Happiness",
   },
   {
     id: 1,
     order: 1,
     key: "skills",
-    label: "Skills",
+    title: "Skills",
   },
   {
     id: 2,
     order: 2,
     key: "quality",
-    label: "Quality",
+    title: "Quality",
   },
   {
     id: 4,
     order: 4,
     key: "productivity",
-    label: "Productivity",
+    title: "Productivity",
   },
   {
     id: 5,
     order: 5,
     key: "communication",
-    label: "Communication",
+    title: "Communication",
   },
   {
     id: 7,
     order: 7,
     key: "engagement",
-    label: "Engagement",
+    title: "Engagement",
   }
 ];
 

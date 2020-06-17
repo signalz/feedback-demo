@@ -1,10 +1,12 @@
 <template>
   <div>
-    <Menu :projects="projects" />
-    <Loading isSpin v-if="isLoading"/>
-    <div class="no-project">
-      <NoProjectSelected v-if="!project" />
-      <ProjectFeedback v-if="!project" />
+    <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" />
+    <Loading isSpin v-if="isLoading" />
+    <div class="no-project" v-if="!project">
+      <NoProjectSelected />
+    </div>
+    <div v-if="project" class="project-feedback">
+      <ProjectFeedback :sections="sections" :ratings="ratings" />
     </div>
   </div>
   <!-- <div>
@@ -71,13 +73,13 @@ import { message } from "ant-design-vue";
 import Loading from "./Loading";
 import Menu from "./Menu";
 import NoProjectSelected from "./NoProjectSelected";
-import ProjectFeedback from "./ProjectFeedback"
+import ProjectFeedback from "./ProjectFeedback";
 
 import { END_POINT } from "../config";
 // import { Button, Collapse, Icon, Select, Modal } from "ant-design-vue";
 
 // import QuestionRow from "./QuestionRow.vue";
-// import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
+import { QUESTIONS, RATINGS, SECTIONS } from "../config";
 
 // const { Panel } = Collapse;
 // const { Option } = Select;
@@ -93,13 +95,21 @@ export default {
   name: "FeedbackPage",
   mounted() {
     Promise.all([
-      fetch(`${END_POINT}/api/projects`).then(res => res.json()),
-      fetch(`${END_POINT}/api/sections`).then(res => res.json())
+      fetch(`${END_POINT}/api/projects`).then(res => res.json())
+      // fetch(`${END_POINT}/api/sections`).then(res => res.json())
     ])
       .then(([projects, sections]) => {
         if (sections && sections.length > 0) {
           this.sections = sections;
         }
+        this.sections = SECTIONS;
+        this.sections = this.sections.map(section => {
+          return {
+            ...section,
+            questions: QUESTIONS[section.key]
+          };
+        });
+        this.ratings = RATINGS;
         if (projects && projects.length > 0) {
           this.projects = projects;
         }
@@ -153,10 +163,16 @@ export default {
     return {
       sections: [],
       projects: [],
+      ratings: [],
       project: undefined,
       message,
-      isLoading: true,
+      isLoading: true
     };
+  },
+  methods: {
+    handleSelectProject({ id }) {
+      this.project = id;
+    }
   }
 };
 
@@ -235,6 +251,19 @@ export default {
 <style scoped lang="scss">
 .no-project {
   padding-top: 100px;
+}
+
+@media screen and (min-width: $desktop-width) {
+  .project-feedback {
+    padding-left: 320px !important;
+  }
+}
+
+.project-feedback {
+  padding-top: 100px;
+  padding-left: 20px;
+  color: #7a7e81;
+  padding-right: 20px;
 }
 
 // .ant-modal-title {

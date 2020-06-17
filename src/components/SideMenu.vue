@@ -17,7 +17,7 @@
           :key="project.id"
           :name="project.projectName"
           :id="project.id"
-          :selected="project.selected"
+          :selected="project.id === selectedProject"
           @itemSelect="handleProjectSelect"
         />
       </div>
@@ -45,7 +45,8 @@ export default {
     SelectableItem
   },
   props: {
-    projects: Array
+    projects: Array,
+    selectedProject: String
   },
   mounted() {
     if (this._routerRoot._route.path === "/dashboard") {
@@ -65,19 +66,7 @@ export default {
   },
   methods: {
     handleProjectSelect({ id }) {
-      this.projects = this.projects.map(prj => {
-        if (prj.id === id) {
-          return {
-            ...prj,
-            selected: true
-          };
-        }
-
-        return {
-          ...prj,
-          selected: false
-        };
-      });
+      this.$emit("selectProject", { id });
     },
 
     handleDashboardSectionSelect({ id }) {
@@ -93,17 +82,36 @@ export default {
     },
 
     debounceInput(e) {
-      console.log(e)
       if (this.timeout) {
-        clearTimeout(this.timeout)
+        clearTimeout(this.timeout);
       }
-      this.timeout = setTimeout(() => this.filterKey = e.target.value, 500)
+      this.timeout = setTimeout(() => (this.filterKey = e.target.value), 500);
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
+@media screen and (max-width: $extra-small-phone-width){
+  .side-menu-wrapper {
+    width: 250px !important;
+
+    .side-menu-navigation {
+      font-size: 20px !important;
+    }
+  }
+}
+
+@media screen and (max-width: $desktop-width) {
+  .side-menu-wrapper {
+    .side-menu-header{
+       .side-menu-app-name {
+         display: none;
+       }
+    }
+  }
+}
+
 .side-menu-wrapper {
   background-color: #22282d;
   height: 100vh;

@@ -1,7 +1,13 @@
 <template>
   <div class="menu-wrapper">
     <BarMenu class="bar-menu" v-bind:class="{sideBarOpen: isOpen}" @open="handleBarMenu" />
-    <SideMenu class="side-menu" v-bind:class="{visible: isOpen}" :projects="projects" />
+    <SideMenu
+      class="side-menu"
+      v-bind:class="{visible: isOpen}"
+      :projects="projects"
+      :selectedProject="selectedProject"
+      @selectProject="handleSelectProject"
+    />
     <Loading :isSpin="false" v-if="isOpen" />
   </div>
 </template>
@@ -18,7 +24,8 @@ export default {
     SideMenu
   },
   props: {
-    projects: Array
+    projects: Array,
+    selectedProject: String
   },
   data: () => {
     return {
@@ -28,11 +35,21 @@ export default {
   methods: {
     handleBarMenu({ isOpen }) {
       this.isOpen = isOpen;
+    },
+
+    handleSelectProject({ id }) {
+      this.$emit("selectProject", { id });
     }
   }
 };
 </script>
 <style scoped lang="scss">
+@media screen and (max-width: $extra-small-phone-width){
+  .sideBarOpen {
+    margin-left: 250px !important;
+  }
+}
+
 @media screen and (max-width: $desktop-width) {
   .side-menu {
     display: none;

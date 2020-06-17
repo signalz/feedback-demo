@@ -34,8 +34,8 @@ export default {
     rating() {
       this.$emit("ratechange", { ratingId: this.ratingId });
     },
-    getImgSrc(type, selected) {
-      return getIconImgSrc(type, selected);
+    getImgSrc(type) {
+      return getIconImgSrc(type);
     }
   }
 };
@@ -55,7 +55,7 @@ export default {
   img {
     width: 50px;
     cursor: pointer;
-    opacity: 0.5;
+    opacity: 0.7;
   }
 
   img.selected {
