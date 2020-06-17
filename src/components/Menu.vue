@@ -1,7 +1,7 @@
 <template>
   <div class="menu-wrapper">
-    <BarMenu class="bar-menu" @open="handleBarMenu" v-bind:class="{sideBarOpen: isOpen}" />
-    <SideMenu class="side-menu" v-bind:class="{visible: isOpen}" />
+    <BarMenu class="bar-menu" v-bind:class="{sideBarOpen: isOpen}" @open="handleBarMenu" />
+    <SideMenu class="side-menu" v-bind:class="{visible: isOpen}" :projects="projects" />
     <Loading :isSpin="false" v-if="isOpen" />
   </div>
 </template>
@@ -16,6 +16,9 @@ export default {
     BarMenu,
     Loading,
     SideMenu
+  },
+  props: {
+    projects: Array
   },
   data: () => {
     return {

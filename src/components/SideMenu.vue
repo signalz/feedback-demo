@@ -9,13 +9,13 @@
       <router-link to="/dashboard" @click.native="handleNavigation">{{$t('header.nav.dashboard')}}</router-link>
     </div>
     <div v-if="isFeedback" class="side-menu-search">
-      <div>Your projects:</div>
-      <input placeholder="Search a project" />
+      <div>{{$t('sideMenu.yourProjects')}}</div>
+      <input :placeholder="$t('sideMenu.searchProject')" @input="debounceInput" />
       <div class="side-menu-projects">
         <SelectableItem
-          v-for="project in projects"
+          v-for="project in projects.filter(prj => prj.projectName.toLocaleLowerCase().includes(filterKey))"
           :key="project.id"
-          :name="project.name"
+          :name="project.projectName"
           :id="project.id"
           :selected="project.selected"
           @itemSelect="handleProjectSelect"
@@ -37,12 +37,15 @@
 
 <script>
 import SelectableItem from "./SelectableItem";
-import { PROJECTS, DASHBOARD_SECTIONS } from "../config";
+import { DASHBOARD_SECTIONS } from "../config";
 
 export default {
   name: "SideMenu",
   components: {
     SelectableItem
+  },
+  props: {
+    projects: Array
   },
   mounted() {
     if (this._routerRoot._route.path === "/dashboard") {
@@ -53,8 +56,9 @@ export default {
   },
   data: () => {
     return {
-      projects: PROJECTS,
       isFeedback: true,
+      filterKey: "",
+      timeout: undefined,
       dashboardSections: DASHBOARD_SECTIONS,
       selectedSection: DASHBOARD_SECTIONS[0].id
     };
@@ -77,7 +81,7 @@ export default {
     },
 
     handleDashboardSectionSelect({ id }) {
-      this.selectedSection = id
+      this.selectedSection = id;
     },
 
     handleNavigation() {
@@ -86,6 +90,14 @@ export default {
       } else {
         this.isFeedback = true;
       }
+    },
+
+    debounceInput(e) {
+      console.log(e)
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => this.filterKey = e.target.value, 500)
     }
   }
 };

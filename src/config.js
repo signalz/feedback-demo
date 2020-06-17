@@ -1,7 +1,6 @@
-export const END_POINT = "https://serene-dusk-06867.herokuapp.com/api/";
+export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
 
-export const RATINGS = [
-  {
+export const RATINGS = [{
     id: 1,
     rate: 1,
     icon: "1",

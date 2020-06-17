@@ -11,7 +11,7 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .loading-wrapper {
   position: fixed;
   width: 100%;

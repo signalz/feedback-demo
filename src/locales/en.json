@@ -17,5 +17,9 @@
       "comparison": "Comparison",
       "history": "History"
     }
+  },
+  "sideMenu": {
+    "yourProjects": "Your projects:",
+    "searchProject": "Search a project"
   }
 }

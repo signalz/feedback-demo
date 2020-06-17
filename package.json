@@ -13,6 +13,8 @@
     "babel-plugin-import": "^1.13.0",
     "chart.js": "^2.9.3",
     "core-js": "^3.6.5",
+    "lodash": "^4.17.15",
+    "lodash.debounce": "^4.0.8",
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.0",
     "vue-i18n": "^8.17.3",
