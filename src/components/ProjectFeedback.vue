@@ -1,7 +1,7 @@
 <template>
   <div class="project-feedback-wrapper">
     <div class="project-feedback-keyboard">
-      <div class="project-feedback-keyboard-icons">
+      <div class="project-feedback-keyboard-icons" @click="handleClose">
         <Icon type="close" :style="{fontSize: '24px'}" />
         <span>{{$t("feedback.esc")}}</span>
       </div>
@@ -38,7 +38,10 @@ export default {
   },
   methods: {
     handleRateChange({ sectionId }, { ratingId, questionId }) {
-      console.log(sectionId, ratingId, questionId);
+      this.$emit("ratechange", { sectionId, ratingId, questionId });
+    },
+    handleClose() {
+      this.$emit('closeProject')
     }
   }
 };

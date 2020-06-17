@@ -1,12 +1,17 @@
 <template>
-  <div>
+  <div tabindex="0" @keydown.esc="handleEsc" class="feedback-page-wrapper">
     <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" />
     <Loading isSpin v-if="isLoading" />
     <div class="no-project" v-if="!project">
       <NoProjectSelected />
     </div>
     <div v-if="project" class="project-feedback">
-      <ProjectFeedback :sections="sections" :ratings="ratings" />
+      <ProjectFeedback
+        :sections="sections"
+        :ratings="ratings"
+        @ratechange="handleRateChange"
+        @closeProject="handleCloseProject"
+      />
     </div>
   </div>
   <!-- <div>
@@ -172,6 +177,34 @@ export default {
   methods: {
     handleSelectProject({ id }) {
       this.project = id;
+    },
+
+    handleRateChange({ sectionId, questionId, ratingId }) {
+      this.sections = this.sections.map(s => {
+        if (s.id === sectionId) {
+          return {
+            ...s,
+            questions: s.questions.map(q => {
+              if (q.id === questionId) {
+                return {
+                  ...q,
+                  ratingId
+                };
+              }
+              return q;
+            })
+          };
+        }
+        return s;
+      });
+    },
+
+    handleEsc() {
+      this.project = undefined;
+    },
+
+    handleCloseProject() {
+      this.project = undefined;
     }
   }
 };
@@ -249,13 +282,22 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.feedback-page-wrapper:focus {
+  outline: none;
+}
+
 .no-project {
   padding-top: 100px;
 }
 
+/* .no-project:focus {
+  outline: none;
+} */
+
 @media screen and (min-width: $desktop-width) {
   .project-feedback {
     padding-left: 320px !important;
+    padding-top: 50px !important;
   }
 }
 
@@ -265,6 +307,10 @@ export default {
   color: #7a7e81;
   padding-right: 20px;
 }
+
+/* .project-feedback:focus {
+  outline: none;
+} */
 
 // .ant-modal-title {
 //   font-weight: bold;
