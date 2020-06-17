@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Loading />
+    <Loading v-if="isLoading" />
     <Modal v-model="visible" title="Information" class="modal">
       <template slot="footer">
         <Button @click="handleOk" type="primary">OK</Button>
@@ -8,11 +8,7 @@
       <p class="modal-info">Thank you for your evaluation</p>
     </Modal>
     <div class="panels-wrapper">
-      <div
-        class="collapse-panel"
-        v-for="(project, idx) in projects"
-        :key="`list-projects-${project.id}-${idx}`"
-      >
+      <div class="collapse-panel" v-for="(project, idx) in projects" :key="`${project.id}-${idx}`">
         <div class="collapse-header">
           <div class="collapse-left-header">
             <Icon :type="project.isCollapsed ? 'right' : 'down'" @click="handleClickCollapse(idx)" />
@@ -27,7 +23,7 @@
                 v-for="selectProject in listSelectProjects"
                 :key="`select-project-${selectProject.id}`"
                 :value="selectProject.id"
-              >{{selectProject.name}}</Option>
+              >{{selectProject.projectName}}</Option>
             </Select>
           </div>
         </div>
@@ -35,15 +31,15 @@
           <Collapse v-model="activeKeys">
             <Panel
               v-for="section in project.sections"
-              :key="`section-${section.key}`"
-              :header="section.label"
+              :key="`${section.id}`"
+              :header="section.title"
             >
               <div>
                 <QuestionRow
-                  v-for="(question, qIdx) in project.questions[section.key]"
-                  :key="`question-${section.key}-${question.id}`"
+                  v-for="(question, qIdx) in section.questions"
+                  :key="`${question._id}`"
                   :ratings="ratings"
-                  :section="section.key"
+                  :section="section.id"
                   :question="{...question, index: qIdx + 1}"
                   :projectIdx="idx"
                   @ratechange="handleRateChange"
@@ -62,21 +58,14 @@
 </template>
 
 <script>
-import { Button, Collapse, Icon, Select, Modal } from "ant-design-vue";
+import { Button, Collapse, Icon, Select, Modal, message } from "ant-design-vue";
 
 import Loading from "./Loading";
 import QuestionRow from "./QuestionRow.vue";
-import { PROJECTS, QUESTIONS, RATINGS, SECTIONS } from "../config";
+import { RATINGS, END_POINT } from "../config";
 
 const { Panel } = Collapse;
 const { Option } = Select;
-
-const defaultProject = {
-  ...PROJECTS[0],
-  isCollapsed: false,
-  questions: QUESTIONS,
-  sections: SECTIONS
-};
 
 export default {
   name: "FeedbackPage",
@@ -91,20 +80,70 @@ export default {
     QuestionRow,
     Select
   },
+  mounted() {
+    Promise.all([
+      fetch(`${END_POINT}projects`).then(res => res.json()),
+      fetch(`${END_POINT}sections`).then(res => res.json())
+    ])
+      .then(([projects, sections]) => {
+        if (sections && sections.length > 0) {
+          this.sections = sections;
+          this.activeKeys = sections.map(section => section.id);
+        }
+
+        if (projects && projects.length > 0) {
+          this.listSelectProjects = projects;
+          this.projects = [
+            {
+              ...projects[0],
+              isCollapsed: false,
+              sections: sections.filter(section => {
+                if (projects[0].sections.includes(section.id)) {
+                  return { ...section };
+                }
+              })
+            }
+          ];
+        }
+
+        this.isLoading = false;
+      })
+      .catch(e => {
+        this.isLoading = false;
+        this.message.error(e);
+      });
+  },
   data: () => {
     return {
+      isLoading: true,
       ratings: RATINGS,
-      listSelectProjects: PROJECTS,
-      projects: [defaultProject],
-      activeKeys: SECTIONS.map(section => `section-${section.key}`),
-      visible: false
+      listSelectProjects: [],
+      projects: [
+        {
+          questions: [],
+          sections: []
+        }
+      ],
+      activeKeys: [],
+      visible: false,
+      sections: [],
+      message,
+      Modal
     };
   },
   methods: {
     handleChangeProject(idx, val) {
-      this.$set(this.projects, idx, {
-        ...defaultProject,
+      const selectedProject = {
         ...this.listSelectProjects.find(prj => prj.id === val)
+      };
+      this.$set(this.projects, idx, {
+        ...selectedProject,
+        isCollapsed: false,
+        sections: this.sections.filter(section => {
+          if (selectedProject.sections.includes(section.id)) {
+            return { ...section };
+          }
+        })
       });
     },
 
@@ -115,22 +154,28 @@ export default {
       });
     },
 
-    handleRateChange({ questionId, projectIdx, ratingId, section }) {
+    handleRateChange({ questionId, projectIdx, ratingId, sectionId }) {
       this.projects[projectIdx] = {
         ...this.projects[projectIdx],
-        questions: {
-          ...this.projects[projectIdx].questions,
-          [section]: this.projects[projectIdx].questions[section].map(q => {
-            if (q.id === questionId) {
-              return {
-                ...q,
-                ratingId
-              };
-            }
+        sections: this.projects[projectIdx].sections.map(section => {
+          if (section.id === sectionId) {
+            return {
+              ...section,
+              questions: section.questions.map(question => {
+                if (question._id === questionId) {
+                  return {
+                    ...question,
+                    ratingId
+                  };
+                }
 
-            return q;
-          })
-        }
+                return question;
+              })
+            };
+          }
+
+          return section;
+        })
       };
       this.$forceUpdate();
     },
@@ -140,7 +185,15 @@ export default {
     },
 
     addProject() {
-      this.projects = this.projects.concat(defaultProject);
+      this.projects = this.projects.concat({
+        ...this.listSelectProjects[0],
+        isCollapsed: false,
+        sections: this.sections.filter(section => {
+          if (this.listSelectProjects[0].sections.includes(section.id)) {
+            return { ...section };
+          }
+        })
+      });
     },
 
     handleOk() {
@@ -214,6 +267,10 @@ export default {
         span {
           margin-left: 10px;
           margin-right: 10px;
+        }
+
+        .select-project {
+          width: 150px;
         }
       }
     }

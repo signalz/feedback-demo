@@ -59,7 +59,7 @@ export default {
     justify-content: space-between;
     padding-left: 20px;
     font-size: 24px;
-    z-index: 999;
+    z-index: 99;
 
     .header-logo {
       height: 100%;

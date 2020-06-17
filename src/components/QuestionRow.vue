@@ -35,9 +35,9 @@ export default {
       const { section, projectIdx, question } = this
       this.$emit("ratechange", {
         ratingId,
-        questionId: question.id,
+        questionId: question._id,
         projectIdx: projectIdx,
-        section,
+        sectionId: section,
       });
     }
   },
