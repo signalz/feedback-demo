@@ -68,39 +68,39 @@ export default {
     ProjectFeedback,
     SubmittedProject
   },
-  mounted() {
-    Promise.all([
-      fetch(`${END_POINT}projects`).then(res => res.json()),
-      fetch(`${END_POINT}sections`).then(res => res.json())
-    ])
-      .then(([projects, sections]) => {
-        if (sections && sections.length > 0) {
-          this.sections = sections;
-          this.activeKeys = sections.map(section => section.id);
-        }
+  // mounted() {
+  //   Promise.all([
+  //     fetch(`${END_POINT}projects`).then(res => res.json()),
+  //     fetch(`${END_POINT}sections`).then(res => res.json())
+  //   ])
+  //     .then(([projects, sections]) => {
+  //       if (sections && sections.length > 0) {
+  //         this.sections = sections;
+  //         this.activeKeys = sections.map(section => section.id);
+  //       }
 
-        if (projects && projects.length > 0) {
-          this.listSelectProjects = projects;
-          this.projects = [
-            {
-              ...projects[0],
-              isCollapsed: false,
-              sections: sections.filter(section => {
-                if (projects[0].sections.includes(section.id)) {
-                  return { ...section };
-                }
-              })
-            }
-          ];
-        }
+  //       if (projects && projects.length > 0) {
+  //         this.listSelectProjects = projects;
+  //         this.projects = [
+  //           {
+  //             ...projects[0],
+  //             isCollapsed: false,
+  //             sections: sections.filter(section => {
+  //               if (projects[0].sections.includes(section.id)) {
+  //                 return { ...section };
+  //               }
+  //             })
+  //           }
+  //         ];
+  //       }
 
-        this.isLoading = false;
-      })
-      .catch(e => {
-        this.isLoading = false;
-        this.message.error(e);
-      });
-  },
+  //       this.isLoading = false;
+  //     })
+  //     .catch(e => {
+  //       this.isLoading = false;
+  //       this.message.error(e);
+  //     });
+  // },
   data: () => {
     return {
       sections: [],
