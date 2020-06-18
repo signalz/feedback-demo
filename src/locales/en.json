@@ -16,6 +16,23 @@
       "overview": "Overview",
       "comparison": "Comparison",
       "history": "History"
+    },
+    "history": {
+      "project": "History of project:",
+      "section": "History of:",
+      "default": "Overall"
+    },
+    "overview": {
+      "section": "Overview by:",
+      "default": "Overall"
+    },
+    "comparison": {
+      "section": "Comparison by:",
+      "default": "Overall",
+      "sort": "Sort by:",
+      "name": "Name",
+      "pointAsc": "Point (ascending)",
+      "pointDesc": "Point (descending)"
     }
   },
   "sideMenu": {

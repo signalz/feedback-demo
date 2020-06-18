@@ -2,9 +2,9 @@
   <div>
     <div class="comparison-dashboard-description">
       <div class="comparison-dashboard-description-left">
-        <div class="comparison-dashboard-description-text">Comparison by:</div>
+        <div class="comparison-dashboard-description-text">{{$t("dashboard.comparison.section")}}</div>
         <Select defaultValue="default" class="comparison-dashboard-select">
-          <Option key="select-section-default" value="default">Overall</Option>
+          <Option key="select-section-default" value="default">{{$t("dashboard.comparison.default")}}</Option>
           <Option
             v-for="section in sections"
             :key="`select-section-${section.id}`"
@@ -13,11 +13,11 @@
         </Select>
       </div>
       <div class="comparison-dashboard-description-right">
-        <div class="comparison-dashboard-description-text">Sort by:</div>
+        <div class="comparison-dashboard-description-text">{{$t("dashboard.comparison.sort")}}</div>
         <Select defaultValue="default" class="comparison-dashboard-select">
-          <Option key="select-compare-default" value="default">Name</Option>
-          <Option key="select-compare-asc" value="asc">Point (ascending)</Option>
-          <Option key="select-compare-desc" value="desc">Point (descending)</Option>
+          <Option key="select-compare-default" value="default">{{$t("dashboard.comparison.name")}}</Option>
+          <Option key="select-compare-asc" value="asc">{{$t("dashboard.comparison.pointAsc")}}</Option>
+          <Option key="select-compare-desc" value="desc">{{$t("dashboard.comparison.pointDesc")}}</Option>
         </Select>
       </div>
     </div>

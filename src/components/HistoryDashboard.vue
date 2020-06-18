@@ -2,7 +2,7 @@
   <div>
     <div class="history-dashboard-description">
       <div class="history-dashboard-description-left">
-        <div class="history-dashboard-description-text">History of project:</div>
+        <div class="history-dashboard-description-text">{{$t("dashboard.history.project")}}</div>
         <Select :defaultValue="projects[0].id" class="history-dashboard-select">
           <Option
             v-for="project in projects"
@@ -12,9 +12,9 @@
         </Select>
       </div>
       <div class="history-dashboard-description-right">
-        <div class="history-dashboard-description-text">History of:</div>
+        <div class="history-dashboard-description-text">{{$t("dashboard.history.section")}}</div>
         <Select defaultValue="default" class="history-dashboard-select">
-          <Option key="select-section-default" value="default">Overall</Option>
+          <Option key="select-section-default" value="default">{{$t("dashboard.history.default")}}</Option>
           <Option
             v-for="section in sections"
             :key="`select-section-${section.id}`"

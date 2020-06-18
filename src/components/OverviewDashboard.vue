@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="overview-dashboard-description">
-      <div class="overview-dashboard-text">Overview by:</div>
+      <div class="overview-dashboard-text">{{$t("dashboard.overview.section")}}</div>
       <Select defaultValue="default" class="overview-dashboard-select">
-        <Option key="select-section-default" value="default">Overall</Option>
+        <Option key="select-section-default" value="default">{{$t("dashboard.overview.default")}}</Option>
         <Option
           v-for="section in sections"
           :key="`select-section-${section.id}`"
