@@ -1,14 +1,17 @@
 <template>
   <div class="loading-wrapper">
-    <div class="loading-content"></div>
+    <div v-if="isSpin" class="loading-content"></div>
   </div>
 </template>
 <script>
 export default {
-  name: "Loading"
+  name: "Loading",
+  props: {
+    isSpin: Boolean
+  }
 };
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .loading-wrapper {
   position: fixed;
   width: 100%;
@@ -16,7 +19,7 @@ export default {
   left: 0;
   top: 0;
   background-color: rgba(0, 0, 0, 0.45);
-  z-index: 99;
+  z-index: 9;
 
   .loading-content {
     display: block;
@@ -36,14 +39,12 @@ export default {
     animation: loader 2s linear infinite;
   }
 }
-
 @keyframes loader {
   0% {
     -webkit-transform: rotate(0deg);
     -ms-transform: rotate(0deg);
     transform: rotate(0deg);
   }
-
   100% {
     -webkit-transform: rotate(360deg);
     -ms-transform: rotate(360deg);

@@ -1,6 +1,5 @@
 <template>
   <div class="question-row-wrapper">
-    <div class="question-number">{{question.index}}</div>
     <div class="question-text"><span>{{question.index}}.</span>{{question.text}}</div>
     <div class="question-rating">
       <FeedbackIcon
@@ -27,17 +26,13 @@ export default {
   props: {
     ratings: Array,
     question: Object,
-    projectIdx: Number,
-    section: String,
   },
   methods: {
     handleRateChange({ ratingId }) {
-      const { section, projectIdx, question } = this
+      const { question } = this
       this.$emit("ratechange", {
         ratingId,
-        questionId: question._id,
-        projectIdx: projectIdx,
-        sectionId: section,
+        questionId: question.id,
       });
     }
   },
@@ -46,25 +41,16 @@ export default {
 
 <style scoped lang="scss">
 
-@media screen and(max-width: $phone-width) {
+@media screen and(max-width: $tablet-width) {
   .question-row-wrapper {
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    .question-number {
-      display: none;
-    }
-
     .question-text {
       width: 100% !important;
       background-color: aliceblue;
       padding: 10px;
-
-      span {
-        display: inline-block !important;
-        margin-right: 5px;
-      }
     }
 
     .question-rating {
@@ -78,22 +64,14 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-
-  .question-number {
-    width: 5%;
-  }
+  margin-bottom: 10px;
 
   .question-text {
-    width: 60%;
-
-    span {
-      display: none;
-    }
+    width: 70%;
   }
 
   .question-rating {
-    width: 35%;
+    width: 30%;
     display: flex;
     justify-content: space-between;
     font-size: 20px;

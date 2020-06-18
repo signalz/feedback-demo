@@ -1,111 +1,53 @@
 <template>
-  <div>
-    <Loading v-if="isLoading" />
-    <Modal v-model="visible" title="Information" class="modal">
-      <template slot="footer">
-        <Button @click="handleOk" type="primary">OK</Button>
-      </template>
-      <p class="modal-info">Thank you for your evaluation</p>
-    </Modal>
-    <div class="panels-wrapper">
-      <div class="collapse-panel" v-for="(project, idx) in projects" :key="`${project.id}-${idx}`">
-        <div class="collapse-header">
-          <div class="collapse-left-header">
-            <Icon :type="project.isCollapsed ? 'right' : 'down'" @click="handleClickCollapse(idx)" />
-            <span>Feedback on project:</span>
-            <Select
-              v-model="project.id"
-              :defaultValue="project.id"
-              @change="handleChangeProject(idx, $event)"
-              class="select-project"
-            >
-              <Option
-                v-for="selectProject in listSelectProjects"
-                :key="`select-project-${selectProject.id}`"
-                :value="selectProject.id"
-              >{{selectProject.projectName}}</Option>
-            </Select>
-          </div>
-        </div>
-        <div class="collapse-body" v-if="!project.isCollapsed">
-          <Collapse v-model="activeKeys">
-            <Panel
-              v-for="section in project.sections"
-              :key="`${section.id}`"
-              :header="section.title"
-            >
-              <div>
-                <QuestionRow
-                  v-for="(question, qIdx) in section.questions"
-                  :key="`${question._id}`"
-                  :ratings="ratings"
-                  :section="section.id"
-                  :question="{...question, index: qIdx + 1}"
-                  :projectIdx="idx"
-                  @ratechange="handleRateChange"
-                />
-              </div>
-            </Panel>
-          </Collapse>
-        </div>
-      </div>
-      <div class="buttons-bar">
-        <Button type="primary" @click="onClickSubmit" shape="circle" icon="save" />
-        <Button type="primary" shape="circle" icon="plus" @click="addProject" />
-      </div>
+  <div tabindex="0" @keydown.esc="handleEsc" class="feedback-page-wrapper">
+    <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" />
+    <Loading isSpin v-if="isLoading" />
+    <div class="no-project" v-if="!project">
+      <NoProjectSelected />
+    </div>
+    <div class="submitted-project" v-if="status === feedbackStatus.SUBMITTED">
+      <SubmittedProject />
+    </div>
+    <div v-if="project && status === feedbackStatus.DRAFT" class="project-feedback">
+      <ProjectFeedback
+        :sections="sections"
+        :ratings="ratings"
+        @ratechange="handleRateChange"
+        @closeProject="handleCloseProject"
+        @submitProject="handleSubmitProject"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { Button, Collapse, Icon, Select, Modal, message } from "ant-design-vue";
+import { message } from "ant-design-vue";
 
 import Loading from "./Loading";
-import QuestionRow from "./QuestionRow.vue";
-import { RATINGS, END_POINT } from "../config";
+import Menu from "./Menu";
+import NoProjectSelected from "./NoProjectSelected";
+import ProjectFeedback from "./ProjectFeedback";
+import SubmittedProject from "./SubmittedProject";
 
-const { Panel } = Collapse;
-const { Option } = Select;
+import { END_POINT } from "../config";
+import { FEEDBACK_STATUS, RATINGS } from "../config";
 
 export default {
   name: "FeedbackPage",
-  components: {
-    Button,
-    Collapse,
-    Icon,
-    Loading,
-    Modal,
-    Option,
-    Panel,
-    QuestionRow,
-    Select
-  },
   mounted() {
     Promise.all([
-      fetch(`${END_POINT}projects`).then(res => res.json()),
-      fetch(`${END_POINT}sections`).then(res => res.json())
+      fetch(`${END_POINT}/api/projects`).then(res => res.json()),
+      fetch(`${END_POINT}/api/sections`).then(res => res.json())
     ])
       .then(([projects, sections]) => {
         if (sections && sections.length > 0) {
           this.sections = sections;
-          this.activeKeys = sections.map(section => section.id);
         }
 
+        this.ratings = RATINGS;
         if (projects && projects.length > 0) {
-          this.listSelectProjects = projects;
-          this.projects = [
-            {
-              ...projects[0],
-              isCollapsed: false,
-              sections: sections.filter(section => {
-                if (projects[0].sections.includes(section.id)) {
-                  return { ...section };
-                }
-              })
-            }
-          ];
+          this.projects = projects;
         }
-
         this.isLoading = false;
       })
       .catch(e => {
@@ -113,208 +55,88 @@ export default {
         this.message.error(e);
       });
   },
+  components: {
+    Loading,
+    Menu,
+    NoProjectSelected,
+    ProjectFeedback,
+    SubmittedProject
+  },
   data: () => {
     return {
-      isLoading: true,
-      ratings: RATINGS,
-      listSelectProjects: [],
-      projects: [
-        {
-          questions: [],
-          sections: []
-        }
-      ],
-      activeKeys: [],
-      visible: false,
       sections: [],
+      projects: [],
+      ratings: [],
+      project: undefined,
       message,
-      Modal
+      isLoading: true,
+      feedbackStatus: FEEDBACK_STATUS,
+      status: FEEDBACK_STATUS.DRAFT
     };
   },
   methods: {
-    handleChangeProject(idx, val) {
-      const selectedProject = {
-        ...this.listSelectProjects.find(prj => prj.id === val)
-      };
-      this.$set(this.projects, idx, {
-        ...selectedProject,
-        isCollapsed: false,
-        sections: this.sections.filter(section => {
-          if (selectedProject.sections.includes(section.id)) {
-            return { ...section };
-          }
-        })
+    handleSelectProject({ id }) {
+      this.project = id;
+    },
+
+    handleRateChange({ sectionId, questionId, ratingId }) {
+      this.sections = this.sections.map(s => {
+        if (s.id === sectionId) {
+          return {
+            ...s,
+            questions: s.questions.map(q => {
+              if (q.id === questionId) {
+                return {
+                  ...q,
+                  ratingId
+                };
+              }
+              return q;
+            })
+          };
+        }
+        return s;
       });
     },
 
-    handleClickCollapse(idx) {
-      this.$set(this.projects, idx, {
-        ...this.projects[idx],
-        isCollapsed: !this.projects[idx].isCollapsed
-      });
+    handleEsc() {
+      this.project = undefined;
+      this.status = FEEDBACK_STATUS.DRAFT;
     },
 
-    handleRateChange({ questionId, projectIdx, ratingId, sectionId }) {
-      this.projects[projectIdx] = {
-        ...this.projects[projectIdx],
-        sections: this.projects[projectIdx].sections.map(section => {
-          if (section.id === sectionId) {
-            return {
-              ...section,
-              questions: section.questions.map(question => {
-                if (question._id === questionId) {
-                  return {
-                    ...question,
-                    ratingId
-                  };
-                }
-
-                return question;
-              })
-            };
-          }
-
-          return section;
-        })
-      };
-      this.$forceUpdate();
+    handleCloseProject() {
+      this.project = undefined;
+      this.status = FEEDBACK_STATUS.DRAFT;
     },
 
-    onClickSubmit() {
-      this.visible = true;
-    },
-
-    addProject() {
-      this.projects = this.projects.concat({
-        ...this.listSelectProjects[0],
-        isCollapsed: false,
-        sections: this.sections.filter(section => {
-          if (this.listSelectProjects[0].sections.includes(section.id)) {
-            return { ...section };
-          }
-        })
-      });
-    },
-
-    handleOk() {
-      this.visible = false;
+    handleSubmitProject() {
+      this.status = FEEDBACK_STATUS.SUBMITTED;
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-.ant-modal-title {
-  font-weight: bold;
+.feedback-page-wrapper:focus {
+  outline: none;
 }
 
-.modal-info {
-  font-size: 24px;
+.no-project,
+.submitted-project {
+  padding-top: 100px;
 }
 
-@media screen and(max-width: $phone-width) {
-  .panels-wrapper {
-    padding-top: 30px;
-
-    .collapse-panel {
-      .collapse-header {
-        .collapse-left-header {
-          span {
-            display: none;
-          }
-
-          .select-project {
-            margin-left: 10px;
-          }
-        }
-      }
-    }
+@media screen and (min-width: $desktop-width) {
+  .project-feedback {
+    padding-left: 320px !important;
+    padding-top: 50px !important;
   }
 }
 
-@media screen and(min-width: $desktop-width) {
-  .panels-wrapper {
-    padding-top: 100px;
-  }
-}
-
-.panels-wrapper {
-  margin-left: 20px;
-  margin-right: 20px;
-  min-width: $min-width;
-
-  .collapse-panel {
-    color: rgba(0, 0, 0, 0.65);
-    margin-bottom: 20px;
-    min-width: $min-width;
-
-    .collapse-header {
-      background-color: #fafafa;
-      font-size: 20px;
-      height: 48px;
-      padding-left: 20px;
-      padding-right: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1px solid #d9d9d9;
-      border-radius: 4px 4px 0 0;
-
-      .collapse-left-header {
-        display: flex;
-        align-items: center;
-
-        span {
-          margin-left: 10px;
-          margin-right: 10px;
-        }
-
-        .select-project {
-          width: 150px;
-        }
-      }
-    }
-
-    .collapse-body {
-      border: 1px solid #d9d9d9;
-      border-top: none;
-      border-radius: 0 0 4px 4px;
-      padding: 20px;
-
-      .question-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-
-        .question-number {
-          width: 5%;
-        }
-
-        .question-text {
-          width: 75%;
-        }
-
-        .question-rating {
-          width: 20%;
-          display: flex;
-          justify-content: space-between;
-          font-size: 20px;
-        }
-      }
-    }
-  }
-
-  .buttons-bar {
-    display: flex;
-    justify-content: flex-end;
-    position: fixed;
-    bottom: 3%;
-    width: 95%;
-
-    button {
-      margin-right: 10px;
-    }
-  }
+.project-feedback {
+  padding-top: 100px;
+  padding-left: 20px;
+  color: #7a7e81;
+  padding-right: 20px;
 }
 </style>

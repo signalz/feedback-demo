@@ -25,7 +25,7 @@ export default {
   .third-bar {
     width: 35px;
     height: 5px;
-    background-color: #2c3e50;
+    background-color: #fff;
     margin: 6px 0;
     transition: 0.4s;
     position: relative;

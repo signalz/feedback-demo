@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "Vietnam shoring team evaluation"
+  },
   "header": {
     "banner": {
       "text": "Vietnam shoring team evaluation"
@@ -7,5 +10,46 @@
       "feedback": "Feedback",
       "dashboard": "Dashboard"
     }
+  },
+  "dashboard": {
+    "section": {
+      "overview": "Overview",
+      "comparison": "Comparison",
+      "history": "History"
+    },
+    "history": {
+      "project": "History of project:",
+      "section": "History of:",
+      "default": "Overall"
+    },
+    "overview": {
+      "section": "Overview by:",
+      "default": "Overall"
+    },
+    "comparison": {
+      "section": "Comparison by:",
+      "default": "Overall",
+      "sort": "Sort by:",
+      "name": "Name",
+      "pointAsc": "Point (ascending)",
+      "pointDesc": "Point (descending)"
+    }
+  },
+  "sideMenu": {
+    "yourProjects": "Your projects:",
+    "searchProject": "Search a project"
+  },
+  "feedback": {
+    "esc": "ESC",
+    "header": "Provide feedback",
+    "submit": "Submit"
+  },
+  "noProjectSelected": {
+    "header": "No project selected",
+    "description": "To provide a feedback you should select a project"
+  },
+  "submittedProject": {
+    "header": "Your feedback accepted",
+    "description": "You can review other project"
   }
 }
