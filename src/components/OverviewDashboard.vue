@@ -2,7 +2,11 @@
   <div>
     <div class="overview-dashboard-description">
       <div class="overview-dashboard-text">{{$t("dashboard.overview.section")}}</div>
-      <Select defaultValue="default" class="overview-dashboard-select">
+      <Select
+        defaultValue="default"
+        class="overview-dashboard-select"
+        @change="handleChangeSection"
+      >
         <Option key="select-section-default" value="default">{{$t("dashboard.overview.default")}}</Option>
         <Option
           v-for="section in sections"
@@ -19,7 +23,21 @@
 import { Select } from "ant-design-vue";
 import PieChart from "./PieChart";
 
+import { DASHBOARD_LABELS_LIST, DASHBOARD_PIE_COLORS } from "../config";
+
 const { Option } = Select;
+
+const chartData = {
+  datasets: [
+    {
+      data: [],
+      backgroundColor: DASHBOARD_PIE_COLORS,
+      hoverBackgroundColor: DASHBOARD_PIE_COLORS,
+      borderWidth: 1
+    }
+  ],
+  labels: DASHBOARD_LABELS_LIST
+};
 
 export default {
   name: "OverviewDashboard",
@@ -28,10 +46,20 @@ export default {
     PieChart,
     Select
   },
-  updated() {
-    this.pieChartData.datasets[0].data = this.data
-    console.log(this.pieChartData)
-    // this.$forceUpdate()
+  watch: {
+    data: function(val) {
+      this.pieChartData = {
+        datasets: [
+          {
+            data: val,
+            backgroundColor: DASHBOARD_PIE_COLORS,
+            hoverBackgroundColor: DASHBOARD_PIE_COLORS,
+            borderWidth: 1
+          }
+        ],
+        labels: DASHBOARD_LABELS_LIST
+      };
+    }
   },
   props: {
     sections: {
@@ -49,22 +77,16 @@ export default {
   },
   data: () => {
     return {
-      pieChartData: {
-        datasets: [
-          {
-            // data: [1, 1, 1, 1],
-            data: [],
-            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-            hoverBackgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-            borderWidth: 1
-          }
-        ],
-        labels: ["BRONZE", "SILVER", "GOLD", "PLATIN"]
-      },
+      pieChartData: chartData,
       pieChartOptions: {
         maintainAspectRatio: false
       }
     };
+  },
+  methods: {
+    handleChangeSection(sectionId) {
+      this.$emit("changeSection", { sectionId });
+    }
   }
 };
 </script>

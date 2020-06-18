@@ -8,10 +8,14 @@
     <Loading isSpin v-if="isLoading" />
     <div class="dashboards-wrapper">
       <div v-if="dashboardSelectedSection === dashboardSectionIds.OVERVIEW">
-        <OverviewDashboard :sections="sections" :data="data" />
+        <OverviewDashboard
+          :sections="sections"
+          :data="pieChartData"
+          @changeSection="handleChangeSection"
+        />
       </div>
       <div v-if="dashboardSelectedSection === dashboardSectionIds.COMPARISON">
-        <ComparisonDashboard :sections="sections" />
+        <ComparisonDashboard :sections="sections" :projects="projects" />
       </div>
       <div v-if="dashboardSelectedSection === dashboardSectionIds.HISTORY">
         <HistoryDashboard :sections="sections" :projects="projects" />
@@ -24,11 +28,16 @@
 import { message } from "ant-design-vue";
 
 import ComparisonDashboard from "./ComparisonDashboard";
-import HistoryDashboard from "./HistoryDashboard"
+import HistoryDashboard from "./HistoryDashboard";
 import Loading from "./Loading";
 import Menu from "./Menu";
 import OverviewDashboard from "./OverviewDashboard";
-import { END_POINT, DASHBOARD_SECTION_ID, DASHBOARD_SECTIONS, DASHBOARD_LABELS_LIST } from "../config";
+import {
+  END_POINT,
+  DASHBOARD_SECTION_ID,
+  DASHBOARD_SECTIONS,
+  DASHBOARD_LABELS_LIST
+} from "../config";
 
 export default {
   name: "DashboardPage",
@@ -43,19 +52,22 @@ export default {
     Promise.all([
       fetch(`${END_POINT}/api/projects`).then(res => res.json()),
       fetch(`${END_POINT}/api/sections`).then(res => res.json()),
-      fetch(`${END_POINT}/api/dashboard/projects/summary`).then(res => res.json()),
+      fetch(`${END_POINT}/api/dashboard/projects/summary`).then(res =>
+        res.json()
+      )
     ])
-      .then(([projects, sections, data]) => {
+      .then(([projects, sections, pieChartData]) => {
         if (sections && sections.length > 0) {
           this.sections = sections;
         }
-        // this.sections = SECTIONS;
         if (projects && projects.length > 0) {
           this.projects = projects;
         }
 
-        if (data) {
-         this.data = DASHBOARD_LABELS_LIST.map(item => data[item])
+        if (pieChartData) {
+          this.pieChartData = DASHBOARD_LABELS_LIST.map(
+            item => pieChartData[item]
+          );
         }
         this.isLoading = false;
       })
@@ -70,21 +82,64 @@ export default {
       dashboardSelectedSection: DASHBOARD_SECTION_ID.OVERVIEW,
       dashboardSectionIds: DASHBOARD_SECTION_ID,
       isLoading: true,
-      data: [],
+      pieChartData: [],
       sections: [],
       message
     };
   },
   methods: {
     handleSelectSection({ id }) {
+      if (this.dashboardSelectedSection !== id) {
+        if (id === DASHBOARD_SECTION_ID.OVERVIEW) {
+          fetch(`${END_POINT}/api/dashboard/projects/summary`)
+            .then(res => res.json())
+            .then(pieChartData => {
+              if (pieChartData) {
+                this.pieChartData = DASHBOARD_LABELS_LIST.map(
+                  item => pieChartData[item]
+                );
+                this.isLoading = false;
+              }
+            })
+            .catch(e => {
+              this.isLoading = false;
+              this.message.error(e);
+            });
+        }
+      }
       this.dashboardSelectedSection = id;
+    },
+
+    handleChangeSection({ sectionId }) {
+      this.isLoading = true;
+      let url;
+      if (sectionId === "default") {
+        url = `${END_POINT}/api/dashboard/projects/summary`;
+      } else {
+        url = `${END_POINT}/api/dashboard/sections/${sectionId}/summary`;
+      }
+
+      fetch(url)
+        .then(res => res.json())
+        .then(pieChartData => {
+          if (pieChartData) {
+            this.pieChartData = DASHBOARD_LABELS_LIST.map(
+              item => pieChartData[item]
+            );
+            this.isLoading = false;
+          }
+        })
+        .catch(e => {
+          this.isLoading = false;
+          this.message.error(e);
+        });
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@media screen and(min-width: $desktop-width) {
+@media screen and (min-width: $desktop-width) {
   .dashboards-wrapper {
     padding-left: 320px !important;
     padding-top: 50px !important;

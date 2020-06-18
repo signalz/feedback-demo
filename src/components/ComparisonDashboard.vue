@@ -4,7 +4,10 @@
       <div class="comparison-dashboard-description-left">
         <div class="comparison-dashboard-description-text">{{$t("dashboard.comparison.section")}}</div>
         <Select defaultValue="default" class="comparison-dashboard-select">
-          <Option key="select-section-default" value="default">{{$t("dashboard.comparison.default")}}</Option>
+          <Option
+            key="select-section-default"
+            value="default"
+          >{{$t("dashboard.comparison.default")}}</Option>
           <Option
             v-for="section in sections"
             :key="`select-section-${section.id}`"
@@ -29,8 +32,6 @@
 import { Select } from "ant-design-vue";
 import HorizontalBar from "./HorizontalBar";
 
-import { PROJECTS } from "../config";
-
 const { Option } = Select;
 
 export default {
@@ -39,6 +40,19 @@ export default {
     Option,
     HorizontalBar,
     Select
+  },
+  watch: {
+    projects: function(val) {
+      this.barChartData = {
+        datasets: [
+          {
+            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
+            data: [2, 3, 4, 5]
+          }
+        ],
+        labels: val.map(item => item.projectName)
+      };
+    }
   },
   props: {
     sections: {
@@ -54,6 +68,17 @@ export default {
       }
     }
   },
+  mounted() {
+    this.barChartData = {
+      datasets: [
+        {
+          backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
+          data: [2, 3, 4, 5]
+        }
+      ],
+      labels: this.projects.map(item => item.projectName)
+    };
+  },
   data: () => {
     return {
       barChartData: {
@@ -63,7 +88,7 @@ export default {
             data: [2, 3, 4, 5]
           }
         ],
-        labels: PROJECTS.map(prj => prj.name)
+        labels: []
       },
       barChartOptions: {
         maintainAspectRatio: false,
