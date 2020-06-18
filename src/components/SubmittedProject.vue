@@ -10,6 +10,12 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+@media screen and (min-width: $desktop-width) {
+  .submitted-project-wrapper {
+    margin-left: 50px !important;
+  }
+}
+
 .submitted-project-wrapper {
   margin: 0;
   position: absolute;

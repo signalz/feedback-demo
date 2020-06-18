@@ -86,20 +86,22 @@ export default {
   }
 }
 
-@media screen and (max-width: $desktop-width) {
-  .side-menu {
-    display: none;
-  }
-}
-
 @media screen and (min-width: $desktop-width) {
   .bar-menu {
     display: none;
   }
 
+  .side-menu {
+    display: block !important;
+  }
+
   .menu-loading-wrapper {
     display: none;
   }
+}
+
+.side-menu {
+  display: none;
 }
 
 .sideBarOpen {

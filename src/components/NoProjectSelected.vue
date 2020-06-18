@@ -10,6 +10,12 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+@media screen and (min-width: $desktop-width) {
+  .no-project-selected {
+    margin-left: 50px !important;
+  }
+}
+
 .no-project-selected {
   margin: 0;
   position: absolute;
