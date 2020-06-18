@@ -24,7 +24,7 @@
     </div>
     <div v-if="!isFeedback" class="side-menu-dashboard">
       <SelectableItem
-        v-for="section in dashboardSections"
+        v-for="section in sections"
         :key="section.id"
         :name="$t(section.label)"
         :id="section.id"
@@ -37,7 +37,7 @@
 
 <script>
 import SelectableItem from "./SelectableItem";
-import { DASHBOARD_SECTIONS } from "../config";
+// import { DASHBOARD_SECTIONS } from "../config";
 
 export default {
   name: "SideMenu",
@@ -46,7 +46,9 @@ export default {
   },
   props: {
     projects: Array,
-    selectedProject: String
+    selectedProject: String,
+    sections: Array,
+    selectedSection: String,
   },
   mounted() {
     if (this._routerRoot._route.path === "/dashboard") {
@@ -60,8 +62,8 @@ export default {
       isFeedback: true,
       filterKey: "",
       timeout: undefined,
-      dashboardSections: DASHBOARD_SECTIONS,
-      selectedSection: DASHBOARD_SECTIONS[0].id
+      // dashboardSections: DASHBOARD_SECTIONS,
+      // selectedSection: DASHBOARD_SECTIONS[0].id
     };
   },
   methods: {
@@ -70,7 +72,7 @@ export default {
     },
 
     handleDashboardSectionSelect({ id }) {
-      this.selectedSection = id;
+      this.$emit("selectSection", { id });
     },
 
     handleNavigation() {

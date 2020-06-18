@@ -1,0 +1,129 @@
+<template>
+  <div>
+    <div class="comparison-dashboard-description">
+      <div class="comparison-dashboard-description-left">
+        <div class="comparison-dashboard-description-text">Comparison by:</div>
+        <Select defaultValue="default" class="comparison-dashboard-select">
+          <Option key="select-section-default" value="default">Overall</Option>
+          <Option
+            v-for="section in sections"
+            :key="`select-section-${section.id}`"
+            :value="section.id"
+          >{{section.title}}</Option>
+        </Select>
+      </div>
+      <div class="comparison-dashboard-description-right">
+        <div class="comparison-dashboard-description-text">Sort by:</div>
+        <Select defaultValue="default" class="comparison-dashboard-select">
+          <Option key="select-compare-default" value="default">Name</Option>
+          <Option key="select-compare-asc" value="asc">Point (ascending)</Option>
+          <Option key="select-compare-desc" value="desc">Point (descending)</Option>
+        </Select>
+      </div>
+    </div>
+    <HorizontalBar :chartData="barChartData" :options="barChartOptions" :width="300" :height="300" />
+  </div>
+</template>
+
+<script>
+import { Select } from "ant-design-vue";
+import HorizontalBar from "./HorizontalBar";
+
+import { PROJECTS } from "../config";
+
+const { Option } = Select;
+
+export default {
+  name: "ComparisonDashboard",
+  components: {
+    Option,
+    HorizontalBar,
+    Select
+  },
+  props: {
+    sections: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+    projects: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    }
+  },
+  data: () => {
+    return {
+      barChartData: {
+        datasets: [
+          {
+            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
+            data: [2, 3, 4, 5]
+          }
+        ],
+        labels: PROJECTS.map(prj => prj.name)
+      },
+      barChartOptions: {
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [
+            {
+              ticks: {
+                min: 1
+              }
+            }
+          ],
+          yAxes: [
+            {
+              stacked: true
+            }
+          ]
+        }
+      }
+    };
+  }
+};
+</script>
+
+<style scoped lang="scss">
+@media screen and(max-width: $phone-width) {
+  .comparison-dashboard-description-left,
+  .comparison-dashboard-description-right {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+}
+
+.comparison-dashboard-description {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  min-width: $min-width;
+  margin-bottom: 20px;
+
+  .comparison-dashboard-description-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .comparison-dashboard-description-text {
+    margin-right: 10px;
+  }
+
+  .comparison-dashboard-description-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .comparison-dashboard-select {
+    width: 150px;
+  }
+}
+</style>
+

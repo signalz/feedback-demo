@@ -50,8 +50,6 @@ export default {
   -ms-user-select: none;
   user-select: none;
 
-  background-image: url("../assets/medals.png");
-
   img {
     width: 50px;
     cursor: pointer;

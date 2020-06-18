@@ -138,16 +138,22 @@ export const QUESTIONS = {
   ]
 };
 
+export const DASHBOARD_SECTION_ID = {
+  OVERVIEW: 'dashboard-section-overview',
+  COMPARISON: 'dashboard-section-comparison',
+  HISTORY: 'dashboard-section-history',
+}
+
 export const DASHBOARD_SECTIONS = [{
-    id: 'dashboard-section-overview',
+    id: DASHBOARD_SECTION_ID.OVERVIEW,
     label: 'dashboard.section.overview'
   },
   {
-    id: 'dashboard-section-comparison',
+    id: DASHBOARD_SECTION_ID.COMPARISON,
     label: 'dashboard.section.comparison'
   },
   {
-    id: 'dashboard-section-history',
+    id: DASHBOARD_SECTION_ID.HISTORY,
     label: 'dashboard.section.history'
   }
 ]

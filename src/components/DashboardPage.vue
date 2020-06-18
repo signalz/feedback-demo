@@ -1,291 +1,94 @@
 <template>
   <div>
-    <Menu />
+    <Menu
+      :sections="dashboardSections"
+      :selectedSection="dashboardSelectedSection"
+      @selectSection="handleSelectSection"
+    />
+    <Loading isSpin v-if="isLoading" />
     <div class="dashboards-wrapper">
-      <Collapse v-model="activeKeys">
-        <Panel header="Projects Overview" key="prj-overview">
-          <div class="pie-description">
-            <div class="pie-description-text">Overview by:</div>
-            <Select defaultValue="default" class="pie-chart-select">
-              <Option key="select-section-default" value="default">Overall</Option>
-              <Option
-                v-for="section in sections"
-                :key="`select-section-${section.id}`"
-                :value="section.id"
-              >{{section.label}}</Option>
-            </Select>
-          </div>
-          <PieChart
-            :chartData="pieChartData"
-            :width="300"
-            :height="300"
-            :options="pieChartOptions"
-          />
-        </Panel>
-      </Collapse>
-      <Collapse>
-        <Panel header="Projects Comparison" key="prj-comparison">
-          <div class="bar-description">
-            <div class="bar-description-left">
-              <div class="bar-description-text">Comparison by:</div>
-              <Select defaultValue="default" class="bar-chart-select">
-                <Option key="select-section-default" value="default">Overall</Option>
-                <Option
-                  v-for="section in sections"
-                  :key="`select-section-${section.id}`"
-                  :value="section.id"
-                >{{section.label}}</Option>
-              </Select>
-            </div>
-            <div class="bar-description-right">
-              <div class="bar-description-text">Sort by:</div>
-              <Select defaultValue="default" class="bar-chart-select">
-                <Option key="select-compare-default" value="default">Name</Option>
-                <Option key="select-compare-asc" value="asc">Point (ascending)</Option>
-                <Option key="select-compare-desc" value="desc">Point (descending)</Option>
-              </Select>
-            </div>
-          </div>
-          <HorizontalBar
-            :chartData="barChartData"
-            :options="barChartOptions"
-            :width="300"
-            :height="300"
-          />
-        </Panel>
-      </Collapse>
-      <Collapse>
-        <Panel header="Project History" key="prj-history">
-          <div class="line-description">
-            <div class="line-description-left">
-              <div class="line-description-text">History of project:</div>
-              <Select :defaultValue="projects[0].id" class="line-chart-select">
-                <Option
-                  v-for="project in projects"
-                  :key="`select-prj-${project.id}`"
-                  :value="project.id"
-                >{{project.name}}</Option>
-              </Select>
-            </div>
-            <div class="line-description-right">
-              <div class="line-description-text">History of:</div>
-              <Select defaultValue="default" class="line-chart-select">
-                <Option key="select-section-default" value="default">Overall</Option>
-                <Option
-                  v-for="section in sections"
-                  :key="`select-section-${section.id}`"
-                  :value="section.id"
-                >{{section.label}}</Option>
-              </Select>
-            </div>
-          </div>
-          <LineChart
-            :chartData="lineChartData"
-            :options="lineChartOptions"
-            :width="300"
-            :height="300"
-          />
-        </Panel>
-      </Collapse>
+      <div v-if="dashboardSelectedSection === dashboardSectionIds.OVERVIEW">
+        <OverviewDashboard :sections="sections" />
+      </div>
+      <div v-if="dashboardSelectedSection === dashboardSectionIds.COMPARISON">
+        <ComparisonDashboard :sections="sections" />
+      </div>
+      <div v-if="dashboardSelectedSection === dashboardSectionIds.HISTORY">
+        <HistoryDashboard :sections="sections" :projects="projects" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { Collapse, Select } from "ant-design-vue";
-import PieChart from "./PieChart";
-import HorizontalBar from "./HorizontalBar";
-import LineChart from "./LineChart";
+import { message } from "ant-design-vue";
 
-// import SideMenu from "./SideMenu";
+import ComparisonDashboard from "./ComparisonDashboard";
+import HistoryDashboard from "./HistoryDashboard"
+import Loading from "./Loading";
 import Menu from "./Menu";
-import { SECTIONS, PROJECTS } from "../config";
-
-const { Panel } = Collapse;
-const { Option } = Select;
+import OverviewDashboard from "./OverviewDashboard";
+import { END_POINT, DASHBOARD_SECTION_ID, DASHBOARD_SECTIONS, SECTIONS } from "../config";
 
 export default {
   name: "DashboardPage",
   components: {
-    HorizontalBar,
-    Collapse,
-    LineChart,
-    Panel,
-    PieChart,
-    Option,
+    ComparisonDashboard,
+    HistoryDashboard,
+    Loading,
     Menu,
-    Select
+    OverviewDashboard
+  },
+  mounted() {
+    Promise.all([
+      fetch(`${END_POINT}/api/projects`).then(res => res.json())
+      // fetch(`${END_POINT}/api/sections`).then(res => res.json())
+    ])
+      .then(([projects, sections]) => {
+        if (sections && sections.length > 0) {
+          this.sections = sections;
+        }
+        this.sections = SECTIONS;
+        if (projects && projects.length > 0) {
+          this.projects = projects;
+        }
+        this.isLoading = false;
+      })
+      .catch(e => {
+        this.isLoading = false;
+        this.message.error(e);
+      });
   },
   data: () => {
     return {
-      activeKeys: ["prj-overview"],
-      pieChartData: {
-        datasets: [
-          {
-            data: [1, 1, 1, 1],
-            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-            hoverBackgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-            borderWidth: 1
-          }
-        ],
-        labels: ["BRONZE", "SILVER", "GOLD", "PLATIN"]
-      },
-      pieChartOptions: {
-        maintainAspectRatio: false
-      },
-      barChartData: {
-        datasets: [
-          {
-            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-            data: [2, 3, 4, 5]
-          }
-        ],
-        labels: PROJECTS.map(prj => prj.name)
-      },
-      barChartOptions: {
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        scales: {
-          xAxes: [
-            {
-              ticks: {
-                min: 1
-              }
-            }
-          ],
-          yAxes: [
-            {
-              stacked: true
-            }
-          ]
-        }
-      },
-      sections: SECTIONS,
-      projects: PROJECTS,
-      lineChartData: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-        datasets: [
-          {
-            data: [5, 4, 3, 2, 5],
-            borderColor: "rgba(54, 162, 235, 0.2)",
-            fill: false
-          }
-        ]
-      },
-      lineChartOptions: {
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                min: 1
-              }
-            }
-          ]
-        }
-      }
+      dashboardSections: DASHBOARD_SECTIONS,
+      dashboardSelectedSection: DASHBOARD_SECTION_ID.OVERVIEW,
+      dashboardSectionIds: DASHBOARD_SECTION_ID,
+      isLoading: true,
+      sections: [],
+      message
     };
+  },
+  methods: {
+    handleSelectSection({ id }) {
+      this.dashboardSelectedSection = id;
+    }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@media screen and(max-width: $phone-width) {
-  .dashboards-wrapper {
-    padding-top: 30px;
-  }
-
-  .pie-description,
-  .bar-description-left,
-  .bar-description-right,
-  .line-description-left,
-  .line-description-right   {
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-}
-
 @media screen and(min-width: $desktop-width) {
   .dashboards-wrapper {
-    padding-top: 100px;
+    padding-left: 320px !important;
+    padding-top: 50px !important;
   }
 }
 
 .dashboards-wrapper {
-  margin-left: 20px;
-  margin-right: 20px;
-
-  .pie-description {
-    display: flex;
-    align-items: center;
-
-    .pie-description-text {
-      margin-right: 10px;
-    }
-
-    .pie-chart-select {
-      width: 150px;
-    }
-  }
-
-  .bar-description {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    min-width: $min-width;
-
-    .bar-description-left {
-      display: flex;
-      align-items: center;
-    }
-
-    .bar-description-text {
-      margin-right: 10px;
-    }
-
-    .bar-description-right {
-      display: flex;
-      align-items: center;
-    }
-
-    .bar-chart-select {
-      width: 150px;
-    }
-  }
-
-  .line-description {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    min-width: $min-width;
-
-    .line-description-left {
-      display: flex;
-      align-items: center;
-    }
-
-    .line-description-text {
-      margin-right: 10px;
-    }
-
-    .line-description-right {
-      display: flex;
-      align-items: center;
-    }
-
-    .line-chart-select {
-      width: 150px;
-    }
-  }
-}
-
-.dashboards-wrapper > div {
-  margin-bottom: 20px;
+  padding-top: 100px;
+  padding-left: 20px;
+  color: #7a7e81;
+  padding-right: 20px;
 }
 </style>

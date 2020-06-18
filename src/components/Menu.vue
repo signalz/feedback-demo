@@ -11,7 +11,10 @@
       v-bind:class="{visible: isOpen}"
       :projects="projects"
       :selectedProject="selectedProject"
+      :sections="sections"
+      :selectedSection="selectedSection"
       @selectProject="handleSelectProject"
+      @selectSection="handleSelectSection"
     />
     <Loading :isSpin="false" v-if="isOpen" class="menu-loading-wrapper" />
   </div>
@@ -29,8 +32,30 @@ export default {
     SideMenu
   },
   props: {
-    projects: Array,
-    selectedProject: String
+    projects: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+    selectedProject: {
+      type: String,
+      default: () => {
+        return "";
+      }
+    },
+    sections: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+    selectedSection: {
+      type: String,
+      default: () => {
+        return "";
+      }
+    }
   },
   data: () => {
     return {
@@ -44,6 +69,11 @@ export default {
 
     handleSelectProject({ id }) {
       this.$emit("selectProject", { id });
+      this.isOpen = false;
+    },
+
+    handleSelectSection({ id }) {
+      this.$emit("selectSection", { id });
       this.isOpen = false;
     }
   }
