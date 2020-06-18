@@ -10,7 +10,7 @@
     </div>
     <div v-if="project && status === feedbackStatus.DRAFT" class="project-feedback">
       <ProjectFeedback
-        :sections="sections"
+        :sections="selectedSections"
         :ratings="ratings"
         @ratechange="handleRateChange"
         @closeProject="handleCloseProject"
@@ -68,6 +68,7 @@ export default {
       projects: [],
       ratings: [],
       project: undefined,
+      selectedSections: [],
       message,
       isLoading: true,
       feedbackStatus: FEEDBACK_STATUS,
@@ -77,6 +78,10 @@ export default {
   methods: {
     handleSelectProject({ id }) {
       this.project = id;
+      const selectedProject = this.projects.find(p => p.id === this.project);
+      this.selectedSections = this.sections.filter(section =>
+        selectedProject.sections.includes(section.id)
+      );
     },
 
     handleRateChange({ sectionId, questionId, rating }) {
