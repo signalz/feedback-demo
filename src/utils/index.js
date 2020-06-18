@@ -1,12 +1,14 @@
+import { RATINGS_LABELS } from '../config'
+
 export function getIconImgSrc(type) {
   switch (type) {
-    case "1":
+    case RATINGS_LABELS.BRONZE:
       return require("../assets/bronze.png");
-    case "2":
+    case RATINGS_LABELS.SILVER:
       return require("../assets/silver.png");
-    case "3":
+    case RATINGS_LABELS.GOLD:
       return require("../assets/gold.png");
-    case "4":
+    case RATINGS_LABELS.PLATINUM:
       return require("../assets/platinum.png");
   }
 }

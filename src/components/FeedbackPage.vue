@@ -30,7 +30,7 @@ import ProjectFeedback from "./ProjectFeedback";
 import SubmittedProject from "./SubmittedProject";
 
 import { END_POINT } from "../config";
-import { FEEDBACK_STATUS, RATINGS } from "../config";
+import { FEEDBACK_STATUS, RATINGS, USER_ID } from "../config";
 
 export default {
   name: "FeedbackPage",
@@ -79,7 +79,7 @@ export default {
       this.project = id;
     },
 
-    handleRateChange({ sectionId, questionId, ratingId }) {
+    handleRateChange({ sectionId, questionId, rating }) {
       this.sections = this.sections.map(s => {
         if (s.id === sectionId) {
           return {
@@ -88,7 +88,7 @@ export default {
               if (q.id === questionId) {
                 return {
                   ...q,
-                  ratingId
+                  rating
                 };
               }
               return q;
@@ -110,7 +110,34 @@ export default {
     },
 
     handleSubmitProject() {
-      this.status = FEEDBACK_STATUS.SUBMITTED;
+      const { project, sections } = this;
+      this.isLoading = true;
+      const requestSections = sections.map(s => ({
+        sectionId: s.id,
+        questions: s.questions.map(q => ({
+          questionId: q.id,
+          rating: q.rating
+        }))
+      }));
+      fetch(`${END_POINT}/api/ratings/${USER_ID}/${project}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestSections)
+      })
+        .then(res => {
+          this.isLoading = false;
+          if (res.ok) {
+            this.status = FEEDBACK_STATUS.SUBMITTED;
+          } else {
+            this.message.error(res.statusText);
+          }
+        })
+        .catch(e => {
+          this.isLoading = false;
+          this.message.error(e);
+        });
     }
   }
 };

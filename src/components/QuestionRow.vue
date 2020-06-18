@@ -4,10 +4,9 @@
     <div class="question-rating">
       <FeedbackIcon
         v-for="rating in ratings"
-        :key="`rating-${rating.id}`"
-        :ratingId="rating.id"
-        :type="rating.icon"
-        :selected="question.ratingId === rating.id"
+        :key="`rating-${rating.rate}`"
+        :rate="rating.rate"
+        :selected="question.rating === rating.rate"
         :label="rating.label"
         @ratechange="handleRateChange"
       />
@@ -28,10 +27,10 @@ export default {
     question: Object,
   },
   methods: {
-    handleRateChange({ ratingId }) {
+    handleRateChange({ rating }) {
       const { question } = this
       this.$emit("ratechange", {
-        ratingId,
+        rating,
         questionId: question.id,
       });
     }

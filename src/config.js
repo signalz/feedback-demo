@@ -1,28 +1,43 @@
 export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
+export const USER_ID = "1234";
+
+export const RATINGS_LABELS = {
+  BRONZE: "Bronze",
+  SILVER: "Silver",
+  GOLD: "Gold",
+  PLATINUM: "Platin"
+}
+
+export const RATINGS_RATE = {
+  BRONZE: 1,
+  SILVER: 2,
+  GOLD: 3,
+  PLATINUM: 4,
+}
 
 export const RATINGS = [{
     id: 1,
-    rate: 1,
+    rate: RATINGS_RATE.BRONZE,
     icon: "1",
-    label: "Bronze",
+    label: RATINGS_LABELS.BRONZE,
   },
   {
     id: 2,
-    rate: 2,
+    rate: RATINGS_RATE.SILVER,
     icon: "2",
-    label: "Silver",
+    label: RATINGS_LABELS.SILVER,
   },
   {
     id: 3,
-    rate: 3,
+    rate: RATINGS_RATE.GOLD,
     icon: "3",
-    label: "Gold",
+    label: RATINGS_LABELS.GOLD,
   },
   {
     id: 4,
-    rate: 4,
+    rate: RATINGS_RATE.PLATINUM,
     icon: "4",
-    label: "Platin",
+    label: RATINGS_LABELS.PLATINUM,
   },
 ];
 

@@ -41,8 +41,8 @@ export default {
     ratings: Array
   },
   methods: {
-    handleRateChange({ sectionId }, { ratingId, questionId }) {
-      this.$emit("ratechange", { sectionId, ratingId, questionId });
+    handleRateChange({ sectionId }, { rating, questionId }) {
+      this.$emit("ratechange", { sectionId, rating, questionId });
     },
     handleClose() {
       this.$emit('closeProject')
