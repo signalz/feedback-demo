@@ -151,3 +151,8 @@ export const DASHBOARD_SECTIONS = [{
     label: 'dashboard.section.history'
   }
 ]
+
+export const FEEDBACK_STATUS = {
+  DRAFT: "DRAFT",
+  SUBMITTED: "SUBMITTED"
+}

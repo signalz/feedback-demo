@@ -6,7 +6,7 @@
         <span>{{$t("feedback.esc")}}</span>
       </div>
     </div>
-    <div class="project-feedback-header">Provide feedback</div>
+    <div class="project-feedback-header">{{$t("feedback.header")}}</div>
     <div v-for="section in sections" :key="section.id" class="project-feedback-section">
       <div class="project-feedback-section-header">{{section.title}}</div>
       <div>
@@ -19,20 +19,20 @@
         </div>
       </div>
     </div>
-    <div>
-      <div>Write a feedback</div>
-      <div><textarea placeholder="Write a feedback"/></div>
+    <div class="feedback-button-wrapper">
+      <Button type="primary" class="feedback-button" @click="handleSubmit">{{$t("feedback.submit")}}</Button>
     </div>
   </div>
 </template>
 <script>
-import { Icon } from "ant-design-vue";
+import { Button, Icon } from "ant-design-vue";
 
 import QuestionRow from "./QuestionRow";
 
 export default {
   name: "ProjectFeedback",
   components: {
+    Button,
     Icon,
     QuestionRow
   },
@@ -46,6 +46,10 @@ export default {
     },
     handleClose() {
       this.$emit('closeProject')
+    },
+
+    handleSubmit() {
+      this.$emit('submitProject')
     }
   }
 };
@@ -67,7 +71,7 @@ export default {
 
   .project-feedback-header {
     padding-top: 20px;
-    color: #d02929;
+    color: #ec1940;
     font-size: 24px;
     font-weight: bold;
   }
@@ -77,7 +81,19 @@ export default {
 
     .project-feedback-section-header {
       font-size: 22px;
-      color: black;
+      color: #22282d;
+    }
+  }
+
+  .feedback-button-wrapper {
+    padding: 20px 20px 20px 0;
+    display: flex;
+    justify-content: flex-end;
+
+    .feedback-button {
+      background-color: #ec1940;
+      border-color: #ec1940;
+      text-transform: uppercase;
     }
   }
 }

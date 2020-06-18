@@ -1,16 +1,16 @@
 <template>
-  <div class="no-project-selected">
-    <div class="no-project-selected-header">{{$t("noProjectSelected.header")}}</div>
-    <div class="no-project-selected-description">{{$t("noProjectSelected.description")}}</div>
+  <div class="submitted-project-wrapper">
+    <div class="submitted-project-header">{{$t("submittedProject.header")}}</div>
+    <div class="submitted-project-description">{{$t("submittedProject.description")}}</div>
   </div>
 </template>
 <script>
 export default {
-  name: "NoProjectSelected"
+  name: "SubmittedProject"
 };
 </script>
 <style scoped lang="scss">
-.no-project-selected {
+.submitted-project-wrapper {
   margin: 0;
   position: absolute;
   top: 50%;
@@ -20,12 +20,12 @@ export default {
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
 
-  .no-project-selected-header {
+  .submitted-project-header {
     color: #4e5357;
     font-size: 48px;
   }
 
-  .no-project-selected-description {
+  .submitted-project-description {
     color: #7a7e81;
     font-size: 14px;
   }

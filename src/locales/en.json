@@ -23,6 +23,16 @@
     "searchProject": "Search a project"
   },
   "feedback": {
-    "esc": "ESC"
+    "esc": "ESC",
+    "header": "Provide feedback",
+    "submit": "Submit"
+  },
+  "noProjectSelected": {
+    "header": "No project selected",
+    "description": "To provide a feedback you should select a project"
+  },
+  "submittedProject": {
+    "header": "Your feedback accepted",
+    "description": "You can review other project"
   }
 }

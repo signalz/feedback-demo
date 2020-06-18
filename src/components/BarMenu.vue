@@ -2,7 +2,7 @@
   <div class="bar-menu-wrapper">
     <MobileMenuButton
       class="header-nav-mobile"
-      :isClicked="isMobileMenuClicked"
+      :isClicked="isOpen"
       @click.native="onMobileMenuClick"
     />
     <div class="bar-menu-app-name">{{$t('app.name')}}</div>
@@ -16,15 +16,12 @@ export default {
   components: {
     MobileMenuButton
   },
-  data: () => {
-    return {
-      isMobileMenuClicked: false
-    };
+  props: {
+    isOpen: Boolean
   },
   methods: {
     onMobileMenuClick() {
-      this.isMobileMenuClicked = !this.isMobileMenuClicked;
-      this.$emit("open", { isOpen: this.isMobileMenuClicked });
+      this.$emit("open", { isOpen: !this.isOpen });
     }
   }
 };

@@ -1,6 +1,11 @@
 <template>
   <div class="menu-wrapper">
-    <BarMenu class="bar-menu" v-bind:class="{sideBarOpen: isOpen}" @open="handleBarMenu" />
+    <BarMenu
+      class="bar-menu"
+      v-bind:class="{sideBarOpen: isOpen}"
+      :isOpen="isOpen"
+      @open="handleBarMenu"
+    />
     <SideMenu
       class="side-menu"
       v-bind:class="{visible: isOpen}"
@@ -8,7 +13,7 @@
       :selectedProject="selectedProject"
       @selectProject="handleSelectProject"
     />
-    <Loading :isSpin="false" v-if="isOpen" />
+    <Loading :isSpin="false" v-if="isOpen" class="menu-loading-wrapper" />
   </div>
 </template>
 <script>
@@ -39,12 +44,13 @@ export default {
 
     handleSelectProject({ id }) {
       this.$emit("selectProject", { id });
+      this.isOpen = false;
     }
   }
 };
 </script>
 <style scoped lang="scss">
-@media screen and (max-width: $extra-small-phone-width){
+@media screen and (max-width: $extra-small-phone-width) {
   .sideBarOpen {
     margin-left: 250px !important;
   }
@@ -58,6 +64,10 @@ export default {
 
 @media screen and (min-width: $desktop-width) {
   .bar-menu {
+    display: none;
+  }
+
+  .menu-loading-wrapper {
     display: none;
   }
 }
