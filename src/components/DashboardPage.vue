@@ -8,7 +8,7 @@
     <Loading isSpin v-if="isLoading" />
     <div class="dashboards-wrapper">
       <div v-if="dashboardSelectedSection === dashboardSectionIds.OVERVIEW">
-        <OverviewDashboard :sections="sections" />
+        <OverviewDashboard :sections="sections" :data="data" />
       </div>
       <div v-if="dashboardSelectedSection === dashboardSectionIds.COMPARISON">
         <ComparisonDashboard :sections="sections" />
@@ -28,7 +28,7 @@ import HistoryDashboard from "./HistoryDashboard"
 import Loading from "./Loading";
 import Menu from "./Menu";
 import OverviewDashboard from "./OverviewDashboard";
-import { END_POINT, DASHBOARD_SECTION_ID, DASHBOARD_SECTIONS, SECTIONS } from "../config";
+import { END_POINT, DASHBOARD_SECTION_ID, DASHBOARD_SECTIONS, DASHBOARD_LABELS_LIST } from "../config";
 
 export default {
   name: "DashboardPage",
@@ -41,16 +41,21 @@ export default {
   },
   mounted() {
     Promise.all([
-      fetch(`${END_POINT}/api/projects`).then(res => res.json())
-      // fetch(`${END_POINT}/api/sections`).then(res => res.json())
+      fetch(`${END_POINT}/api/projects`).then(res => res.json()),
+      fetch(`${END_POINT}/api/sections`).then(res => res.json()),
+      fetch(`${END_POINT}/api/dashboard/projects/summary`).then(res => res.json()),
     ])
-      .then(([projects, sections]) => {
+      .then(([projects, sections, data]) => {
         if (sections && sections.length > 0) {
           this.sections = sections;
         }
-        this.sections = SECTIONS;
+        // this.sections = SECTIONS;
         if (projects && projects.length > 0) {
           this.projects = projects;
+        }
+
+        if (data) {
+         this.data = DASHBOARD_LABELS_LIST.map(item => data[item])
         }
         this.isLoading = false;
       })
@@ -65,6 +70,7 @@ export default {
       dashboardSelectedSection: DASHBOARD_SECTION_ID.OVERVIEW,
       dashboardSectionIds: DASHBOARD_SECTION_ID,
       isLoading: true,
+      data: [],
       sections: [],
       message
     };

@@ -1,6 +1,13 @@
 export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
 export const USER_ID = "1234";
 
+export const DASHBOARD_LABELS_LIST = [
+  "BRONZE",
+  "SILVER",
+  "GOLD",
+  "PLATIN"
+]
+
 export const RATINGS_LABELS = {
   BRONZE: "Bronze",
   SILVER: "Silver",

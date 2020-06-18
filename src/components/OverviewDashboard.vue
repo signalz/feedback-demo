@@ -28,8 +28,19 @@ export default {
     PieChart,
     Select
   },
+  updated() {
+    this.pieChartData.datasets[0].data = this.data
+    console.log(this.pieChartData)
+    // this.$forceUpdate()
+  },
   props: {
     sections: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+    data: {
       type: Array,
       default: () => {
         return [];
@@ -41,7 +52,8 @@ export default {
       pieChartData: {
         datasets: [
           {
-            data: [1, 1, 1, 1],
+            // data: [1, 1, 1, 1],
+            data: [],
             backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
             hoverBackgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
             borderWidth: 1
