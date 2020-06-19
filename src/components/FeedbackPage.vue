@@ -115,9 +115,9 @@ export default {
     },
 
     handleSubmitProject() {
-      const { project, sections } = this;
+      const { project, selectedSections } = this;
       this.isLoading = true;
-      const requestSections = sections.map(s => ({
+      const requestSections = selectedSections.map(s => ({
         sectionId: s.id,
         questions: s.questions.map(q => ({
           questionId: q.id,
