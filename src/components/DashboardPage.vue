@@ -15,7 +15,7 @@
         />
       </div>
       <div v-if="dashboardSelectedSection === dashboardSectionIds.COMPARISON">
-        <ComparisonDashboard :sections="sections" :projects="projects" />
+        <ComparisonDashboard :sections="sections" :data="comparisonData" />
       </div>
       <div v-if="dashboardSelectedSection === dashboardSectionIds.HISTORY">
         <HistoryDashboard :sections="sections" :projects="projects" />
@@ -83,6 +83,7 @@ export default {
       dashboardSectionIds: DASHBOARD_SECTION_ID,
       isLoading: true,
       pieChartData: [],
+      comparisonData: [],
       sections: [],
       message
     };
@@ -98,6 +99,21 @@ export default {
                 this.pieChartData = DASHBOARD_LABELS_LIST.map(
                   item => pieChartData[item]
                 );
+                this.isLoading = false;
+              }
+            })
+            .catch(e => {
+              this.isLoading = false;
+              this.message.error(e);
+            });
+        }
+
+        if (id === DASHBOARD_SECTION_ID.COMPARISON) {
+          fetch(`${END_POINT}/api/dashboard/projects/compare?sortby=projectName&order=1`)
+            .then(res => res.json())
+            .then(data => {
+              if (data) {
+                this.comparisonData = data;
                 this.isLoading = false;
               }
             })

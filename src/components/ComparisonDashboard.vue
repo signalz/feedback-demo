@@ -34,6 +34,8 @@ import HorizontalBar from "./HorizontalBar";
 
 const { Option } = Select;
 
+const BACKGROUND_COLORS = ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"]
+
 export default {
   name: "ComparisonDashboard",
   components: {
@@ -42,12 +44,12 @@ export default {
     Select
   },
   watch: {
-    projects: function(val) {
+    data: function(val) {
       this.barChartData = {
         datasets: [
           {
-            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-            data: [2, 3, 4, 5]
+            backgroundColor: BACKGROUND_COLORS,
+            data: val.map(item => Number.parseFloat(item.rating))
           }
         ],
         labels: val.map(item => item.projectName)
@@ -61,7 +63,7 @@ export default {
         return [];
       }
     },
-    projects: {
+    data: {
       type: Array,
       default: () => {
         return [];
@@ -72,11 +74,11 @@ export default {
     this.barChartData = {
       datasets: [
         {
-          backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-          data: [2, 3, 4, 5]
+          backgroundColor: BACKGROUND_COLORS,
+          data: this.data.map(item => Number.parseFloat(item.rating))
         }
       ],
-      labels: this.projects.map(item => item.projectName)
+      labels: this.data.map(item => item.projectName)
     };
   },
   data: () => {
@@ -84,8 +86,8 @@ export default {
       barChartData: {
         datasets: [
           {
-            backgroundColor: ["#cd7f32 ", "#aaa9ad", "#faf369", "#e5e4e2"],
-            data: [2, 3, 4, 5]
+            backgroundColor: BACKGROUND_COLORS,
+            data: []
           }
         ],
         labels: []

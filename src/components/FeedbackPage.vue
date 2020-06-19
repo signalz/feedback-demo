@@ -85,7 +85,7 @@ export default {
     },
 
     handleRateChange({ sectionId, questionId, rating }) {
-      this.sections = this.sections.map(s => {
+      this.selectedSections = this.selectedSections.map(s => {
         if (s.id === sectionId) {
           return {
             ...s,
