@@ -23,10 +23,10 @@
           @itemSelect="handleProjectSelect"
         />
         <SelectableItem
-          key="all-projects"
+          :key="allProjectsId"
           name="All projects"
-          id="all-projects"
-          :selected="selectedProject === 'all-projects'"
+          :id="allProjectsId"
+          :selected="selectedProject === allProjectsId"
           @itemSelect="handleProjectSelect"
         />
       </div>
@@ -36,6 +36,7 @@
 
 <script>
 import SelectableItem from "./SelectableItem";
+import { ALL_PROJECTS } from "../config";
 
 export default {
   name: "SideMenu",
@@ -50,7 +51,8 @@ export default {
   data: () => {
     return {
       filterKey: "",
-      timeout: undefined
+      timeout: undefined,
+      allProjectsId: ALL_PROJECTS
     };
   },
   methods: {

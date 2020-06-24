@@ -2,13 +2,13 @@
   <div tabindex="0" @keydown.esc="handleEsc" class="feedback-page-wrapper">
     <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" />
     <Loading isSpin v-if="isLoading" />
-    <div class="no-project" v-if="!project">
-      <NoProjectSelected />
+    <div class="all-projects" v-if="project.id === allProjectsId">
+      <Overview :sections="sections" />
     </div>
     <div class="submitted-project" v-if="status === feedbackStatus.SUBMITTED">
       <SubmittedProject />
     </div>
-    <div v-if="project && status === feedbackStatus.DRAFT" class="project-feedback">
+    <div v-if="project.id !== allProjectsId && status === feedbackStatus.DRAFT" class="project-feedback">
       <ProjectFeedback
         :sections="selectedSections"
         :ratings="ratings"
@@ -25,12 +25,13 @@ import { message } from "ant-design-vue";
 
 import Loading from "./Loading";
 import Menu from "./Menu";
-import NoProjectSelected from "./NoProjectSelected";
+// import NoProjectSelected from "./NoProjectSelected";
+import Overview from "./Overview"
 import ProjectFeedback from "./ProjectFeedback";
 import SubmittedProject from "./SubmittedProject";
 
 import { END_POINT } from "../config";
-import { FEEDBACK_STATUS, RATINGS, USER_ID } from "../config";
+import { FEEDBACK_STATUS, RATINGS, USER_ID, ALL_PROJECTS } from "../config";
 
 export default {
   name: "FeedbackPage",
@@ -58,7 +59,8 @@ export default {
   components: {
     Loading,
     Menu,
-    NoProjectSelected,
+    // NoProjectSelected,
+    Overview,
     ProjectFeedback,
     SubmittedProject
   },
@@ -67,21 +69,37 @@ export default {
       sections: [],
       projects: [],
       ratings: [],
-      project: undefined,
+      project: {
+        id: ALL_PROJECTS,
+        name: ALL_PROJECTS
+      },
       selectedSections: [],
       message,
       isLoading: true,
       feedbackStatus: FEEDBACK_STATUS,
-      status: FEEDBACK_STATUS.DRAFT
+      status: FEEDBACK_STATUS.DRAFT,
+      allProjectsId: ALL_PROJECTS
     };
   },
   methods: {
     handleSelectProject({ id }) {
-      this.project = id;
-      const selectedProject = this.projects.find(p => p.id === this.project);
-      this.selectedSections = this.sections.filter(section =>
-        selectedProject.sections.includes(section.id)
-      );
+      // this.project = id;
+      let selectedProject
+      if (id === ALL_PROJECTS) {
+        this.project = {
+          id: ALL_PROJECTS,
+          name: ALL_PROJECTS
+        }
+      } else {
+        selectedProject = this.projects.find(p => p.id === id);
+        this.project = {
+          name: selectedProject.projectName,
+          id: selectedProject.id
+        }
+      }
+      // this.selectedSections = this.sections.filter(section =>
+      //   selectedProject.sections.includes(section.id)
+      // );
     },
 
     handleRateChange({ sectionId, questionId, rating }) {
@@ -153,9 +171,15 @@ export default {
   outline: none;
 }
 
-.no-project,
+/* .no-project, */
 .submitted-project {
   padding-top: 100px;
+}
+
+.all-projects {
+  margin-left: $side-menu-width;
+  padding-top: $header-height;
+  min-width: 300px;
 }
 
 @media screen and (min-width: $desktop-width) {

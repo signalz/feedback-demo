@@ -3,7 +3,7 @@
     <BarMenu
       class="bar-menu"
       v-bind:class="{sideBarOpen: isOpen}"
-      :selectedProject="selectedProject.name"
+      :selectedProject="projectName"
       :isOpen="isOpen"
       @open="handleBarMenu"
     />
@@ -22,12 +22,19 @@ import BarMenu from "./BarMenu";
 import Loading from "./Loading";
 import SideMenu from "./SideMenu";
 
+import { ALL_PROJECTS } from "../config";
+
 export default {
   name: "Menu",
   components: {
     BarMenu,
     Loading,
     SideMenu
+  },
+  computed: {
+    projectName: function() {
+      return this.selectedProject.name === ALL_PROJECTS ? '' : this.selectedProject.name
+    }
   },
   props: {
     projects: {
@@ -41,7 +48,7 @@ export default {
       default: () => {
         return {
           name: '',
-          id: 'all-projects',
+          id: '',
         };
       }
     },

@@ -76,3 +76,5 @@ export const FEEDBACK_STATUS = {
   DRAFT: "DRAFT",
   SUBMITTED: "SUBMITTED"
 };
+
+export const ALL_PROJECTS = 'all_projects'
