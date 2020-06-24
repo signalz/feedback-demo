@@ -43,6 +43,10 @@
     "searchProject": "Search a project",
     "manager": "Manager:"
   },
+  "barMenu": {
+    "projectLabel": "Chosen project:",
+    "eventLabel": "Last evaluation event:"
+  },
   "feedback": {
     "esc": "ESC",
     "header": "Provide feedback",

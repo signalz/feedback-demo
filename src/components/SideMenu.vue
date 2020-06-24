@@ -22,6 +22,13 @@
           :selected="project.id === selectedProject"
           @itemSelect="handleProjectSelect"
         />
+        <SelectableItem
+          key="all-projects"
+          name="All projects"
+          id="all-projects"
+          :selected="selectedProject === 'all-projects'"
+          @itemSelect="handleProjectSelect"
+        />
       </div>
     </div>
   </div>
@@ -64,7 +71,7 @@ export default {
 <style scoped lang="scss">
 @media screen and (max-width: $extra-small-phone-width) {
   .side-menu-wrapper {
-    width: 250px !important;
+    width: $minimum-side-menu-width !important;
 
     .side-menu-header {
       .side-menu-app-name-first {
