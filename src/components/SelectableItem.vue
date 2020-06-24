@@ -24,7 +24,7 @@ export default {
 
 <style scoped lang="scss">
 .selectable-item {
-  padding: 10px 5px 10px 5px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -33,19 +33,19 @@ export default {
   cursor: pointer;
 
   .selectable-item-name {
-    color: $default-color;
+    color: #000;
   }
 
   .selectable-item-selected {
     height: 10px;
     width: 10px;
-    background-color: #42b983;
+    background-color: #ec4a70;
     border-radius: 50%;
   }
 }
 
 .selectable-item:hover {
-  background-color: #22282d;
+  background-color: #417ce8;
   opacity: 0.5;
 }
 </style>

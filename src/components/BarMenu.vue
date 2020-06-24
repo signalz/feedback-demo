@@ -5,7 +5,9 @@
       :isClicked="isOpen"
       @click.native="onMobileMenuClick"
     />
-    <div class="bar-menu-app-name">{{$t('app.name')}}</div>
+    <!-- <div class="bar-menu-app-name">{{$t('app.name')}}</div> -->
+    <div class="bar-menu-app-name">{{$t('app.name.first')}}</div>
+    <div class="bar-menu-app-name">{{$t('app.name.second')}}</div>
   </div>
 </template>
 <script>
