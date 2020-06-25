@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="history-dashboard-description">
-      <div class="history-dashboard-description-left">
+      <!-- <div class="history-dashboard-description-left">
         <div class="history-dashboard-description-text">{{$t("dashboard.history.project")}}</div>
         <Select :defaultValue="projects[0].id" class="history-dashboard-select">
           <Option
@@ -10,17 +10,30 @@
             :value="project.id"
           >{{project.projectName}}</Option>
         </Select>
-      </div>
+      </div>-->
       <div class="history-dashboard-description-right">
-        <div class="history-dashboard-description-text">{{$t("dashboard.history.section")}}</div>
-        <Select defaultValue="default" class="history-dashboard-select">
+        <!-- <div class="history-dashboard-description-text">{{$t("dashboard.history.section")}}</div> -->
+        <Group @change="onChange" :defaultValue="['overview']">
+          <Row>
+            <Col span="8">
+              <Checkbox value="select-all">Select all</Checkbox>
+            </Col>
+            <Col span="8">
+              <Checkbox value="overview">Overview</Checkbox>
+            </Col>
+            <Col v-for="section in sections" :key="section.id" span="8">
+              <Checkbox :value="section.id">{{section.title}}</Checkbox>
+            </Col>
+          </Row>
+        </Group>
+        <!-- <Select defaultValue="default" class="history-dashboard-select">
           <Option key="select-section-default" value="default">{{$t("dashboard.history.default")}}</Option>
           <Option
             v-for="section in sections"
             :key="`select-section-${section.id}`"
             :value="section.id"
           >{{section.title}}</Option>
-        </Select>
+        </Select>-->
       </div>
     </div>
     <LineChart :chartData="lineChartData" :options="lineChartOptions" :width="300" :height="300" />
@@ -28,17 +41,22 @@
 </template>
 
 <script>
-import { Select } from "ant-design-vue";
+import { Row, Col, Checkbox } from "ant-design-vue";
 import LineChart from "./LineChart";
 
-const { Option } = Select;
+// const { Option } = Select;
+const { Group } = Checkbox;
 
 export default {
   name: "HistoryDashboard",
   components: {
-    Option,
+    // Option,
     LineChart,
-    Select
+    Row,
+    Col,
+    Group,
+    Checkbox
+    // Select
   },
   props: {
     sections: {
@@ -46,12 +64,17 @@ export default {
       default: () => {
         return [];
       }
-    },
-    projects: {
-      type: Array,
-      default: () => {
-        return [];
-      }
+    }
+    // projects: {
+    //   type: Array,
+    //   default: () => {
+    //     return [];
+    //   }
+    // }
+  },
+  methods: {
+    onChange(value) {
+      console.log(value);
     }
   },
   data: () => {
@@ -88,7 +111,7 @@ export default {
 
 <style scoped lang="scss">
 @media screen and(max-width: $phone-width) {
-  .history-dashboard-description-left,
+  // .history-dashboard-description-left,
   .history-dashboard-description-right {
     width: 100%;
     justify-content: space-between;
@@ -103,10 +126,10 @@ export default {
   min-width: $min-width;
   margin-bottom: 20px;
 
-  .history-dashboard-description-left {
-    display: flex;
-    align-items: center;
-  }
+  // .history-dashboard-description-left {
+  //   display: flex;
+  //   align-items: center;
+  // }
 
   .history-dashboard-description-text {
     margin-right: 10px;
