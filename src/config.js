@@ -78,3 +78,9 @@ export const FEEDBACK_STATUS = {
 };
 
 export const ALL_PROJECTS = 'all_projects'
+
+export const FEEDBACK_STATE = {
+  NO_FEEDBACK: 'no-feedback',
+  LAST_FEEDBACK: 'last-feedback',
+  NEW_FEEDBACK: 'new-feedback',
+}

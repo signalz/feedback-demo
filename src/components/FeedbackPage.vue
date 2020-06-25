@@ -6,24 +6,33 @@
       <div class="feedback-page-content-left" v-if="showOverview">
         <div class="feedback-page-content-left-header">
           <div>FEEDBACK</div>
-          <Button
-            type="primary"
-            class="feedback-page-content-left-header-button"
-            @click="onClick"
-          >Dashboard</Button>
+          <div style="display: flex">
+            <Button type="primary" @click="onClickNew" v-if="project.id !== allProjectsId">New</Button>
+            <Button
+              type="primary"
+              class="feedback-page-content-left-header-button"
+              @click="onClick"
+            >Dashboard</Button>
+          </div>
         </div>
         <Overview :sections="sections" v-if="project.id === allProjectsId" />
         <div
-          v-if="project.id !== allProjectsId && status === feedbackStatus.DRAFT"
+          v-if="project.id !== allProjectsId && feedbackState !== feedbackStates.NO_FEEDBACK"
           class="project-feedback"
         >
           <ProjectFeedback
             :sections="selectedSections"
             :ratings="ratings"
             @ratechange="handleRateChange"
-            @closeProject="handleCloseProject"
             @submitProject="handleSubmitProject"
+            :state="feedbackState"
           />
+        </div>
+        <div
+          v-if="project.id !== allProjectsId && feedbackState === feedbackStates.NO_FEEDBACK"
+          class="project-feedback"
+        >
+          <div style="color: #000">Click New button to review this project</div>
         </div>
       </div>
       <div class="feedback-page-content-right" v-if="showDashboard">
@@ -67,7 +76,13 @@ import ProjectFeedback from "./ProjectFeedback";
 // import SubmittedProject from "./SubmittedProject";
 
 import { END_POINT } from "../config";
-import { FEEDBACK_STATUS, RATINGS, USER_ID, ALL_PROJECTS } from "../config";
+import {
+  FEEDBACK_STATUS,
+  RATINGS,
+  USER_ID,
+  ALL_PROJECTS,
+  FEEDBACK_STATE
+} from "../config";
 
 export default {
   name: "FeedbackPage",
@@ -131,7 +146,10 @@ export default {
       showDashboard: false,
       showOverview: true,
       pieChartData: [],
-      surveys: []
+      surveys: [],
+      survey: {},
+      feedbackStates: FEEDBACK_STATE,
+      feedbackState: FEEDBACK_STATE.NO_FEEDBACK
     };
   },
   methods: {
@@ -147,6 +165,16 @@ export default {
     onClick() {
       this.showDashboard = !this.showDashboard;
       this.showOverview = !this.showOverview;
+    },
+
+    onClickNew() {
+      this.feedbackState = FEEDBACK_STATE.NEW_FEEDBACK;
+      this.selectedSections = this.survey.sections.map(section => {
+        return {
+          ...section,
+          title: this.sections.find(item => item.id === section.sectionId).title
+        };
+      });
     },
 
     handleSelectProject({ id }) {
@@ -165,11 +193,17 @@ export default {
         };
         if (this.surveys.length > 0) {
           const surveyId = this.surveys[0].id;
-          fetch(
-            `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
-          )
-            .then(res => res.json())
-            .then(survey => {
+          Promise.all([
+            fetch(
+              `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
+            ).then(res => res.json()),
+            fetch(
+              `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
+            ).then(res => res.json())
+          ])
+            .then(values => {
+              const [survey, feedback] = values;
+              this.survey = { ...survey, id: surveyId };
               this.selectedSections = survey.sections.map(section => {
                 return {
                   ...section,
@@ -178,6 +212,10 @@ export default {
                   ).title
                 };
               });
+              if (feedback.message) {
+                this.message.error(feedback.message);
+                this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
+              }
               this.isLoading = false;
             })
             .catch(e => {
@@ -220,27 +258,35 @@ export default {
       this.status = FEEDBACK_STATUS.DRAFT;
     },
 
-    handleSubmitProject() {
+    handleSubmitProject({ event, review }) {
       const { project, selectedSections } = this;
       this.isLoading = true;
-      const requestSections = selectedSections.map(s => ({
-        sectionId: s.id,
-        questions: s.questions.map(q => ({
-          questionId: q.id,
-          rating: q.rating
+      const request = {
+        userId: USER_ID,
+        surveyId: this.survey.id,
+        projectId: project.id,
+        review,
+        event,
+        ratings: selectedSections.map(s => ({
+          sectionId: s.sectionId,
+          questions: s.questions.map(q => ({
+            questionId: q.questionId,
+            rating: q.rating
+          }))
         }))
-      }));
-      fetch(`${END_POINT}/api/ratings/${USER_ID}/${project}`, {
+      };
+      fetch(`${END_POINT}/api/feedbacks/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(requestSections)
+        body: JSON.stringify(request)
       })
         .then(res => {
           this.isLoading = false;
           if (res.ok) {
-            this.status = FEEDBACK_STATUS.SUBMITTED;
+            this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+            this.message.success('Thanks for your review')
           } else {
             this.message.error(res.statusText);
           }
@@ -307,6 +353,7 @@ export default {
 
         .feedback-page-content-left-header-button {
           display: none;
+          margin-left: 10px;
         }
       }
 

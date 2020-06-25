@@ -2,7 +2,9 @@
   <div class="project-feedback-wrapper">
     <div class="project-feedback-event">
       <div class="project-feedback-event-label">Event:</div>
-      <div><Input v-model="event" /></div>
+      <div>
+        <Input v-model="event" />
+      </div>
     </div>
     <div v-for="section in sections" :key="section.id" class="project-feedback-section">
       <div class="project-feedback-section-header">{{section.title}}</div>
@@ -17,9 +19,11 @@
       </div>
     </div>
     <div class="project-feedback-review">
-      <div><TextArea v-model="review" style="resize: none" placeholder="Write a review" /></div>
+      <div style="padding-bottom: 20px">
+        <TextArea v-model="review" style="resize: none" placeholder="Write a review" />
+      </div>
     </div>
-    <div class="feedback-button-wrapper">
+    <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
       <Button type="primary" class="feedback-button" @click="handleSubmit">{{$t("feedback.submit")}}</Button>
     </div>
   </div>
@@ -29,7 +33,9 @@ import { Button, Input } from "ant-design-vue";
 
 import QuestionRow from "./QuestionRow";
 
-const { TextArea } = Input
+import { FEEDBACK_STATE } from "../config";
+
+const { TextArea } = Input;
 
 export default {
   name: "ProjectFeedback",
@@ -39,15 +45,25 @@ export default {
     QuestionRow,
     TextArea
   },
+  watch: {
+    state(val) {
+      if (val === FEEDBACK_STATE.NEW_FEEDBACK) {
+        this.event = ''
+        this.review = ''
+      }
+    }
+  },
   props: {
     sections: Array,
-    ratings: Array
+    ratings: Array,
+    state: String,
   },
   data() {
     return {
-      event: '',
-      review: ''
-    }
+      event: "",
+      review: "",
+      feedbackStates: FEEDBACK_STATE
+    };
   },
   methods: {
     handleRateChange({ sectionId }, { rating, questionId }) {
@@ -55,8 +71,8 @@ export default {
     },
 
     handleSubmit() {
-      console.log(this.event)
-      // this.$emit('submitProject')
+      const { event, review } = this;
+      this.$emit("submitProject", { event, review });
     }
   }
 };
