@@ -181,7 +181,10 @@ export default {
   methods: {
     myEventHandler(e) {
       if (e.target.innerWidth <= 768) {
-        this.showDashboard = false;
+        if (this.showOverview) {
+          this.showDashboard = false;
+        }
+        // this.showOverview = true;
       } else {
         this.showDashboard = true;
         this.showOverview = true;
