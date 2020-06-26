@@ -1,16 +1,18 @@
 <template>
   <div class="side-menu-wrapper">
     <div class="side-menu-header">
-      <img alt="logo" src="../assets/logo.png" class="side-menu-logo" />
-      <div class="side-menu-app-name">{{$t('app.name')}}</div>
+      <div class="side-menu-app-name-first">{{$t('app.name.first')}}</div>
+      <div class="side-menu-app-name-second">{{$t('app.name.second')}}</div>
     </div>
-    <div class="side-menu-navigation">
-      <router-link to="/" @click.native="handleNavigation">{{$t('header.nav.feedback')}}</router-link>
-      <router-link to="/dashboard" @click.native="handleNavigation">{{$t('header.nav.dashboard')}}</router-link>
+    <div class="side-menu-project-manager">
+      <div class="side-menu-project-manager-label">{{$t('sideMenu.manager')}}</div>
+      <div class="side-menu-project-manager-name">{{manager}}</div>
     </div>
-    <div v-if="isFeedback" class="side-menu-search">
-      <div>{{$t('sideMenu.yourProjects')}}</div>
-      <input :placeholder="$t('sideMenu.searchProject')" @input="debounceInput" />
+    <div class="side-menu-search">
+      <div class="side-menu-search-box">
+        <div>{{$t('sideMenu.yourProjects')}}</div>
+        <input :placeholder="$t('sideMenu.searchProject')" @input="debounceInput" />
+      </div>
       <div class="side-menu-projects">
         <SelectableItem
           v-for="project in projects.filter(prj => prj.projectName.toLocaleLowerCase().includes(filterKey))"
@@ -20,24 +22,21 @@
           :selected="project.id === selectedProject"
           @itemSelect="handleProjectSelect"
         />
+        <SelectableItem
+          :key="allProjectsId"
+          name="All projects"
+          :id="allProjectsId"
+          :selected="selectedProject === allProjectsId"
+          @itemSelect="handleProjectSelect"
+        />
       </div>
-    </div>
-    <div v-if="!isFeedback" class="side-menu-dashboard">
-      <SelectableItem
-        v-for="section in sections"
-        :key="section.id"
-        :name="$t(section.label)"
-        :id="section.id"
-        :selected="section.id === selectedSection"
-        @itemSelect="handleDashboardSectionSelect"
-      />
     </div>
   </div>
 </template>
 
 <script>
 import SelectableItem from "./SelectableItem";
-// import { DASHBOARD_SECTIONS } from "../config";
+import { ALL_PROJECTS } from "../config";
 
 export default {
   name: "SideMenu",
@@ -47,40 +46,18 @@ export default {
   props: {
     projects: Array,
     selectedProject: String,
-    sections: Array,
-    selectedSection: String,
-  },
-  mounted() {
-    if (this._routerRoot._route.path === "/dashboard") {
-      this.isFeedback = false;
-    } else {
-      this.isFeedback = true;
-    }
+    manager: String,
   },
   data: () => {
     return {
-      isFeedback: true,
       filterKey: "",
       timeout: undefined,
-      // dashboardSections: DASHBOARD_SECTIONS,
-      // selectedSection: DASHBOARD_SECTIONS[0].id
+      allProjectsId: ALL_PROJECTS
     };
   },
   methods: {
     handleProjectSelect({ id }) {
       this.$emit("selectProject", { id });
-    },
-
-    handleDashboardSectionSelect({ id }) {
-      this.$emit("selectSection", { id });
-    },
-
-    handleNavigation() {
-      if (this._routerRoot._route.path === "/dashboard") {
-        this.isFeedback = false;
-      } else {
-        this.isFeedback = true;
-      }
     },
 
     debounceInput(e) {
@@ -94,28 +71,24 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@media screen and (max-width: $extra-small-phone-width){
+@media screen and (max-width: $extra-small-phone-width) {
   .side-menu-wrapper {
-    width: 250px !important;
+    width: $minimum-side-menu-width !important;
 
-    .side-menu-navigation {
-      font-size: 20px !important;
-    }
-  }
-}
+    .side-menu-header {
+      .side-menu-app-name-first {
+        font-size: 18px !important;
+      }
 
-@media screen and (max-width: $desktop-width) {
-  .side-menu-wrapper {
-    .side-menu-header{
-       .side-menu-app-name {
-         display: none;
-       }
+      .side-menu-app-name-second {
+        font-size: 24px !important;
+      }
     }
   }
 }
 
 .side-menu-wrapper {
-  background-color: #22282d;
+  background-color: $primary-color;
   height: 100vh;
   z-index: 99;
   position: fixed;
@@ -123,52 +96,58 @@ export default {
 
   .side-menu-header {
     display: flex;
-    margin: 20px;
+    margin: 20px 10px 20px 10px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    .side-menu-logo {
-      width: 150px;
+    .side-menu-app-name-first {
+      text-transform: uppercase;
+      font-size: 22px;
     }
 
-    .side-menu-app-name {
-      font-size: 24px;
-      font-weight: bold;
-      text-align: center;
+    .side-menu-app-name-second {
+      font-size: 26px;
       text-transform: uppercase;
-      margin-top: 10px;
+      font-weight: 600;
     }
   }
 
-  .side-menu-navigation {
-    font-size: 24px;
-    a {
-      font-weight: bold;
-      color: #5f778e;
-      margin-left: 20px;
-    }
+  .side-menu-project-manager {
+    margin-top: 100px;
+    display: flex;
+    padding: 0 10px 0 10px;
+    font-size: 16px;
+    align-items: center;
 
-    a.router-link-exact-active {
-      color: #42b983;
+    .side-menu-project-manager-label {
+      margin-right: 20px;
     }
   }
 
   .side-menu-search {
-    color: #a7a9ab;
-    margin: 20px;
-    height: 60%;
+    margin: 0 10px 20px 10px;
+    height: 70%;
 
-    input {
-      background-color: #22282d;
-      border: none;
-      border-bottom: 1px solid;
-      width: 100%;
-      margin-top: 10px;
-    }
+    .side-menu-search-box {
+      display: flex;
+      align-items: center;
 
-    input:focus {
-      outline: none;
+      input {
+        margin-left: 10px;
+        background-color: $primary-color;
+        border: none;
+        color: #bfbfbf;
+        border-bottom: 1px solid;
+      }
+
+      input:focus {
+        outline: none;
+      }
+
+      input::placeholder {
+        color: #bfbfbf;
+      }
     }
   }
 
@@ -176,21 +155,7 @@ export default {
     overflow-y: auto;
     height: 100%;
     margin-top: 5px;
-  }
-
-  .side-menu-dashboard {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 150px;
-    font-size: 16px;
-    padding: 20px;
-
-    .side-menu-dashboard-item:hover {
-      background-color: #22282d;
-      opacity: 0.5;
-      cursor: pointer;
-    }
+    background-color: #c6d9f1;
   }
 }
 

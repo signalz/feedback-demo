@@ -52,7 +52,7 @@ export default {
   img {
     width: 50px;
     cursor: pointer;
-    opacity: 0.7;
+    opacity: 0.5;
   }
 
   img.selected {

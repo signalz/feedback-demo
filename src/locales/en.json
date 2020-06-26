@@ -1,6 +1,9 @@
 {
   "app": {
-    "name": "Vietnam shoring team evaluation"
+    "name": {
+      "first": "Vietnam shoring team",
+      "second": "evaluation tool"
+    }
   },
   "header": {
     "banner": {
@@ -36,8 +39,13 @@
     }
   },
   "sideMenu": {
-    "yourProjects": "Your projects:",
-    "searchProject": "Search a project"
+    "yourProjects": "Project list:",
+    "searchProject": "Search a project",
+    "manager": "Manager:"
+  },
+  "barMenu": {
+    "projectLabel": "Chosen project:",
+    "eventLabel": "Last evaluation event:"
   },
   "feedback": {
     "esc": "ESC",

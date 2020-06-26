@@ -1,12 +1,15 @@
 <template>
   <div class="project-feedback-wrapper">
-    <div class="project-feedback-keyboard">
-      <div class="project-feedback-keyboard-icons" @click="handleClose">
-        <Icon type="close" :style="{fontSize: '24px'}" />
-        <span>{{$t("feedback.esc")}}</span>
+    <div class="project-feedback-event">
+      <div class="project-feedback-event-label">Event:</div>
+      <div>
+        <Input
+          :defaultValue="event"
+          v-model="eventName"
+          :disabled="feedbackStates.LAST_FEEDBACK === state"
+        />
       </div>
     </div>
-    <div class="project-feedback-header">{{$t("feedback.header")}}</div>
     <div v-for="section in sections" :key="section.id" class="project-feedback-section">
       <div class="project-feedback-section-header">{{section.title}}</div>
       <div>
@@ -14,71 +17,112 @@
           <QuestionRow
             :ratings="ratings"
             :question="{...question, index: qIdx + 1}"
-            @ratechange="handleRateChange({sectionId: section.id}, $event)"
+            @ratechange="handleRateChange({sectionId: section.sectionId}, $event)"
           />
         </div>
       </div>
     </div>
-    <div class="feedback-button-wrapper">
+    <div class="project-feedback-review">
+      <div style="padding-bottom: 20px">
+        <div class="project-feedback-section-header" style="padding-bottom: 20px">Review</div>
+        <TextArea
+          v-if="feedbackStates.NEW_FEEDBACK === state"
+          :defaultValue="review"
+          v-model="reviewText"
+          style="resize: none"
+          placeholder="Write a review"
+        />
+        <div v-if="feedbackStates.LAST_FEEDBACK === state">
+          <div>{{review}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
       <Button type="primary" class="feedback-button" @click="handleSubmit">{{$t("feedback.submit")}}</Button>
     </div>
   </div>
 </template>
 <script>
-import { Button, Icon } from "ant-design-vue";
+import { Button, Input } from "ant-design-vue";
 
 import QuestionRow from "./QuestionRow";
+
+import { FEEDBACK_STATE } from "../config";
+
+const { TextArea } = Input;
 
 export default {
   name: "ProjectFeedback",
   components: {
     Button,
-    Icon,
-    QuestionRow
+    Input,
+    QuestionRow,
+    TextArea
+  },
+  watch: {
+    state(val) {
+      console.log('????=======')
+      if (val === FEEDBACK_STATE.NEW_FEEDBACK) {
+        this.eventName = "";
+        this.reviewText = "";
+      }
+    }
+  },
+  mounted() {
+    console.log(this.review, '????>>>>>>>>>>')
   },
   props: {
     sections: Array,
-    ratings: Array
+    ratings: Array,
+    state: String,
+    event: String,
+    review: String
+  },
+  data() {
+    return {
+      eventName: "",
+      reviewText: "",
+      feedbackStates: FEEDBACK_STATE
+    };
   },
   methods: {
     handleRateChange({ sectionId }, { rating, questionId }) {
       this.$emit("ratechange", { sectionId, rating, questionId });
     },
-    handleClose() {
-      this.$emit('closeProject')
-    },
 
     handleSubmit() {
-      this.$emit('submitProject')
+      const { eventName, reviewText } = this;
+      this.$emit("submitProject", { event: eventName, review: reviewText });
     }
   }
 };
 </script>
 <style scoped lang="scss">
 .project-feedback-wrapper {
-  .project-feedback-keyboard {
+  color: rgba(0, 0, 0, 0.65);
+
+  .project-feedback-event {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
 
-    .project-feedback-keyboard-icons {
-      width: 5%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
+    .project-feedback-event-label {
+      margin-right: 10px;
+      font-size: 22px;
+      color: #22282d;
     }
-  }
-
-  .project-feedback-header {
-    padding-top: 20px;
-    color: #ec1940;
-    font-size: 24px;
-    font-weight: bold;
   }
 
   .project-feedback-section {
     padding-top: 20px;
 
+    .project-feedback-section-header {
+      font-size: 22px;
+      color: #22282d;
+    }
+  }
+
+  .project-feedback-review {
+    margin-top: 40px;
     .project-feedback-section-header {
       font-size: 22px;
       color: #22282d;

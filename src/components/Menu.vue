@@ -3,18 +3,17 @@
     <BarMenu
       class="bar-menu"
       v-bind:class="{sideBarOpen: isOpen}"
+      :selectedProject="projectName"
       :isOpen="isOpen"
+      :eventName="eventName"
       @open="handleBarMenu"
     />
     <SideMenu
       class="side-menu"
       v-bind:class="{visible: isOpen}"
       :projects="projects"
-      :selectedProject="selectedProject"
-      :sections="sections"
-      :selectedSection="selectedSection"
+      :selectedProject="selectedProject.id"
       @selectProject="handleSelectProject"
-      @selectSection="handleSelectSection"
     />
     <Loading :isSpin="false" v-if="isOpen" class="menu-loading-wrapper" />
   </div>
@@ -24,12 +23,19 @@ import BarMenu from "./BarMenu";
 import Loading from "./Loading";
 import SideMenu from "./SideMenu";
 
+import { ALL_PROJECTS } from "../config";
+
 export default {
   name: "Menu",
   components: {
     BarMenu,
     Loading,
     SideMenu
+  },
+  computed: {
+    projectName: function() {
+      return this.selectedProject.name === ALL_PROJECTS ? '' : this.selectedProject.name
+    }
   },
   props: {
     projects: {
@@ -39,23 +45,15 @@ export default {
       }
     },
     selectedProject: {
-      type: String,
+      type: Object,
       default: () => {
-        return "";
+        return {
+          name: '',
+          id: '',
+        };
       }
     },
-    sections: {
-      type: Array,
-      default: () => {
-        return [];
-      }
-    },
-    selectedSection: {
-      type: String,
-      default: () => {
-        return "";
-      }
-    }
+    eventName: String
   },
   data: () => {
     return {
@@ -71,37 +69,33 @@ export default {
       this.$emit("selectProject", { id });
       this.isOpen = false;
     },
-
-    handleSelectSection({ id }) {
-      this.$emit("selectSection", { id });
-      this.isOpen = false;
-    }
   }
 };
 </script>
 <style scoped lang="scss">
+.menu-wrapper {
+  .bar-menu-button {
+    display: none;
+  }
+  .side-menu {
+    display: none;
+  }
+
+  @media screen and (min-width: $desktop-width) {
+    .bar-menu {
+      padding-left: $side-menu-width;
+    }
+
+    .side-menu {
+      display: inline;
+    }
+  }
+}
+
 @media screen and (max-width: $extra-small-phone-width) {
   .sideBarOpen {
-    margin-left: 250px !important;
+    margin-left: $minimum-side-menu-width !important;
   }
-}
-
-@media screen and (min-width: $desktop-width) {
-  .bar-menu {
-    display: none;
-  }
-
-  .side-menu {
-    display: block !important;
-  }
-
-  .menu-loading-wrapper {
-    display: none;
-  }
-}
-
-.side-menu {
-  display: none;
 }
 
 .sideBarOpen {

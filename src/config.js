@@ -1,7 +1,7 @@
 export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
 export const USER_ID = "1234";
 
-export const DASHBOARD_LABELS_LIST = ["BRONZE", "SILVER", "GOLD", "PLATIN"];
+export const DASHBOARD_LABELS_LIST = ["BRONZE", "SILVER", "GOLD", "PLATINUM"];
 
 export const DASHBOARD_PIE_COLORS = [
   "#cd7f32 ",
@@ -76,3 +76,11 @@ export const FEEDBACK_STATUS = {
   DRAFT: "DRAFT",
   SUBMITTED: "SUBMITTED"
 };
+
+export const ALL_PROJECTS = 'all_projects'
+
+export const FEEDBACK_STATE = {
+  NO_FEEDBACK: 'no-feedback',
+  LAST_FEEDBACK: 'last-feedback',
+  NEW_FEEDBACK: 'new-feedback',
+}

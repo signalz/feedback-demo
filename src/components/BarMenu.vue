@@ -1,11 +1,20 @@
 <template>
   <div class="bar-menu-wrapper">
     <MobileMenuButton
-      class="header-nav-mobile"
+      class="bar-menu-button"
       :isClicked="isOpen"
       @click.native="onMobileMenuClick"
     />
-    <div class="bar-menu-app-name">{{$t('app.name')}}</div>
+    <div class="bar-menu-information">
+      <div class="bar-menu-project">
+        <div class="bar-menu-project-label">{{$t('barMenu.projectLabel')}}</div>
+        <div class="bar-menu-project-name">{{selectedProject || 'Not Selected'}}</div>
+      </div>
+      <div class="bar-menu-event">
+        <div class="bar-menu-event-label">{{$t('barMenu.eventLabel')}}</div>
+        <div class="bar-menu-event-name">{{eventName || 'No Event'}}</div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -17,7 +26,9 @@ export default {
     MobileMenuButton
   },
   props: {
-    isOpen: Boolean
+    isOpen: Boolean,
+    eventName: String,
+    selectedProject: String
   },
   methods: {
     onMobileMenuClick() {
@@ -31,7 +42,7 @@ export default {
   height: $header-height;
   position: fixed;
   width: 100%;
-  background-color: #22282d;
+  background-color: $primary-color;
   display: flex;
   align-items: center;
   padding: 0 20px 0 20px;
@@ -39,16 +50,40 @@ export default {
   z-index: 99;
   min-width: $min-width;
 
-  @media screen and (max-width: $phone-width) {
-    .bar-menu-app-name {
-      font-size: 16px;
+  .bar-menu-information {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-left: 10px;
+
+    .bar-menu-project {
+      display: flex;
+
+      .bar-menu-project-label {
+        margin-right: 5px;
+      }
+    }
+
+    .bar-menu-event {
+      display: flex;
+
+      .bar-menu-event-label {
+        margin-right: 5px;
+      }
     }
   }
 
-  .bar-menu-app-name {
-    width: 90%;
-    text-transform: uppercase;
-    text-align: center;
+  @media screen and (max-width: $desktop-width) {
+    .bar-menu-information {
+      font-size: 17px;
+    }
+  }
+
+  @media screen and (min-width: $desktop-width) {
+    .bar-menu-button {
+      display: none;
+    }
   }
 }
 </style>
