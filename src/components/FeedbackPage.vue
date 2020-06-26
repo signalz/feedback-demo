@@ -185,8 +185,8 @@ export default {
       survey: {},
       feedbackStates: FEEDBACK_STATE,
       feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
-      historySections: [],
-      overviewSection: ''
+      historySections: ["overview"],
+      overviewSection: "default"
     };
   },
   methods: {
@@ -230,16 +230,57 @@ export default {
         };
         if (this.surveys.length > 0) {
           const surveyId = this.surveys[0].id;
-          Promise.all([
-            fetch(
-              `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
-            ).then(res => res.json()),
-            fetch(
-              `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
-            ).then(res => res.json())
-          ])
+          Promise.all(
+            [
+              fetch(
+                `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
+              ).then(res => res.json()),
+              fetch(
+                `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
+              ).then(res => res.json()),
+              fetch(`${END_POINT}/api/dashboard/projects/summary`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  sectionId:
+                    this.overviewSection === "default"
+                      ? null
+                      : this.overviewSection,
+                  projectId:
+                    this.project.id === ALL_PROJECTS ? null : this.project.id
+                })
+              }).then(res => res.json())
+            ].concat(
+              this.historySections.map(section =>
+                fetch(`${END_POINT}/api/dashboard/projects/history`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    sectionId: section === "overview" ? null : section,
+                    projectId:
+                      this.project.id === ALL_PROJECTS ? null : this.project.id
+                  })
+                }).then(res => res.json())
+              )
+            )
+          )
             .then(values => {
-              const [survey, feedback] = values;
+              const [survey, feedback, pieChartData, ...lineChartData] = values;
+              this.pieChartData = DASHBOARD_LABELS_LIST.map(
+                item => pieChartData[item]
+              );
+              this.lineChartData = lineChartData.map(val =>
+                val.sort((a, b) => {
+                  return moment(a.date, "YYYY-MM-DD") <
+                    moment(b.date, "YYYY-MM-DD")
+                    ? -1
+                    : 1;
+                })
+              );
               this.survey = { ...survey, id: surveyId };
               this.selectedSections = survey.sections.map(section => {
                 return {
@@ -326,14 +367,14 @@ export default {
 
     changeOverviewSection({ sectionId }) {
       this.isLoading = true;
-      this.overviewSection = sectionId
+      this.overviewSection = sectionId;
       fetch(`${END_POINT}/api/dashboard/projects/summary`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          sectionId,
+          sectionId: sectionId === "default" ? null : sectionId,
           projectId: this.project.id === ALL_PROJECTS ? null : this.project.id
         })
       })
@@ -350,7 +391,7 @@ export default {
 
     changeHistorySection({ sections }) {
       this.isLoading = true;
-      this.historySections = sections
+      this.historySections = sections;
       Promise.all(
         sections.map(section =>
           fetch(`${END_POINT}/api/dashboard/projects/history`, {
