@@ -8,8 +8,12 @@
           @changeSection="handleChangeSection"
         />
       </div>
-      <div >
-        <HistoryDashboard :sections="sections" />
+      <div>
+        <HistoryDashboard
+          :sections="sections"
+          :data="lineChartData"
+          @changeSection="handleChangeSectionHistory"
+        />
       </div>
     </div>
   </div>
@@ -28,10 +32,15 @@ export default {
   props: {
     sections: Array,
     pieChartData: Array,
+    lineChartData: Array
   },
   methods: {
     handleChangeSection({ sectionId }) {
-      console.log(sectionId, '?????????????????????')
+      this.$emit("changeOverviewSection", { sectionId });
+    },
+
+    handleChangeSectionHistory({ sections }) {
+      this.$emit("changeHistorySection", { sections });
     }
   }
 };

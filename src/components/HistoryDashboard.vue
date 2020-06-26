@@ -1,39 +1,17 @@
 <template>
   <div>
     <div class="history-dashboard-description">
-      <!-- <div class="history-dashboard-description-left">
-        <div class="history-dashboard-description-text">{{$t("dashboard.history.project")}}</div>
-        <Select :defaultValue="projects[0].id" class="history-dashboard-select">
-          <Option
-            v-for="project in projects"
-            :key="`select-prj-${project.id}`"
-            :value="project.id"
-          >{{project.projectName}}</Option>
-        </Select>
-      </div>-->
       <div class="history-dashboard-description-right">
-        <!-- <div class="history-dashboard-description-text">{{$t("dashboard.history.section")}}</div> -->
-        <Group @change="onChange" :defaultValue="['overview']">
-          <Row>
-            <Col span="8">
-              <Checkbox value="select-all">Select all</Checkbox>
-            </Col>
-            <Col span="8">
-              <Checkbox value="overview">Overview</Checkbox>
-            </Col>
-            <Col v-for="section in sections" :key="section.id" span="8">
+        <div style="margin-right: 10px">History of: </div>
+        <Group @change="onChange" :value="value">
+          <Select style="width: 200px" value="Select below">
+            <Option value="select-all"><Button type="primary" style="width: 100%" @click="onSelectAll">Select all</Button></Option>
+            <Option value="overview"><Checkbox value="overview">Overview</Checkbox></Option>
+            <Option v-for="section in sections" :key="section.id" :value="section.id">
               <Checkbox :value="section.id">{{section.title}}</Checkbox>
-            </Col>
-          </Row>
+            </Option>
+          </Select>
         </Group>
-        <!-- <Select defaultValue="default" class="history-dashboard-select">
-          <Option key="select-section-default" value="default">{{$t("dashboard.history.default")}}</Option>
-          <Option
-            v-for="section in sections"
-            :key="`select-section-${section.id}`"
-            :value="section.id"
-          >{{section.title}}</Option>
-        </Select>-->
       </div>
     </div>
     <LineChart :chartData="lineChartData" :options="lineChartOptions" :width="300" :height="300" />
@@ -41,22 +19,21 @@
 </template>
 
 <script>
-import { Row, Col, Checkbox } from "ant-design-vue";
+import { Checkbox, Select, Button } from "ant-design-vue";
 import LineChart from "./LineChart";
 
-// const { Option } = Select;
 const { Group } = Checkbox;
+const { Option } = Select
 
 export default {
   name: "HistoryDashboard",
   components: {
-    // Option,
     LineChart,
-    Row,
-    Col,
     Group,
-    Checkbox
-    // Select
+    Checkbox,
+    Select,
+    Option,
+    Button
   },
   props: {
     sections: {
@@ -64,31 +41,46 @@ export default {
       default: () => {
         return [];
       }
+    },
+    data: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
-    // projects: {
-    //   type: Array,
-    //   default: () => {
-    //     return [];
-    //   }
-    // }
   },
   methods: {
     onChange(value) {
-      console.log(value);
+      this.value = value
+      this.$emit('changeSection', { sections: this.value })
+    },
+
+    onSelectAll() {
+      this.value = this.sections.map(section => section.id).concat('overview')
+      this.$emit('changeSection', { sections: this.value })
+    }
+  },
+  computed: {
+    lineChartData() {
+      return {
+        labels: this.data.length > 0 ? this.data[0].map(item => item.date): [],
+        // datasets: [
+        //   {
+        //     data: this.data.map(item => item.rating),
+        //     borderColor: "rgba(54, 162, 235, 0.2)",
+        //     fill: false
+        //   }
+        // ],
+        datasets: this.data.map(item => ({
+          data: item.map(data => data.rating),
+          borderColor: "rgba(54, 162, 235, 0.2)",
+          fill: false
+        }))
+      }
     }
   },
   data: () => {
     return {
-      lineChartData: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-        datasets: [
-          {
-            data: [5, 4, 3, 2, 5],
-            borderColor: "rgba(54, 162, 235, 0.2)",
-            fill: false
-          }
-        ]
-      },
       lineChartOptions: {
         maintainAspectRatio: false,
         legend: {
@@ -103,15 +95,16 @@ export default {
             }
           ]
         }
-      }
+      },
+      value: ['overview']
     };
   }
 };
 </script>
 
 <style scoped lang="scss">
+
 @media screen and(max-width: $phone-width) {
-  // .history-dashboard-description-left,
   .history-dashboard-description-right {
     width: 100%;
     justify-content: space-between;
@@ -125,11 +118,7 @@ export default {
   flex-wrap: wrap;
   min-width: $min-width;
   margin-bottom: 20px;
-
-  // .history-dashboard-description-left {
-  //   display: flex;
-  //   align-items: center;
-  // }
+  color: rgba(0, 0, 0, 0.65);
 
   .history-dashboard-description-text {
     margin-right: 10px;

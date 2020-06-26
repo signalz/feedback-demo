@@ -44,7 +44,13 @@
             @click="onClick"
           >Feedback</Button>
         </div>
-        <Dashboard :sections="sections" :pieChartData="pieChartData" />
+        <Dashboard
+          :sections="sections"
+          :pieChartData="pieChartData"
+          :lineChartData="lineChartData"
+          @changeOverviewSection="changeOverviewSection"
+          @changeHistorySection="changeHistorySection"
+        />
       </div>
     </div>
     <!-- <div class="submitted-project" v-if="status === feedbackStatus.SUBMITTED">
@@ -67,6 +73,7 @@
 
 <script>
 import { message, Button } from "ant-design-vue";
+import moment from "moment";
 
 import Loading from "./Loading";
 import Menu from "./Menu";
@@ -75,7 +82,7 @@ import Overview from "./Overview";
 import ProjectFeedback from "./ProjectFeedback";
 // import SubmittedProject from "./SubmittedProject";
 
-import { END_POINT } from "../config";
+import { END_POINT, DASHBOARD_LABELS_LIST } from "../config";
 import {
   FEEDBACK_STATUS,
   RATINGS,
@@ -92,14 +99,41 @@ export default {
     Promise.all([
       fetch(`${END_POINT}/api/projects`).then(res => res.json()),
       fetch(`${END_POINT}/api/sections`).then(res => res.json()),
-      fetch(`${END_POINT}/api/surveys`).then(res => res.json())
+      fetch(`${END_POINT}/api/surveys`).then(res => res.json()),
+      fetch(`${END_POINT}/api/dashboard/projects/summary`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => res.json()),
+      fetch(`${END_POINT}/api/dashboard/projects/history`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => res.json())
     ])
-      .then(([projects, sections, surveys]) => {
+      .then(([projects, sections, surveys, pieChartData, lineChartData]) => {
         if (sections && sections.length > 0) {
           this.sections = sections;
         }
 
-        this.pieChartData = [1, 2, 3, 5];
+        if (pieChartData) {
+          this.pieChartData = DASHBOARD_LABELS_LIST.map(
+            item => pieChartData[item]
+          );
+        }
+
+        if (lineChartData) {
+          this.lineChartData = [
+            lineChartData.sort((a, b) => {
+              return moment(a.date, "YYYY-MM-DD") < moment(b.date, "YYYY-MM-DD")
+                ? -1
+                : 1;
+            })
+          ];
+        }
+
         this.ratings = RATINGS;
         if (projects && projects.length > 0) {
           this.projects = projects;
@@ -146,10 +180,13 @@ export default {
       showDashboard: false,
       showOverview: true,
       pieChartData: [],
+      lineChartData: [],
       surveys: [],
       survey: {},
       feedbackStates: FEEDBACK_STATE,
-      feedbackState: FEEDBACK_STATE.NO_FEEDBACK
+      feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
+      historySections: [],
+      overviewSection: ''
     };
   },
   methods: {
@@ -248,16 +285,6 @@ export default {
       });
     },
 
-    handleEsc() {
-      this.project = undefined;
-      this.status = FEEDBACK_STATUS.DRAFT;
-    },
-
-    handleCloseProject() {
-      this.project = undefined;
-      this.status = FEEDBACK_STATUS.DRAFT;
-    },
-
     handleSubmitProject({ event, review }) {
       const { project, selectedSections } = this;
       this.isLoading = true;
@@ -286,10 +313,71 @@ export default {
           this.isLoading = false;
           if (res.ok) {
             this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-            this.message.success('Thanks for your review')
+            this.message.success("Thanks for your review");
           } else {
             this.message.error(res.statusText);
           }
+        })
+        .catch(e => {
+          this.isLoading = false;
+          this.message.error(e);
+        });
+    },
+
+    changeOverviewSection({ sectionId }) {
+      this.isLoading = true;
+      this.overviewSection = sectionId
+      fetch(`${END_POINT}/api/dashboard/projects/summary`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          sectionId,
+          projectId: this.project.id === ALL_PROJECTS ? null : this.project.id
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.pieChartData = DASHBOARD_LABELS_LIST.map(item => data[item]);
+          this.isLoading = false;
+        })
+        .catch(e => {
+          this.isLoading = false;
+          this.message.error(e);
+        });
+    },
+
+    changeHistorySection({ sections }) {
+      this.isLoading = true;
+      this.historySections = sections
+      Promise.all(
+        sections.map(section =>
+          fetch(`${END_POINT}/api/dashboard/projects/history`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              sectionId: section === "overview" ? null : section,
+              projectId:
+                this.project.id === ALL_PROJECTS ? null : this.project.id
+            })
+          }).then(res => res.json())
+        )
+      )
+        .then(values => {
+          if (values) {
+            this.lineChartData = values.map(val =>
+              val.sort((a, b) => {
+                return moment(a.date, "YYYY-MM-DD") <
+                  moment(b.date, "YYYY-MM-DD")
+                  ? -1
+                  : 1;
+              })
+            );
+          }
+          this.isLoading = false;
         })
         .catch(e => {
           this.isLoading = false;

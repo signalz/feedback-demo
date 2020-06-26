@@ -27,40 +27,13 @@ import { DASHBOARD_LABELS_LIST, DASHBOARD_PIE_COLORS } from "../config";
 
 const { Option } = Select;
 
-// const chartData = {
-//   datasets: [
-//     {
-//       data: [],
-//       backgroundColor: DASHBOARD_PIE_COLORS,
-//       hoverBackgroundColor: DASHBOARD_PIE_COLORS,
-//       borderWidth: 1
-//     }
-//   ],
-//   labels: DASHBOARD_LABELS_LIST
-// };
-
 export default {
   name: "OverviewDashboard",
   components: {
     Option,
     PieChart,
-    Select
+    Select,
   },
-  // watch: {
-  //   data: function(val) {
-  //     this.pieChartData = {
-  //       datasets: [
-  //         {
-  //           data: val,
-  //           backgroundColor: DASHBOARD_PIE_COLORS,
-  //           hoverBackgroundColor: DASHBOARD_PIE_COLORS,
-  //           borderWidth: 1
-  //         }
-  //       ],
-  //       labels: DASHBOARD_LABELS_LIST
-  //     };
-  //   }
-  // },
   props: {
     sections: {
       type: Array,
@@ -92,17 +65,6 @@ export default {
   },
   data: () => {
     return {
-      // pieChartData: {
-      //   datasets: [
-      //     {
-      //       data: ,
-      //       backgroundColor: DASHBOARD_PIE_COLORS,
-      //       hoverBackgroundColor: DASHBOARD_PIE_COLORS,
-      //       borderWidth: 1
-      //     }
-      //   ],
-      //   labels: DASHBOARD_LABELS_LIST
-      // },
       pieChartOptions: {
         maintainAspectRatio: false
       }
@@ -121,6 +83,7 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  color: rgba(0, 0, 0, 0.65);
 
   .overview-dashboard-text {
     margin-right: 10px;

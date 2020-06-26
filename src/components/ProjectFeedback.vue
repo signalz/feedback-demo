@@ -3,7 +3,7 @@
     <div class="project-feedback-event">
       <div class="project-feedback-event-label">Event:</div>
       <div>
-        <Input v-model="event" />
+        <Input v-model="event" :disabled="feedbackStates.LAST_FEEDBACK === state" />
       </div>
     </div>
     <div v-for="section in sections" :key="section.id" class="project-feedback-section">
@@ -20,7 +20,7 @@
     </div>
     <div class="project-feedback-review">
       <div style="padding-bottom: 20px">
-        <TextArea v-model="review" style="resize: none" placeholder="Write a review" />
+        <TextArea v-model="review" style="resize: none" placeholder="Write a review" :disabled="feedbackStates.LAST_FEEDBACK === state" />
       </div>
     </div>
     <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
