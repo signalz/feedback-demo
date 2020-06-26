@@ -3,7 +3,11 @@
     <div class="project-feedback-event">
       <div class="project-feedback-event-label">Event:</div>
       <div>
-        <Input v-model="event" :disabled="feedbackStates.LAST_FEEDBACK === state" />
+        <Input
+          :defaultValue="event"
+          v-model="eventName"
+          :disabled="feedbackStates.LAST_FEEDBACK === state"
+        />
       </div>
     </div>
     <div v-for="section in sections" :key="section.id" class="project-feedback-section">
@@ -20,7 +24,17 @@
     </div>
     <div class="project-feedback-review">
       <div style="padding-bottom: 20px">
-        <TextArea v-model="review" style="resize: none" placeholder="Write a review" :disabled="feedbackStates.LAST_FEEDBACK === state" />
+        <div class="project-feedback-section-header" style="padding-bottom: 20px">Review</div>
+        <TextArea
+          v-if="feedbackStates.NEW_FEEDBACK === state"
+          :defaultValue="review"
+          v-model="reviewText"
+          style="resize: none"
+          placeholder="Write a review"
+        />
+        <div v-if="feedbackStates.LAST_FEEDBACK === state">
+          <div>{{review}}</div>
+        </div>
       </div>
     </div>
     <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
@@ -47,21 +61,27 @@ export default {
   },
   watch: {
     state(val) {
+      console.log('????=======')
       if (val === FEEDBACK_STATE.NEW_FEEDBACK) {
-        this.event = ''
-        this.review = ''
+        this.eventName = "";
+        this.reviewText = "";
       }
     }
+  },
+  mounted() {
+    console.log(this.review, '????>>>>>>>>>>')
   },
   props: {
     sections: Array,
     ratings: Array,
     state: String,
+    event: String,
+    review: String
   },
   data() {
     return {
-      event: "",
-      review: "",
+      eventName: "",
+      reviewText: "",
       feedbackStates: FEEDBACK_STATE
     };
   },
@@ -71,8 +91,8 @@ export default {
     },
 
     handleSubmit() {
-      const { event, review } = this;
-      this.$emit("submitProject", { event, review });
+      const { eventName, reviewText } = this;
+      this.$emit("submitProject", { event: eventName, review: reviewText });
     }
   }
 };
@@ -103,6 +123,10 @@ export default {
 
   .project-feedback-review {
     margin-top: 40px;
+    .project-feedback-section-header {
+      font-size: 22px;
+      color: #22282d;
+    }
   }
 
   .feedback-button-wrapper {

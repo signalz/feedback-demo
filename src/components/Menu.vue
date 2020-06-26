@@ -5,6 +5,7 @@
       v-bind:class="{sideBarOpen: isOpen}"
       :selectedProject="projectName"
       :isOpen="isOpen"
+      :eventName="eventName"
       @open="handleBarMenu"
     />
     <SideMenu
@@ -52,6 +53,7 @@ export default {
         };
       }
     },
+    eventName: String
   },
   data: () => {
     return {

@@ -1,6 +1,6 @@
 <template>
   <div tabindex="0" @keydown.esc="handleEsc" class="feedback-page-wrapper">
-    <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" />
+    <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" :eventName="eventName" />
     <Loading isSpin v-if="isLoading" />
     <div class="feedback-page-content">
       <div class="feedback-page-content-left" v-if="showOverview">
@@ -26,6 +26,8 @@
             @ratechange="handleRateChange"
             @submitProject="handleSubmitProject"
             :state="feedbackState"
+            :event="eventName"
+            :review="review"
           />
         </div>
         <div
@@ -53,21 +55,6 @@
         />
       </div>
     </div>
-    <!-- <div class="submitted-project" v-if="status === feedbackStatus.SUBMITTED">
-      <SubmittedProject />
-    </div>-->
-    <!-- <div
-      v-if="project.id !== allProjectsId && status === feedbackStatus.DRAFT"
-      class="project-feedback"
-    >
-      <ProjectFeedback
-        :sections="selectedSections"
-        :ratings="ratings"
-        @ratechange="handleRateChange"
-        @closeProject="handleCloseProject"
-        @submitProject="handleSubmitProject"
-      />
-    </div>-->
   </div>
 </template>
 
@@ -186,7 +173,9 @@ export default {
       feedbackStates: FEEDBACK_STATE,
       feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
       historySections: ["overview"],
-      overviewSection: "default"
+      overviewSection: "default",
+      eventName: "",
+      review: ""
     };
   },
   methods: {
@@ -290,9 +279,25 @@ export default {
                   ).title
                 };
               });
-              if (feedback.message) {
-                this.message.error(feedback.message);
-                this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
+              if (feedback) {
+                this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+                this.review = feedback.review;
+
+                this.selectedSections = this.selectedSections.map(section => {
+                  return {
+                    ...section,
+                    questions: section.questions.map(q => {
+                      return {
+                        ...q,
+                        rating: feedback.ratings
+                          .find(item => item.sectionId === section.sectionId)
+                          .questions.find(
+                            item => item.questionId === q.questionId
+                          ).rating
+                      };
+                    })
+                  };
+                });
               }
               this.isLoading = false;
             })
@@ -352,6 +357,8 @@ export default {
       })
         .then(res => {
           this.isLoading = false;
+          this.eventName = event;
+          this.review = review;
           if (res.ok) {
             this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
             this.message.success("Thanks for your review");
