@@ -7,9 +7,9 @@
     <div class="question-rating">
       <FeedbackIcon
         v-for="rating in ratings"
-        :key="`rating-${rating.rate}`"
-        :rate="rating.rate"
-        :selected="question.rating === rating.rate"
+        :key="rating.label"
+        :rating="rating.rating"
+        :selected="question.rating === rating.rating"
         :label="rating.label"
         @ratechange="handleRateChange"
       />
@@ -26,15 +26,33 @@ export default {
     FeedbackIcon
   },
   props: {
-    ratings: Array,
-    question: Object
+    ratings: {
+      type: Array,
+      default: () => {
+        return [
+          {
+            label: String,
+            rating: Number
+          }
+        ];
+      }
+    },
+    question: {
+      type: Object,
+      default: () => {
+        return {
+          questionId: String,
+          index: Number,
+          text: String
+        };
+      }
+    }
   },
   methods: {
     handleRateChange({ rating }) {
-      const { question } = this;
       this.$emit("ratechange", {
         rating,
-        questionId: question.questionId
+        questionId: this.question.questionId
       });
     }
   }
@@ -42,7 +60,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-// @media screen and(max-width: $tablet-width) {
 .question-row-wrapper {
   display: flex;
   flex-direction: column;
@@ -51,36 +68,17 @@ export default {
   margin-bottom: 10px;
 
   .question-text {
-    width: 100% !important;
+    width: 100%;
     background-color: aliceblue;
     padding: 10px;
   }
 
   .question-rating {
-    width: 60% !important;
+    width: 60%;
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
     font-size: 20px;
   }
 }
-// }
-
-// .question-row-wrapper {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   margin-bottom: 10px;
-
-//   .question-text {
-//     width: 70%;
-//   }
-
-//   .question-rating {
-//     width: 30%;
-//     display: flex;
-//     justify-content: space-between;
-//     font-size: 20px;
-//   }
-// }
 </style>

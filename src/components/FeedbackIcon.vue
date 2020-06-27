@@ -7,7 +7,7 @@
       <img
         v-bind:src="getImgSrc(label)"
         v-bind:class="{selected}"
-        @click="rating"
+        @click="onClickRating"
         :draggable="false"
       />
     </Tooltip>
@@ -26,12 +26,12 @@ export default {
   },
   props: {
     selected: Boolean,
-    rate: Number,
+    rating: Number,
     label: String
   },
   methods: {
-    rating() {
-      this.$emit("ratechange", { rating: this.rate });
+    onClickRating() {
+      this.$emit("ratechange", { rating: this.rating });
     },
     getImgSrc(label) {
       return getIconImgSrc(label);
