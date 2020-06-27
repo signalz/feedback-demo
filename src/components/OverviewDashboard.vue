@@ -1,16 +1,16 @@
 <template>
   <div>
     <div class="overview-dashboard-description">
-      <div class="overview-dashboard-text">{{$t("dashboard.overview.section")}}</div>
+      <div class="overview-dashboard-label">{{$t("dashboard.overview.section")}}</div>
       <Select
-        defaultValue="default"
+        :defaultValue="defaultValue"
         class="overview-dashboard-select"
         @change="handleChangeSection"
       >
-        <Option key="select-section-default" value="default">{{$t("dashboard.overview.default")}}</Option>
+        <Option :key="defaultValue" :value="defaultValue">{{$t("dashboard.overview.default")}}</Option>
         <Option
           v-for="section in sections"
-          :key="`select-section-${section.id}`"
+          :key="section.id"
           :value="section.id"
         >{{section.title}}</Option>
       </Select>
@@ -21,9 +21,9 @@
 
 <script>
 import { Select } from "ant-design-vue";
-import PieChart from "./chart/PieChart";
 
-import { DASHBOARD_LABELS_LIST, DASHBOARD_PIE_COLORS } from "../config";
+import { DASHBOARD_LABELS_LIST, DASHBOARD_PIE_COLORS, DEFAULT } from "../config";
+import PieChart from "./chart/PieChart";
 
 const { Option } = Select;
 
@@ -67,7 +67,8 @@ export default {
     return {
       pieChartOptions: {
         maintainAspectRatio: false
-      }
+      },
+      defaultValue: DEFAULT
     };
   },
   methods: {
@@ -85,14 +86,13 @@ export default {
   margin-bottom: 20px;
   color: rgba(0, 0, 0, 0.65);
 
-  .overview-dashboard-text {
+  .overview-dashboard-label {
     margin-right: 10px;
     color: rgba(0, 0, 0, 0.65)
   }
 
   .overview-dashboard-select {
-    width: 150px;
-    margin-left: 10px;
+    width: 200px;
   }
 }
 </style>
