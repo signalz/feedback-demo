@@ -21,9 +21,10 @@
       "history": "History"
     },
     "history": {
-      "project": "History of project:",
-      "section": "History of:",
-      "default": "Overall"
+      "sections": "History of:",
+      "select-all": "Select all",
+      "select-below": "Select below",
+      "default": "Overview"
     },
     "overview": {
       "section": "Overview by:",

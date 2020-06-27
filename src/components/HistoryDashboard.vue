@@ -1,39 +1,50 @@
 <template>
   <div>
     <div class="history-dashboard-description">
-      <div class="history-dashboard-description-right">
-        <div style="margin-right: 10px">History of: </div>
-        <Group @change="onChange" :value="value">
-          <Select style="width: 200px" value="Select below">
-            <Option value="select-all"><Button type="primary" style="width: 100%" @click="onSelectAll">Select all</Button></Option>
-            <Option value="overview"><Checkbox value="overview">Overview</Checkbox></Option>
-            <Option v-for="section in sections" :key="section.id" :value="section.id">
-              <Checkbox :value="section.id">{{section.title}}</Checkbox>
-            </Option>
-          </Select>
-        </Group>
-      </div>
+      <div class="history-dashboard-description-label">{{$t('dashboard.history.sections')}}</div>
+      <Group @change="onChangeCheckboxes" :value="checkboxesValues">
+        <Select
+          :value="$t('dashboard.history.select-below')"
+          class="history-dashboard-description-select"
+        >
+          <Option value="select-all">
+            <Button
+              type="primary"
+              style="width: 100%"
+              @click="onSelectAll"
+            >{{$t('dashboard.history.select-all')}}</Button>
+          </Option>
+          <Option :value="defaultValue">
+            <Checkbox :value="defaultValue">{{$t('dashboard.history.default')}}</Checkbox>
+          </Option>
+          <Option v-for="section in sections" :key="section.id" :value="section.id">
+            <Checkbox :value="section.id">{{section.title}}</Checkbox>
+          </Option>
+        </Select>
+      </Group>
     </div>
     <LineChart :chartData="lineChartData" :options="lineChartOptions" :width="300" :height="300" />
   </div>
 </template>
 
 <script>
-import { Checkbox, Select, Button } from "ant-design-vue";
-import LineChart from "./LineChart";
+import { Button, Checkbox, Select } from "ant-design-vue";
+
+import { DEFAULT } from "../config";
+import LineChart from "./chart/LineChart";
 
 const { Group } = Checkbox;
-const { Option } = Select
+const { Option } = Select;
 
 export default {
   name: "HistoryDashboard",
   components: {
-    LineChart,
-    Group,
+    Button,
     Checkbox,
-    Select,
+    Group,
+    LineChart,
     Option,
-    Button
+    Select
   },
   props: {
     sections: {
@@ -45,38 +56,31 @@ export default {
     data: {
       type: Array,
       default: () => {
-        return [];
+        return [[{ date: String, rating: String }]];
       }
     }
   },
   methods: {
-    onChange(value) {
-      this.value = value
-      this.$emit('changeSection', { sections: this.value })
+    onChangeCheckboxes(value) {
+      this.checkboxesValues = value;
+      this.$emit("changeSection", { sections: this.value });
     },
 
     onSelectAll() {
-      this.value = this.sections.map(section => section.id).concat('overview')
-      this.$emit('changeSection', { sections: this.value })
+      this.value = this.sections.map(section => section.id).concat(DEFAULT);
+      this.$emit("changeSection", { sections: this.value });
     }
   },
   computed: {
     lineChartData() {
       return {
-        labels: this.data.length > 0 ? this.data[0].map(item => item.date): [],
-        // datasets: [
-        //   {
-        //     data: this.data.map(item => item.rating),
-        //     borderColor: "rgba(54, 162, 235, 0.2)",
-        //     fill: false
-        //   }
-        // ],
+        labels: this.data.length > 0 ? this.data[0].map(item => item.date) : [],
         datasets: this.data.map(item => ({
           data: item.map(data => data.rating),
           borderColor: "rgba(54, 162, 235, 0.2)",
           fill: false
         }))
-      }
+      };
     }
   },
   data: () => {
@@ -96,41 +100,27 @@ export default {
           ]
         }
       },
-      value: ['overview']
+      checkboxesValues: [DEFAULT],
+      defaultValue: DEFAULT
     };
   }
 };
 </script>
 
 <style scoped lang="scss">
-
-@media screen and(max-width: $phone-width) {
-  .history-dashboard-description-right {
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-}
-
 .history-dashboard-description {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  align-items: center;
   min-width: $min-width;
   margin-bottom: 20px;
   color: rgba(0, 0, 0, 0.65);
 
-  .history-dashboard-description-text {
+  .history-dashboard-description-label {
     margin-right: 10px;
   }
 
-  .history-dashboard-description-right {
-    display: flex;
-    align-items: center;
-  }
-
-  .history-dashboard-select {
-    width: 150px;
+  .history-dashboard-description-select {
+    width: 200px;
   }
 }
 </style>

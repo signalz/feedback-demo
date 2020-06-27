@@ -84,3 +84,5 @@ export const FEEDBACK_STATE = {
   LAST_FEEDBACK: 'last-feedback',
   NEW_FEEDBACK: 'new-feedback',
 }
+
+export const DEFAULT = 'default'

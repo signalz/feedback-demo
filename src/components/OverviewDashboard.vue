@@ -21,7 +21,7 @@
 
 <script>
 import { Select } from "ant-design-vue";
-import PieChart from "./PieChart";
+import PieChart from "./chart/PieChart";
 
 import { DASHBOARD_LABELS_LIST, DASHBOARD_PIE_COLORS } from "../config";
 
