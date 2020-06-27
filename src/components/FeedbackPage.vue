@@ -15,7 +15,7 @@
             >Dashboard</Button>
           </div>
         </div>
-        <Overview :sections="sections" v-if="project.id === allProjectsId" />
+        <OverviewTable :sections="sections" v-if="project.id === allProjectsId" />
         <div
           v-if="project.id !== allProjectsId && feedbackState !== feedbackStates.NO_FEEDBACK"
           class="project-feedback"
@@ -65,7 +65,7 @@ import moment from "moment";
 import Loading from "./Loading";
 import Menu from "./Menu";
 import Dashboard from "./Dashboard";
-import Overview from "./Overview";
+import OverviewTable from "./OverviewTable";
 import ProjectFeedback from "./ProjectFeedback";
 // import SubmittedProject from "./SubmittedProject";
 
@@ -144,7 +144,7 @@ export default {
     Loading,
     Menu,
     Dashboard,
-    Overview,
+    OverviewTable,
     ProjectFeedback,
     // SubmittedProject,
     Button
