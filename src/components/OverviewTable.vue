@@ -17,24 +17,31 @@
     </Row>
     <Row v-for="section in sections" :key="section.id" class="overview-table-row">
       <Col class="overview-table-section" span="8">{{section.title}}</Col>
-      <Col class="overview-table-value" span="4">{{section.bronze || 0}}</Col>
-      <Col class="overview-table-value" span="4">{{section.silver || 0}}</Col>
-      <Col class="overview-table-value" span="4">{{section.gold || 0}}</Col>
-      <Col class="overview-table-value" span="4">{{section.platin || 0}}</Col>
+      <Col class="overview-table-value" span="4">{{section.bronze || defaultValue}}</Col>
+      <Col class="overview-table-value" span="4">{{section.silver || defaultValue}}</Col>
+      <Col class="overview-table-value" span="4">{{section.gold || defaultValue}}</Col>
+      <Col class="overview-table-value" span="4">{{section.platin || defaultValue}}</Col>
     </Row>
   </div>
 </template>
 <script>
 import { Col, Row } from "ant-design-vue";
 
+const DEFAULT_VALUE = 0;
+
 export default {
   name: "OverviewTable",
-  props: {
-    sections: Array
-  },
   components: {
     Col,
     Row
+  },
+  props: {
+    sections: Array
+  },
+  data: () => {
+    return {
+      defaultValue: DEFAULT_VALUE
+    };
   }
 };
 </script>
