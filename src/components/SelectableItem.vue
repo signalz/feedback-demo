@@ -34,6 +34,9 @@ export default {
 
   .selectable-item-name {
     color: #000;
+    width: 80%;
+    flex-wrap: wrap;
+    word-break: break-all;
   }
 
   .selectable-item-selected {

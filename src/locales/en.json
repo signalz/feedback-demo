@@ -32,6 +32,12 @@
       "no-project": "Not Selected",
       "event-label": "Last evaluation event:",
       "no-event": "No event"
+    },
+    "side": {
+      "manager": "Manager:",
+      "projects-list": "Project list:",
+      "projects-search": "Search a project",
+      "project-all": "All projects"
     }
   },
   "sideMenu": {
