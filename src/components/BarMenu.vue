@@ -7,12 +7,12 @@
     />
     <div class="bar-menu-information">
       <div class="bar-menu-project">
-        <div class="bar-menu-project-label">{{$t('barMenu.projectLabel')}}</div>
-        <div class="bar-menu-project-name">{{selectedProject || 'Not Selected'}}</div>
+        <div class="bar-menu-project-label">{{$t('menu.bar.project-label')}}</div>
+        <div class="bar-menu-project-name">{{project || $t('menu.bar.no-project')}}</div>
       </div>
       <div class="bar-menu-event">
-        <div class="bar-menu-event-label">{{$t('barMenu.eventLabel')}}</div>
-        <div class="bar-menu-event-name">{{eventName || 'No Event'}}</div>
+        <div class="bar-menu-event-label">{{$t('menu.bar.event-label')}}</div>
+        <div class="bar-menu-event-name">{{event || $t('menu.bar.no-event')}}</div>
       </div>
     </div>
   </div>
@@ -27,8 +27,8 @@ export default {
   },
   props: {
     isOpen: Boolean,
-    eventName: String,
-    selectedProject: String
+    event: String,
+    project: String
   },
   methods: {
     onMobileMenuClick() {
@@ -77,6 +77,12 @@ export default {
   @media screen and (max-width: $desktop-width) {
     .bar-menu-information {
       font-size: 17px;
+    }
+  }
+
+  @media screen and (max-width: $extra-small-phone-width) {
+    .bar-menu-information {
+      font-size: 15px;
     }
   }
 

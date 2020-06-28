@@ -15,11 +15,6 @@
     }
   },
   "dashboard": {
-    "section": {
-      "overview": "Overview",
-      "comparison": "Comparison",
-      "history": "History"
-    },
     "history": {
       "sections": "History of:",
       "select-all": "Select all",
@@ -29,14 +24,14 @@
     "overview": {
       "section": "Overview by:",
       "default": "Overall"
-    },
-    "comparison": {
-      "section": "Comparison by:",
-      "default": "Overall",
-      "sort": "Sort by:",
-      "name": "Name",
-      "pointAsc": "Point (ascending)",
-      "pointDesc": "Point (descending)"
+    }
+  },
+  "menu": {
+    "bar": {
+      "project-label": "Chosen project:",
+      "no-project": "Not Selected",
+      "event-label": "Last evaluation event:",
+      "no-event": "No event"
     }
   },
   "sideMenu": {
@@ -44,21 +39,14 @@
     "searchProject": "Search a project",
     "manager": "Manager:"
   },
-  "barMenu": {
-    "projectLabel": "Chosen project:",
-    "eventLabel": "Last evaluation event:"
+  "bar-menu": {
+    "project-label": "Chosen project:",
+    "no-project": "No project",
+    "event-label": "Last evaluation event:"
   },
   "feedback": {
     "esc": "ESC",
     "header": "Provide feedback",
     "submit": "Submit"
-  },
-  "noProjectSelected": {
-    "header": "No project selected",
-    "description": "To provide a feedback you should select a project"
-  },
-  "submittedProject": {
-    "header": "Your feedback accepted",
-    "description": "You can review other project"
   }
 }

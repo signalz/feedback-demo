@@ -3,9 +3,9 @@
     <BarMenu
       class="bar-menu"
       v-bind:class="{sideBarOpen: isOpen}"
-      :selectedProject="projectName"
+      :project="projectName"
       :isOpen="isOpen"
-      :eventName="eventName"
+      :event="eventName"
       @open="handleBarMenu"
     />
     <SideMenu
