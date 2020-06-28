@@ -69,7 +69,7 @@ import OverviewTable from "./OverviewTable";
 import ProjectFeedback from "./ProjectFeedback";
 // import SubmittedProject from "./SubmittedProject";
 
-import { END_POINT, DASHBOARD_LABELS_LIST } from "../config";
+import { END_POINT, DASHBOARD_LABELS_LIST, DEFAULT } from "../config";
 import {
   FEEDBACK_STATUS,
   RATINGS,
@@ -141,23 +141,23 @@ export default {
     window.removeEventListener("resize", this.myEventHandler);
   },
   components: {
+    Button,
+    Dashboard,
     Loading,
     Menu,
-    Dashboard,
     OverviewTable,
     ProjectFeedback,
-    // SubmittedProject,
-    Button
   },
   data: () => {
     return {
-      sections: [],
       projects: [],
-      ratings: [],
       project: {
-        id: ALL_PROJECTS,
-        name: ALL_PROJECTS
+        id: DEFAULT,
+        projectName: DEFAULT
       },
+
+      sections: [],
+      ratings: [],
       selectedSections: [],
       message,
       isLoading: true,
@@ -208,16 +208,16 @@ export default {
 
     handleSelectProject({ id }) {
       let selectedProject;
-      if (id === ALL_PROJECTS) {
+      if (id === DEFAULT) {
         this.project = {
-          id: ALL_PROJECTS,
-          name: ALL_PROJECTS
+          id: DEFAULT,
+          projectName: DEFAULT
         };
       } else {
         selectedProject = this.projects.find(p => p.id === id);
         this.isLoading = true;
         this.project = {
-          name: selectedProject.projectName,
+          projectName: selectedProject.projectName,
           id: selectedProject.id
         };
         if (this.surveys.length > 0) {
