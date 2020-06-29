@@ -5,7 +5,7 @@
         <span>{{label}}</span>
       </template>
       <img
-        v-bind:src="getImgSrc(label)"
+        v-bind:src="getImgSrc()"
         v-bind:class="{selected}"
         @click="onClickRating"
         :draggable="false"
@@ -33,8 +33,8 @@ export default {
     onClickRating() {
       this.$emit("ratechange", { rating: this.rating });
     },
-    getImgSrc(label) {
-      return getIconImgSrc(label);
+    getImgSrc() {
+      return getIconImgSrc(this.label, this.selected);
     }
   }
 };
