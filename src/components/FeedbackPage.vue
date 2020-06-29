@@ -1,60 +1,109 @@
 <template>
-  <div tabindex="0" @keydown.esc="handleEsc" class="feedback-page-wrapper">
-    <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" :eventName="eventName" />
+  <div class="feedback-page-wrapper">
+    <Menu
+      :projects="projects"
+      :selectedProject="project"
+      @selectProject="handleSelectProject"
+      :eventName="eventName"
+    />
     <Loading isSpin v-if="isLoading" />
-    <div class="feedback-page-content">
-      <div class="feedback-page-content-left" v-if="showOverview">
-        <div class="feedback-page-content-left-header">
-          <div>FEEDBACK</div>
-          <div style="display: flex">
-            <Button type="primary" @click="onClickNew" v-if="project.id !== allProjectsId">New</Button>
+    <mq-layout :mq="`${screenBreakpoints.md}+`">
+      <div class="feedback-page-content">
+        <div class="feedback-page-content-left">
+          <div class="feedback-page-content-left-header">
+            <div class="feedback-page-content-left-header-text">{{$t('feedback.feedback')}}</div>
             <Button
+              v-if="project.id !== defaultValue"
               type="primary"
-              class="feedback-page-content-left-header-button"
-              @click="onClick"
-            >Dashboard</Button>
+              class="feedback-page-content-left-header-new"
+              @click="onClickNew"
+            >{{$t('feedback.new')}}</Button>
+          </div>
+          <div class="feedback-page-content-left-section">
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <ProjectFeedback
+              v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
+              :sections="surveySections"
+              :ratings="ratings"
+              @ratechange="handleRateChange"
+              @submitProject="handleSubmitProject"
+              :state="feedbackState"
+              :event="eventName"
+              :review="review"
+            />
+            <div
+              v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
+            >{{$t('feedback.new-feedback')}}</div>
           </div>
         </div>
-        <Overview :sections="sections" v-if="project.id === allProjectsId" />
-        <div
-          v-if="project.id !== allProjectsId && feedbackState !== feedbackStates.NO_FEEDBACK"
-          class="project-feedback"
-        >
-          <ProjectFeedback
-            :sections="selectedSections"
-            :ratings="ratings"
-            @ratechange="handleRateChange"
-            @submitProject="handleSubmitProject"
-            :state="feedbackState"
-            :event="eventName"
-            :review="review"
+        <div class="feedback-page-content-right">
+          <div class="feedback-page-content-right-header">
+            <div class="feedback-page-content-right-header-text">{{$t('feedback.dashboard')}}</div>
+          </div>
+          <Dashboard
+            :key="key"
+            :sections="sections"
+            :overviewData="overviewData"
+            :historyData="historyData"
+            @changeOverviewSection="changeOverviewSection"
+            @changeHistorySection="changeHistorySection"
           />
         </div>
-        <div
-          v-if="project.id !== allProjectsId && feedbackState === feedbackStates.NO_FEEDBACK"
-          class="project-feedback"
-        >
-          <div style="color: #000">Click New button to review this project</div>
+      </div>
+    </mq-layout>
+    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
+      <div class="feedback-page-content">
+        <div class="feedback-page-content-left" v-if="showOverview">
+          <div class="feedback-page-content-left-header">
+            <div class="feedback-page-content-left-header-text">{{$t('feedback.feedback')}}</div>
+            <Button
+              v-if="project.id !== defaultValue"
+              type="primary"
+              class="feedback-page-content-left-header-new"
+              @click="onClickNew"
+            >{{$t('feedback.new')}}</Button>
+            <Button
+              type="primary"
+              class="feedback-page-content-left-header-dashboard"
+              @click="onClickChangeSection"
+            >{{$t('feedback.dashboard')}}</Button>
+          </div>
+          <div class="feedback-page-content-left-section">
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <ProjectFeedback
+              v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
+              :sections="surveySections"
+              :ratings="ratings"
+              @ratechange="handleRateChange"
+              @submitProject="handleSubmitProject"
+              :state="feedbackState"
+              :event="eventName"
+              :review="review"
+            />
+            <div
+              v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
+            >{{$t('feedback.new-feedback')}}</div>
+          </div>
+        </div>
+        <div class="feedback-page-content-right" v-if="!showOverview">
+          <div class="feedback-page-content-right-header">
+            <div class="feedback-page-content-right-header-text">{{$t('feedback.dashboard')}}</div>
+            <Button
+              type="primary"
+              class="feedback-page-content-right-header-feedback"
+              @click="onClickChangeSection"
+            >{{$t('feedback.feedback')}}</Button>
+          </div>
+          <Dashboard
+            :sections="sections"
+            :overviewData="overviewData"
+            :historyData="historyData"
+            @changeOverviewSection="changeOverviewSection"
+            @changeHistorySection="changeHistorySection"
+          />
         </div>
       </div>
-      <div class="feedback-page-content-right" v-if="showDashboard">
-        <div class="feedback-page-content-right-header">
-          <div>DASHBOARD</div>
-          <Button
-            type="primary"
-            class="feedback-page-content-right-header-button"
-            @click="onClick"
-          >Feedback</Button>
-        </div>
-        <Dashboard
-          :sections="sections"
-          :pieChartData="pieChartData"
-          :lineChartData="lineChartData"
-          @changeOverviewSection="changeOverviewSection"
-          @changeHistorySection="changeHistorySection"
-        />
-      </div>
-    </div>
+    </mq-layout>
   </div>
 </template>
 
@@ -62,59 +111,88 @@
 import { message, Button } from "ant-design-vue";
 import moment from "moment";
 
+import Dashboard from "./Dashboard";
 import Loading from "./Loading";
 import Menu from "./Menu";
-import Dashboard from "./Dashboard";
-import Overview from "./Overview";
+import OverviewTable from "./OverviewTable";
 import ProjectFeedback from "./ProjectFeedback";
-// import SubmittedProject from "./SubmittedProject";
 
-import { END_POINT, DASHBOARD_LABELS_LIST } from "../config";
+import { request } from "../api";
 import {
-  FEEDBACK_STATUS,
+  END_POINT,
+  DASHBOARD_LABELS_LIST,
+  DEFAULT,
+  SCREEN_BREAK_POINTS_DEFINITION,
   RATINGS,
   USER_ID,
-  ALL_PROJECTS,
   FEEDBACK_STATE
 } from "../config";
 
+const DATE_FORMAT = "YYYY-MM-DD";
+
 export default {
   name: "FeedbackPage",
+  components: {
+    Button,
+    Dashboard,
+    Loading,
+    Menu,
+    OverviewTable,
+    ProjectFeedback
+  },
+  data: () => {
+    return {
+      projects: [],
+      project: {
+        id: DEFAULT,
+        projectName: DEFAULT
+      },
+      screenBreakpoints: SCREEN_BREAK_POINTS_DEFINITION,
+      defaultValue: DEFAULT,
+      sections: [],
+      ratings: [],
+      surveys: [],
+      survey: {},
+      message,
+      isLoading: true,
+      showOverview: true,
+      overviewData: [],
+      historyData: [],
+      surveySections: [],
+      feedbackStates: FEEDBACK_STATE,
+      feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
+      key: Math.random(),
+      eventName: "",
+      review: ""
+    };
+  },
   mounted() {
-    window.addEventListener("resize", this.myEventHandler);
-    window.dispatchEvent(new Event("resize"));
     Promise.all([
-      fetch(`${END_POINT}/api/projects`).then(res => res.json()),
-      fetch(`${END_POINT}/api/sections`).then(res => res.json()),
-      fetch(`${END_POINT}/api/surveys`).then(res => res.json()),
-      fetch(`${END_POINT}/api/dashboard/projects/summary`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(res => res.json()),
-      fetch(`${END_POINT}/api/dashboard/projects/history`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(res => res.json())
+      request(`${END_POINT}/api/projects`),
+      request(`${END_POINT}/api/sections`),
+      request(`${END_POINT}/api/surveys`),
+      request(`${END_POINT}/api/dashboard/projects/summary`, {
+        method: "POST"
+      }),
+      request(`${END_POINT}/api/dashboard/projects/history`, {
+        method: "POST"
+      })
     ])
-      .then(([projects, sections, surveys, pieChartData, lineChartData]) => {
+      .then(([projects, sections, surveys, overviewData, historyData]) => {
         if (sections && sections.length > 0) {
           this.sections = sections;
         }
 
-        if (pieChartData) {
-          this.pieChartData = DASHBOARD_LABELS_LIST.map(
-            item => pieChartData[item]
+        if (overviewData) {
+          this.overviewData = DASHBOARD_LABELS_LIST.map(
+            item => overviewData[item]
           );
         }
 
-        if (lineChartData) {
-          this.lineChartData = [
-            lineChartData.sort((a, b) => {
-              return moment(a.date, "YYYY-MM-DD") < moment(b.date, "YYYY-MM-DD")
+        if (historyData) {
+          this.historyData = [
+            historyData.sort((a, b) => {
+              return moment(a.date, DATE_FORMAT) < moment(b.date, DATE_FORMAT)
                 ? -1
                 : 1;
             })
@@ -122,6 +200,7 @@ export default {
         }
 
         this.ratings = RATINGS;
+
         if (projects && projects.length > 0) {
           this.projects = projects;
         }
@@ -132,73 +211,44 @@ export default {
 
         this.isLoading = false;
       })
+      .then(() => {
+        if (this.sections.length > 0) {
+          this.isLoading = true;
+          Promise.all(
+            this.sections.map(section =>
+              request(`${END_POINT}/api/dashboard/projects/summary`, {
+                method: "POST",
+                body: JSON.stringify({
+                  sectionId: section.id
+                })
+              })
+            )
+          )
+            .then(values => {
+              this.sections = this.sections.map((section, idx) => ({
+                ...section,
+                ...values[idx]
+              }));
+              this.isLoading = false;
+            })
+            .catch(e => {
+              throw e;
+            });
+        }
+      })
       .catch(e => {
         this.isLoading = false;
         this.message.error(e);
       });
   },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.myEventHandler);
-  },
-  components: {
-    Loading,
-    Menu,
-    Dashboard,
-    Overview,
-    ProjectFeedback,
-    // SubmittedProject,
-    Button
-  },
-  data: () => {
-    return {
-      sections: [],
-      projects: [],
-      ratings: [],
-      project: {
-        id: ALL_PROJECTS,
-        name: ALL_PROJECTS
-      },
-      selectedSections: [],
-      message,
-      isLoading: true,
-      feedbackStatus: FEEDBACK_STATUS,
-      status: FEEDBACK_STATUS.DRAFT,
-      allProjectsId: ALL_PROJECTS,
-      showDashboard: false,
-      showOverview: true,
-      pieChartData: [],
-      lineChartData: [],
-      surveys: [],
-      survey: {},
-      feedbackStates: FEEDBACK_STATE,
-      feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
-      historySections: ["overview"],
-      overviewSection: "default",
-      eventName: "",
-      review: ""
-    };
-  },
   methods: {
-    myEventHandler(e) {
-      if (e.target.innerWidth <= 768) {
-        if (this.showOverview) {
-          this.showDashboard = false;
-        }
-        // this.showOverview = true;
-      } else {
-        this.showDashboard = true;
-        this.showOverview = true;
-      }
-    },
-
-    onClick() {
-      this.showDashboard = !this.showDashboard;
+    onClickChangeSection() {
       this.showOverview = !this.showOverview;
     },
 
     onClickNew() {
       this.feedbackState = FEEDBACK_STATE.NEW_FEEDBACK;
-      this.selectedSections = this.survey.sections.map(section => {
+      this.surveySections = this.survey.sections.map(section => {
         return {
           ...section,
           title: this.sections.find(item => item.id === section.sectionId).title
@@ -207,74 +257,54 @@ export default {
     },
 
     handleSelectProject({ id }) {
-      let selectedProject;
-      if (id === ALL_PROJECTS) {
+      if (id === DEFAULT) {
         this.project = {
-          id: ALL_PROJECTS,
-          name: ALL_PROJECTS
+          id: DEFAULT,
+          projectName: DEFAULT
         };
       } else {
-        selectedProject = this.projects.find(p => p.id === id);
+        const selectedProject = this.projects.find(p => p.id === id);
         this.isLoading = true;
         this.project = {
-          name: selectedProject.projectName,
+          projectName: selectedProject.projectName,
           id: selectedProject.id
         };
         if (this.surveys.length > 0) {
+          // temporary get survey for project
           const surveyId = this.surveys[0].id;
-          Promise.all(
-            [
-              fetch(
-                `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
-              ).then(res => res.json()),
-              fetch(
-                `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
-              ).then(res => res.json()),
-              fetch(`${END_POINT}/api/dashboard/projects/summary`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  sectionId:
-                    this.overviewSection === "default"
-                      ? null
-                      : this.overviewSection,
-                  projectId:
-                    this.project.id === ALL_PROJECTS ? null : this.project.id
-                })
-              }).then(res => res.json())
-            ].concat(
-              this.historySections.map(section =>
-                fetch(`${END_POINT}/api/dashboard/projects/history`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({
-                    sectionId: section === "overview" ? null : section,
-                    projectId:
-                      this.project.id === ALL_PROJECTS ? null : this.project.id
+          Promise.all([
+            request(
+              `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
+            ),
+            request(
+              `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
+            ),
+            request(`${END_POINT}/api/dashboard/projects/summary`, {
+              method: "POST"
+            }),
+            request(`${END_POINT}/api/dashboard/projects/history`, {
+              method: "POST"
+            })
+          ])
+            .then(([survey, feedback, overviewData, historyData]) => {
+              this.overviewData = DASHBOARD_LABELS_LIST.map(
+                item => overviewData[item]
+              );
+
+              if (historyData) {
+                this.historyData = [
+                  historyData.sort((a, b) => {
+                    return moment(a.date, DATE_FORMAT) <
+                      moment(b.date, DATE_FORMAT)
+                      ? -1
+                      : 1;
                   })
-                }).then(res => res.json())
-              )
-            )
-          )
-            .then(values => {
-              const [survey, feedback, pieChartData, ...lineChartData] = values;
-              this.pieChartData = DASHBOARD_LABELS_LIST.map(
-                item => pieChartData[item]
-              );
-              this.lineChartData = lineChartData.map(val =>
-                val.sort((a, b) => {
-                  return moment(a.date, "YYYY-MM-DD") <
-                    moment(b.date, "YYYY-MM-DD")
-                    ? -1
-                    : 1;
-                })
-              );
+                ];
+              }
+
               this.survey = { ...survey, id: surveyId };
-              this.selectedSections = survey.sections.map(section => {
+
+              this.surveySections = survey.sections.map(section => {
                 return {
                   ...section,
                   title: this.sections.find(
@@ -282,11 +312,12 @@ export default {
                   ).title
                 };
               });
+
               if (feedback) {
                 this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
                 this.review = feedback.review;
 
-                this.selectedSections = this.selectedSections.map(section => {
+                this.surveySections = this.surveySections.map(section => {
                   return {
                     ...section,
                     questions: section.questions.map(q => {
@@ -302,6 +333,8 @@ export default {
                   };
                 });
               }
+              // trigger re-mount overview dashboard
+              this.key = Math.random()
               this.isLoading = false;
             })
             .catch(e => {
@@ -315,7 +348,7 @@ export default {
     },
 
     handleRateChange({ sectionId, questionId, rating }) {
-      this.selectedSections = this.selectedSections.map(s => {
+      this.surveySections = this.surveySections.map(s => {
         if (s.sectionId === sectionId) {
           return {
             ...s,
@@ -335,15 +368,15 @@ export default {
     },
 
     handleSubmitProject({ event, review }) {
-      const { project, selectedSections } = this;
+      const { project, surveySections } = this;
       this.isLoading = true;
-      const request = {
+      const requestBody = {
         userId: USER_ID,
         surveyId: this.survey.id,
         projectId: project.id,
         review,
         event,
-        ratings: selectedSections.map(s => ({
+        ratings: surveySections.map(s => ({
           sectionId: s.sectionId,
           questions: s.questions.map(q => ({
             questionId: q.questionId,
@@ -351,23 +384,17 @@ export default {
           }))
         }))
       };
-      fetch(`${END_POINT}/api/feedbacks/submit`, {
+
+      request(`${END_POINT}/api/feedbacks/submit`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(request)
+        body: JSON.stringify(requestBody)
       })
-        .then(res => {
+        .then(() => {
           this.isLoading = false;
           this.eventName = event;
           this.review = review;
-          if (res.ok) {
-            this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-            this.message.success("Thanks for your review");
-          } else {
-            this.message.error(res.statusText);
-          }
+          this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+          this.message.success("Thanks for your review");
         })
         .catch(e => {
           this.isLoading = false;
@@ -378,19 +405,15 @@ export default {
     changeOverviewSection({ sectionId }) {
       this.isLoading = true;
       this.overviewSection = sectionId;
-      fetch(`${END_POINT}/api/dashboard/projects/summary`, {
+      request(`${END_POINT}/api/dashboard/projects/summary`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({
-          sectionId: sectionId === "default" ? null : sectionId,
-          projectId: this.project.id === ALL_PROJECTS ? null : this.project.id
+          sectionId: sectionId === DEFAULT ? null : sectionId,
+          projectId: this.project.id === DEFAULT ? null : this.project.id
         })
       })
-        .then(res => res.json())
         .then(data => {
-          this.pieChartData = DASHBOARD_LABELS_LIST.map(item => data[item]);
+          this.overviewData = DASHBOARD_LABELS_LIST.map(item => data[item]);
           this.isLoading = false;
         })
         .catch(e => {
@@ -404,22 +427,18 @@ export default {
       this.historySections = sections;
       Promise.all(
         sections.map(section =>
-          fetch(`${END_POINT}/api/dashboard/projects/history`, {
+          request(`${END_POINT}/api/dashboard/projects/history`, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
             body: JSON.stringify({
-              sectionId: section === "overview" ? null : section,
-              projectId:
-                this.project.id === ALL_PROJECTS ? null : this.project.id
+              sectionId: section === DEFAULT ? null : section,
+              projectId: this.project.id === DEFAULT ? null : this.project.id
             })
-          }).then(res => res.json())
+          })
         )
       )
         .then(values => {
           if (values) {
-            this.lineChartData = values.map(val =>
+            this.historyData = values.map(val =>
               val.sort((a, b) => {
                 return moment(a.date, "YYYY-MM-DD") <
                   moment(b.date, "YYYY-MM-DD")
@@ -440,40 +459,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.feedback-page-wrapper:focus {
-  outline: none;
-}
-
-@media screen and (min-width: $desktop-width) {
-  .feedback-page-wrapper {
-    .feedback-page-content {
-      margin-left: $side-menu-width;
-    }
-  }
-}
-
-@media screen and (max-width: $tablet-width) {
-  .feedback-page-wrapper {
-    .feedback-page-content {
-      .feedback-page-content-left {
-        width: 100% !important;
-
-        .feedback-page-content-left-header-button {
-          display: block !important;
-        }
-      }
-
-      .feedback-page-content-right {
-        width: 100% !important;
-
-        .feedback-page-content-right-header-button {
-          display: block !important;
-        }
-      }
-    }
-  }
-}
-
 .feedback-page-wrapper {
   .feedback-page-content {
     padding-top: $header-height;
@@ -482,47 +467,50 @@ export default {
     .feedback-page-content-left {
       width: 50%;
       margin: 20px 10px auto 10px;
-      overflow-y: auto;
 
       .feedback-page-content-left-header {
-        display: flex;
-        justify-content: space-between;
-        color: #000;
-        margin-bottom: 40px;
+        @include header-wrapper;
 
-        .feedback-page-content-left-header-button {
-          display: none;
-          margin-left: 10px;
+        .feedback-page-content-left-header-text {
+          @include header-text;
         }
-      }
 
-      .feedback-page-content-left-header > div {
-        font-size: 30px;
-        font-weight: 500;
+        .feedback-page-content-left-header-new {
+          text-transform: uppercase;
+          margin-right: 20px;
+        }
       }
     }
 
     .feedback-page-content-right {
       width: 50%;
       margin: 20px 10px auto 10px;
-      overflow-y: auto;
 
       .feedback-page-content-right-header {
-        display: flex;
-        justify-content: space-between;
-        color: #000;
-        margin-bottom: 40px;
+        @include header-wrapper;
 
-        .feedback-page-content-right-header-button {
-          display: none;
+        .feedback-page-content-right-header-text {
+          @include header-text;
         }
       }
+    }
 
-      .feedback-page-content-right-header > div {
-        font-size: 30px;
-        font-weight: 500;
+    @media screen and (max-width: $tablet-width) {
+      .feedback-page-content-left,
+      .feedback-page-content-right {
+        width: 100% !important;
       }
     }
   }
+
+  @media screen and (min-width: $desktop-width) {
+    .feedback-page-content {
+      margin-left: $side-menu-width;
+    }
+  }
+}
+
+.feedback-page-wrapper:focus {
+  outline: none;
 }
 </style>

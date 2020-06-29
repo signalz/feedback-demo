@@ -3,27 +3,27 @@
     <BarMenu
       class="bar-menu"
       v-bind:class="{sideBarOpen: isOpen}"
-      :selectedProject="projectName"
+      :project="projectName"
       :isOpen="isOpen"
-      :eventName="eventName"
+      :event="eventName"
       @open="handleBarMenu"
     />
     <SideMenu
       class="side-menu"
       v-bind:class="{visible: isOpen}"
       :projects="projects"
-      :selectedProject="selectedProject.id"
+      :selectedProject="selectedProject"
       @selectProject="handleSelectProject"
     />
     <Loading :isSpin="false" v-if="isOpen" class="menu-loading-wrapper" />
   </div>
 </template>
 <script>
+import { DEFAULT } from "../config";
+
 import BarMenu from "./BarMenu";
 import Loading from "./Loading";
 import SideMenu from "./SideMenu";
-
-import { ALL_PROJECTS } from "../config";
 
 export default {
   name: "Menu",
@@ -34,7 +34,7 @@ export default {
   },
   computed: {
     projectName: function() {
-      return this.selectedProject.name === ALL_PROJECTS ? '' : this.selectedProject.name
+      return this.selectedProject.id === DEFAULT ? '' : this.selectedProject.projectName
     }
   },
   props: {
@@ -48,8 +48,8 @@ export default {
       type: Object,
       default: () => {
         return {
-          name: '',
-          id: '',
+          projectName: String,
+          id: String,
         };
       }
     },

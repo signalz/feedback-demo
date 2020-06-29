@@ -4,14 +4,14 @@
       <div class="dashboards-overview">
         <OverviewDashboard
           :sections="sections"
-          :data="pieChartData"
+          :data="overviewData"
           @changeSection="handleChangeSection"
         />
       </div>
       <div>
         <HistoryDashboard
           :sections="sections"
-          :data="lineChartData"
+          :data="historyData"
           @changeSection="handleChangeSectionHistory"
         />
       </div>
@@ -31,8 +31,8 @@ export default {
   },
   props: {
     sections: Array,
-    pieChartData: Array,
-    lineChartData: Array
+    overviewData: Array,
+    historyData: Array
   },
   methods: {
     handleChangeSection({ sectionId }) {

@@ -5,13 +5,13 @@
       <div class="side-menu-app-name-second">{{$t('app.name.second')}}</div>
     </div>
     <div class="side-menu-project-manager">
-      <div class="side-menu-project-manager-label">{{$t('sideMenu.manager')}}</div>
+      <div class="side-menu-project-manager-label">{{$t('menu.side.manager')}}</div>
       <div class="side-menu-project-manager-name">{{manager}}</div>
     </div>
     <div class="side-menu-search">
       <div class="side-menu-search-box">
-        <div>{{$t('sideMenu.yourProjects')}}</div>
-        <input :placeholder="$t('sideMenu.searchProject')" @input="debounceInput" />
+        <div>{{$t('menu.side.projects-list')}}</div>
+        <input :placeholder="$t('menu.side.projects-search')" @input="debounceInput" />
       </div>
       <div class="side-menu-projects">
         <SelectableItem
@@ -19,14 +19,14 @@
           :key="project.id"
           :name="project.projectName"
           :id="project.id"
-          :selected="project.id === selectedProject"
+          :selected="project.id === selectedProject.id"
           @itemSelect="handleProjectSelect"
         />
         <SelectableItem
-          :key="allProjectsId"
-          name="All projects"
-          :id="allProjectsId"
-          :selected="selectedProject === allProjectsId"
+          :key="defaultValue"
+          :name="$t('menu.side.project-all')"
+          :id="defaultValue"
+          :selected="selectedProject.id === defaultValue"
           @itemSelect="handleProjectSelect"
         />
       </div>
@@ -35,8 +35,8 @@
 </template>
 
 <script>
+import { DEFAULT } from "../config";
 import SelectableItem from "./SelectableItem";
-import { ALL_PROJECTS } from "../config";
 
 export default {
   name: "SideMenu",
@@ -45,14 +45,22 @@ export default {
   },
   props: {
     projects: Array,
-    selectedProject: String,
-    manager: String,
+    selectedProject: {
+      type: Object,
+      default: () => {
+        return {
+          id: String,
+          projectName: String
+        };
+      }
+    },
+    manager: String
   },
   data: () => {
     return {
       filterKey: "",
       timeout: undefined,
-      allProjectsId: ALL_PROJECTS
+      defaultValue: DEFAULT
     };
   },
   methods: {
