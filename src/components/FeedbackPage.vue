@@ -41,6 +41,7 @@
             <div class="feedback-page-content-right-header-text">{{$t('feedback.dashboard')}}</div>
           </div>
           <Dashboard
+            :key="key"
             :sections="sections"
             :overviewData="overviewData"
             :historyData="historyData"
@@ -121,13 +122,9 @@ import {
   END_POINT,
   DASHBOARD_LABELS_LIST,
   DEFAULT,
-  SCREEN_BREAK_POINTS_DEFINITION
-} from "../config";
-import {
-  FEEDBACK_STATUS,
+  SCREEN_BREAK_POINTS_DEFINITION,
   RATINGS,
   USER_ID,
-  // ALL_PROJECTS,
   FEEDBACK_STATE
 } from "../config";
 
@@ -155,6 +152,7 @@ export default {
       sections: [],
       ratings: [],
       surveys: [],
+      survey: {},
       message,
       isLoading: true,
       showOverview: true,
@@ -163,14 +161,7 @@ export default {
       surveySections: [],
       feedbackStates: FEEDBACK_STATE,
       feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
-
-      feedbackStatus: FEEDBACK_STATUS,
-      status: FEEDBACK_STATUS.DRAFT,
-      // allProjectsId: ALL_PROJECTS,
-      showDashboard: false,
-      survey: {},
-      historySections: ["overview"],
-      overviewSection: "default",
+      key: Math.random(),
       eventName: "",
       review: ""
     };
@@ -278,7 +269,6 @@ export default {
           projectName: selectedProject.projectName,
           id: selectedProject.id
         };
-        console.log(this.project)
         if (this.surveys.length > 0) {
           // temporary get survey for project
           const surveyId = this.surveys[0].id;
@@ -343,6 +333,8 @@ export default {
                   };
                 });
               }
+              // trigger re-mount overview dashboard
+              this.key = Math.random()
               this.isLoading = false;
             })
             .catch(e => {

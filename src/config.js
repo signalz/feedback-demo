@@ -61,13 +61,6 @@ export const RATINGS = [
   }
 ];
 
-export const FEEDBACK_STATUS = {
-  DRAFT: "DRAFT",
-  SUBMITTED: "SUBMITTED"
-};
-
-export const ALL_PROJECTS = 'all_projects'
-
 export const FEEDBACK_STATE = {
   NO_FEEDBACK: 'no-feedback',
   LAST_FEEDBACK: 'last-feedback',

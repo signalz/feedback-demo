@@ -61,15 +61,11 @@ export default {
   },
   watch: {
     state(val) {
-      console.log('????=======')
       if (val === FEEDBACK_STATE.NEW_FEEDBACK) {
         this.eventName = "";
         this.reviewText = "";
       }
     }
-  },
-  mounted() {
-    console.log(this.review, '????>>>>>>>>>>')
   },
   props: {
     sections: Array,
@@ -87,7 +83,9 @@ export default {
   },
   methods: {
     handleRateChange({ sectionId }, { rating, questionId }) {
-      this.$emit("ratechange", { sectionId, rating, questionId });
+      if (this.feedbackStates.LAST_FEEDBACK !== this.state) {
+        this.$emit("ratechange", { sectionId, rating, questionId });
+      }
     },
 
     handleSubmit() {
