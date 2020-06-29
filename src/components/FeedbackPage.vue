@@ -1,60 +1,108 @@
 <template>
-  <div tabindex="0" @keydown.esc="handleEsc" class="feedback-page-wrapper">
-    <Menu :projects="projects" :selectedProject="project" @selectProject="handleSelectProject" :eventName="eventName" />
+  <div class="feedback-page-wrapper">
+    <Menu
+      :projects="projects"
+      :selectedProject="project"
+      @selectProject="handleSelectProject"
+      :eventName="eventName"
+    />
     <Loading isSpin v-if="isLoading" />
-    <div class="feedback-page-content">
-      <div class="feedback-page-content-left" v-if="showOverview">
-        <div class="feedback-page-content-left-header">
-          <div>FEEDBACK</div>
-          <div style="display: flex">
-            <Button type="primary" @click="onClickNew" v-if="project.id !== allProjectsId">New</Button>
+    <mq-layout :mq="`${screenBreakpoints.md}+`">
+      <div class="feedback-page-content">
+        <div class="feedback-page-content-left">
+          <div class="feedback-page-content-left-header">
+            <div class="feedback-page-content-left-header-text">{{$t('feedback.feedback')}}</div>
             <Button
+              v-if="project.id !== defaultValue"
               type="primary"
-              class="feedback-page-content-left-header-button"
-              @click="onClick"
-            >Dashboard</Button>
+              class="feedback-page-content-left-header-new"
+              @click="onClickNew"
+            >{{$t('feedback.new')}}</Button>
+          </div>
+          <div class="feedback-page-content-left-section">
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <ProjectFeedback
+              v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
+              :sections="selectedSections"
+              :ratings="ratings"
+              @ratechange="handleRateChange"
+              @submitProject="handleSubmitProject"
+              :state="feedbackState"
+              :event="eventName"
+              :review="review"
+            />
+            <div
+              v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
+            >{{$t('feedback.new-feedback')}}</div>
           </div>
         </div>
-        <OverviewTable :sections="sections" v-if="project.id === allProjectsId" />
-        <div
-          v-if="project.id !== allProjectsId && feedbackState !== feedbackStates.NO_FEEDBACK"
-          class="project-feedback"
-        >
-          <ProjectFeedback
-            :sections="selectedSections"
-            :ratings="ratings"
-            @ratechange="handleRateChange"
-            @submitProject="handleSubmitProject"
-            :state="feedbackState"
-            :event="eventName"
-            :review="review"
+        <div class="feedback-page-content-right">
+          <div class="feedback-page-content-right-header">
+            <div class="feedback-page-content-right-header-text">{{$t('feedback.dashboard')}}</div>
+          </div>
+          <Dashboard
+            :sections="sections"
+            :pieChartData="pieChartData"
+            :lineChartData="lineChartData"
+            @changeOverviewSection="changeOverviewSection"
+            @changeHistorySection="changeHistorySection"
           />
         </div>
-        <div
-          v-if="project.id !== allProjectsId && feedbackState === feedbackStates.NO_FEEDBACK"
-          class="project-feedback"
-        >
-          <div style="color: #000">Click New button to review this project</div>
+      </div>
+    </mq-layout>
+    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
+      <div class="feedback-page-content">
+        <div class="feedback-page-content-left" v-if="showOverview">
+          <div class="feedback-page-content-left-header">
+            <div class="feedback-page-content-left-header-text">{{$t('feedback.feedback')}}</div>
+            <Button
+              v-if="project.id !== defaultValue"
+              type="primary"
+              class="feedback-page-content-left-header-new"
+              @click="onClickNew"
+            >{{$t('feedback.new')}}</Button>
+            <Button
+              type="primary"
+              class="feedback-page-content-left-header-dashboard"
+              @click="onClickChangeSection"
+            >{{$t('feedback.dashboard')}}</Button>
+          </div>
+          <div class="feedback-page-content-left-section">
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <ProjectFeedback
+              v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
+              :sections="selectedSections"
+              :ratings="ratings"
+              @ratechange="handleRateChange"
+              @submitProject="handleSubmitProject"
+              :state="feedbackState"
+              :event="eventName"
+              :review="review"
+            />
+            <div
+              v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
+            >{{$t('feedback.new-feedback')}}</div>
+          </div>
+        </div>
+        <div class="feedback-page-content-right" v-if="!showOverview">
+          <div class="feedback-page-content-right-header">
+            <div class="feedback-page-content-right-header-text">{{$t('feedback.dashboard')}}</div>
+            <Button
+              type="primary"
+              class="feedback-page-content-right-header-feedback"
+              @click="onClickChangeSection"
+            >{{$t('feedback.feedback')}}</Button>
+          </div>
+          <Dashboard
+            :sections="sections"
+            :pieChartData="pieChartData"
+            :lineChartData="lineChartData"
+            @changeOverviewSection="changeOverviewSection"
+            @changeHistorySection="changeHistorySection"
+          />
         </div>
       </div>
-      <div class="feedback-page-content-right" v-if="showDashboard">
-        <div class="feedback-page-content-right-header">
-          <div>DASHBOARD</div>
-          <Button
-            type="primary"
-            class="feedback-page-content-right-header-button"
-            @click="onClick"
-          >Feedback</Button>
-        </div>
-        <Dashboard
-          :sections="sections"
-          :pieChartData="pieChartData"
-          :lineChartData="lineChartData"
-          @changeOverviewSection="changeOverviewSection"
-          @changeHistorySection="changeHistorySection"
-        />
-      </div>
-    </div>
+    </mq-layout>
   </div>
 </template>
 
@@ -62,14 +110,19 @@
 import { message, Button } from "ant-design-vue";
 import moment from "moment";
 
+import Dashboard from "./Dashboard";
 import Loading from "./Loading";
 import Menu from "./Menu";
-import Dashboard from "./Dashboard";
 import OverviewTable from "./OverviewTable";
 import ProjectFeedback from "./ProjectFeedback";
-// import SubmittedProject from "./SubmittedProject";
 
-import { END_POINT, DASHBOARD_LABELS_LIST, DEFAULT } from "../config";
+import { request } from "../api";
+import {
+  END_POINT,
+  DASHBOARD_LABELS_LIST,
+  DEFAULT,
+  SCREEN_BREAK_POINTS_DEFINITION
+} from "../config";
 import {
   FEEDBACK_STATUS,
   RATINGS,
@@ -81,24 +134,16 @@ import {
 export default {
   name: "FeedbackPage",
   mounted() {
-    window.addEventListener("resize", this.myEventHandler);
-    window.dispatchEvent(new Event("resize"));
     Promise.all([
-      fetch(`${END_POINT}/api/projects`).then(res => res.json()),
-      fetch(`${END_POINT}/api/sections`).then(res => res.json()),
-      fetch(`${END_POINT}/api/surveys`).then(res => res.json()),
-      fetch(`${END_POINT}/api/dashboard/projects/summary`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(res => res.json()),
-      fetch(`${END_POINT}/api/dashboard/projects/history`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(res => res.json())
+      request(`${END_POINT}/api/projects`),
+      request(`${END_POINT}/api/sections`),
+      request(`${END_POINT}/api/surveys`),
+      request(`${END_POINT}/api/dashboard/projects/summary`, {
+        method: "POST"
+      }),
+      request(`${END_POINT}/api/dashboard/projects/history`, {
+        method: "POST"
+      })
     ])
       .then(([projects, sections, surveys, pieChartData, lineChartData]) => {
         if (sections && sections.length > 0) {
@@ -137,16 +182,13 @@ export default {
         this.message.error(e);
       });
   },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.myEventHandler);
-  },
   components: {
     Button,
     Dashboard,
     Loading,
     Menu,
     OverviewTable,
-    ProjectFeedback,
+    ProjectFeedback
   },
   data: () => {
     return {
@@ -155,17 +197,19 @@ export default {
         id: DEFAULT,
         projectName: DEFAULT
       },
-
+      screenBreakpoints: SCREEN_BREAK_POINTS_DEFINITION,
+      defaultValue: DEFAULT,
       sections: [],
       ratings: [],
-      selectedSections: [],
       message,
       isLoading: true,
+      showOverview: true,
+
+      selectedSections: [],
       feedbackStatus: FEEDBACK_STATUS,
       status: FEEDBACK_STATUS.DRAFT,
       allProjectsId: ALL_PROJECTS,
       showDashboard: false,
-      showOverview: true,
       pieChartData: [],
       lineChartData: [],
       surveys: [],
@@ -179,20 +223,7 @@ export default {
     };
   },
   methods: {
-    myEventHandler(e) {
-      if (e.target.innerWidth <= 768) {
-        if (this.showOverview) {
-          this.showDashboard = false;
-        }
-        // this.showOverview = true;
-      } else {
-        this.showDashboard = true;
-        this.showOverview = true;
-      }
-    },
-
-    onClick() {
-      this.showDashboard = !this.showDashboard;
+    onClickChangeSection() {
       this.showOverview = !this.showOverview;
     },
 
@@ -440,40 +471,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.feedback-page-wrapper:focus {
-  outline: none;
-}
-
-@media screen and (min-width: $desktop-width) {
-  .feedback-page-wrapper {
-    .feedback-page-content {
-      margin-left: $side-menu-width;
-    }
-  }
-}
-
-@media screen and (max-width: $tablet-width) {
-  .feedback-page-wrapper {
-    .feedback-page-content {
-      .feedback-page-content-left {
-        width: 100% !important;
-
-        .feedback-page-content-left-header-button {
-          display: block !important;
-        }
-      }
-
-      .feedback-page-content-right {
-        width: 100% !important;
-
-        .feedback-page-content-right-header-button {
-          display: block !important;
-        }
-      }
-    }
-  }
-}
-
 .feedback-page-wrapper {
   .feedback-page-content {
     padding-top: $header-height;
@@ -482,47 +479,50 @@ export default {
     .feedback-page-content-left {
       width: 50%;
       margin: 20px 10px auto 10px;
-      overflow-y: auto;
 
       .feedback-page-content-left-header {
-        display: flex;
-        justify-content: space-between;
-        color: #000;
-        margin-bottom: 40px;
+        @include header-wrapper;
 
-        .feedback-page-content-left-header-button {
-          display: none;
-          margin-left: 10px;
+        .feedback-page-content-left-header-text {
+          @include header-text;
         }
-      }
 
-      .feedback-page-content-left-header > div {
-        font-size: 30px;
-        font-weight: 500;
+        .feedback-page-content-left-header-new {
+          text-transform: uppercase;
+          margin-right: 20px;
+        }
       }
     }
 
     .feedback-page-content-right {
       width: 50%;
       margin: 20px 10px auto 10px;
-      overflow-y: auto;
 
       .feedback-page-content-right-header {
-        display: flex;
-        justify-content: space-between;
-        color: #000;
-        margin-bottom: 40px;
+        @include header-wrapper;
 
-        .feedback-page-content-right-header-button {
-          display: none;
+        .feedback-page-content-right-header-text {
+          @include header-text;
         }
       }
+    }
 
-      .feedback-page-content-right-header > div {
-        font-size: 30px;
-        font-weight: 500;
+    @media screen and (max-width: $tablet-width) {
+      .feedback-page-content-left,
+      .feedback-page-content-right {
+        width: 100% !important;
       }
     }
   }
+
+  @media screen and (min-width: $desktop-width) {
+    .feedback-page-content {
+      margin-left: $side-menu-width;
+    }
+  }
+}
+
+.feedback-page-wrapper:focus {
+  outline: none;
 }
 </style>

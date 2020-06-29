@@ -51,6 +51,10 @@
     "event-label": "Last evaluation event:"
   },
   "feedback": {
+    "feedback": "Feedback",
+    "new": "new",
+    "new-feedback": "Click New button to review this project",
+    "dashboard": "Dashboard",
     "esc": "ESC",
     "header": "Provide feedback",
     "submit": "Submit"

@@ -10,3 +10,17 @@ $extra-small-phone-width: 360px;
 
 $side-menu-width: 300px;
 $minimum-side-menu-width: 250px;
+
+@mixin header-text {
+  font-size: 30px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-right: 20px;
+}
+
+@mixin header-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+  color: #000;
+}

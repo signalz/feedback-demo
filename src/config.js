@@ -1,6 +1,24 @@
 export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
 export const USER_ID = "1234";
 
+export const SCREEN_BREAK_POINTS_DEFINITION = {
+  xxs: 'xxs',
+  xs: 'xs',
+  sm: 'sm',
+  md: 'md',
+  lg: 'lg',
+  xl: 'xl'
+}
+
+export const SCREEN_BREAK_POINTS_VALUE = {
+  xxs: 360,
+  xs: 576,
+  sm: 768,
+  md: 992,
+  lg: 1200,
+  xl: Infinity
+}
+
 export const DASHBOARD_LABELS_LIST = ["BRONZE", "SILVER", "GOLD", "PLATINUM"];
 
 export const DASHBOARD_PIE_COLORS = [
