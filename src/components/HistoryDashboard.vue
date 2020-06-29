@@ -63,12 +63,12 @@ export default {
   methods: {
     onChangeCheckboxes(value) {
       this.checkboxesValues = value;
-      this.$emit("changeSection", { sections: this.value });
+      this.$emit("changeSection", { sections: this.checkboxesValues });
     },
 
     onSelectAll() {
-      this.value = this.sections.map(section => section.id).concat(DEFAULT);
-      this.$emit("changeSection", { sections: this.value });
+      this.checkboxesValues = this.sections.map(section => section.id).concat(DEFAULT);
+      this.$emit("changeSection", { sections: this.checkboxesValues });
     }
   },
   computed: {

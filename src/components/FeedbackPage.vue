@@ -404,7 +404,6 @@ export default {
 
     changeOverviewSection({ sectionId }) {
       this.isLoading = true;
-      this.overviewSection = sectionId;
       request(`${END_POINT}/api/dashboard/projects/summary`, {
         method: "POST",
         body: JSON.stringify({
@@ -424,7 +423,6 @@ export default {
 
     changeHistorySection({ sections }) {
       this.isLoading = true;
-      this.historySections = sections;
       Promise.all(
         sections.map(section =>
           request(`${END_POINT}/api/dashboard/projects/history`, {
