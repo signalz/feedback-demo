@@ -17,10 +17,10 @@
     </Row>
     <Row v-for="section in sections" :key="section.id" class="overview-table-row">
       <Col class="overview-table-section" span="8">{{section.title}}</Col>
-      <Col class="overview-table-value" span="4">{{section.bronze || defaultValue}}</Col>
-      <Col class="overview-table-value" span="4">{{section.silver || defaultValue}}</Col>
-      <Col class="overview-table-value" span="4">{{section.gold || defaultValue}}</Col>
-      <Col class="overview-table-value" span="4">{{section.platin || defaultValue}}</Col>
+      <Col class="overview-table-value" span="4">{{section.BRONZE || defaultValue}}</Col>
+      <Col class="overview-table-value" span="4">{{section.SILVER || defaultValue}}</Col>
+      <Col class="overview-table-value" span="4">{{section.GOLD || defaultValue}}</Col>
+      <Col class="overview-table-value" span="4">{{section.PLATINUM || defaultValue}}</Col>
     </Row>
   </div>
 </template>

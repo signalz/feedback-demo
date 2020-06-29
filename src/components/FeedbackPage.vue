@@ -23,7 +23,7 @@
             <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
             <ProjectFeedback
               v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
-              :sections="selectedSections"
+              :sections="surveySections"
               :ratings="ratings"
               @ratechange="handleRateChange"
               @submitProject="handleSubmitProject"
@@ -42,8 +42,8 @@
           </div>
           <Dashboard
             :sections="sections"
-            :pieChartData="pieChartData"
-            :lineChartData="lineChartData"
+            :overviewData="overviewData"
+            :historyData="historyData"
             @changeOverviewSection="changeOverviewSection"
             @changeHistorySection="changeHistorySection"
           />
@@ -71,7 +71,7 @@
             <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
             <ProjectFeedback
               v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
-              :sections="selectedSections"
+              :sections="surveySections"
               :ratings="ratings"
               @ratechange="handleRateChange"
               @submitProject="handleSubmitProject"
@@ -95,8 +95,8 @@
           </div>
           <Dashboard
             :sections="sections"
-            :pieChartData="pieChartData"
-            :lineChartData="lineChartData"
+            :overviewData="overviewData"
+            :historyData="historyData"
             @changeOverviewSection="changeOverviewSection"
             @changeHistorySection="changeHistorySection"
           />
@@ -127,61 +127,14 @@ import {
   FEEDBACK_STATUS,
   RATINGS,
   USER_ID,
-  ALL_PROJECTS,
+  // ALL_PROJECTS,
   FEEDBACK_STATE
 } from "../config";
 
+const DATE_FORMAT = "YYYY-MM-DD";
+
 export default {
   name: "FeedbackPage",
-  mounted() {
-    Promise.all([
-      request(`${END_POINT}/api/projects`),
-      request(`${END_POINT}/api/sections`),
-      request(`${END_POINT}/api/surveys`),
-      request(`${END_POINT}/api/dashboard/projects/summary`, {
-        method: "POST"
-      }),
-      request(`${END_POINT}/api/dashboard/projects/history`, {
-        method: "POST"
-      })
-    ])
-      .then(([projects, sections, surveys, pieChartData, lineChartData]) => {
-        if (sections && sections.length > 0) {
-          this.sections = sections;
-        }
-
-        if (pieChartData) {
-          this.pieChartData = DASHBOARD_LABELS_LIST.map(
-            item => pieChartData[item]
-          );
-        }
-
-        if (lineChartData) {
-          this.lineChartData = [
-            lineChartData.sort((a, b) => {
-              return moment(a.date, "YYYY-MM-DD") < moment(b.date, "YYYY-MM-DD")
-                ? -1
-                : 1;
-            })
-          ];
-        }
-
-        this.ratings = RATINGS;
-        if (projects && projects.length > 0) {
-          this.projects = projects;
-        }
-
-        if (surveys && surveys.length > 0) {
-          this.surveys = surveys;
-        }
-
-        this.isLoading = false;
-      })
-      .catch(e => {
-        this.isLoading = false;
-        this.message.error(e);
-      });
-  },
   components: {
     Button,
     Dashboard,
@@ -201,26 +154,101 @@ export default {
       defaultValue: DEFAULT,
       sections: [],
       ratings: [],
+      surveys: [],
       message,
       isLoading: true,
       showOverview: true,
-
-      selectedSections: [],
-      feedbackStatus: FEEDBACK_STATUS,
-      status: FEEDBACK_STATUS.DRAFT,
-      allProjectsId: ALL_PROJECTS,
-      showDashboard: false,
-      pieChartData: [],
-      lineChartData: [],
-      surveys: [],
-      survey: {},
+      overviewData: [],
+      historyData: [],
+      surveySections: [],
       feedbackStates: FEEDBACK_STATE,
       feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
+
+      feedbackStatus: FEEDBACK_STATUS,
+      status: FEEDBACK_STATUS.DRAFT,
+      // allProjectsId: ALL_PROJECTS,
+      showDashboard: false,
+      survey: {},
       historySections: ["overview"],
       overviewSection: "default",
       eventName: "",
       review: ""
     };
+  },
+  mounted() {
+    Promise.all([
+      request(`${END_POINT}/api/projects`),
+      request(`${END_POINT}/api/sections`),
+      request(`${END_POINT}/api/surveys`),
+      request(`${END_POINT}/api/dashboard/projects/summary`, {
+        method: "POST"
+      }),
+      request(`${END_POINT}/api/dashboard/projects/history`, {
+        method: "POST"
+      })
+    ])
+      .then(([projects, sections, surveys, overviewData, historyData]) => {
+        if (sections && sections.length > 0) {
+          this.sections = sections;
+        }
+
+        if (overviewData) {
+          this.overviewData = DASHBOARD_LABELS_LIST.map(
+            item => overviewData[item]
+          );
+        }
+
+        if (historyData) {
+          this.historyData = [
+            historyData.sort((a, b) => {
+              return moment(a.date, DATE_FORMAT) < moment(b.date, DATE_FORMAT)
+                ? -1
+                : 1;
+            })
+          ];
+        }
+
+        this.ratings = RATINGS;
+
+        if (projects && projects.length > 0) {
+          this.projects = projects;
+        }
+
+        if (surveys && surveys.length > 0) {
+          this.surveys = surveys;
+        }
+
+        this.isLoading = false;
+      })
+      .then(() => {
+        if (this.sections.length > 0) {
+          this.isLoading = true;
+          Promise.all(
+            this.sections.map(section =>
+              request(`${END_POINT}/api/dashboard/projects/summary`, {
+                method: "POST",
+                body: JSON.stringify({
+                  sectionId: section.id
+                })
+              })
+            )
+          )
+            .then(values => {
+              this.sections = this.sections.map((section, idx) => ({
+                ...section,
+                ...values[idx]
+              }));
+              this.isLoading = false;
+            })
+            .catch(e => {
+              throw e;
+            });
+        }
+      })
+      .catch(e => {
+        this.isLoading = false;
+        this.message.error(e);
+      });
   },
   methods: {
     onClickChangeSection() {
@@ -229,7 +257,7 @@ export default {
 
     onClickNew() {
       this.feedbackState = FEEDBACK_STATE.NEW_FEEDBACK;
-      this.selectedSections = this.survey.sections.map(section => {
+      this.surveySections = this.survey.sections.map(section => {
         return {
           ...section,
           title: this.sections.find(item => item.id === section.sectionId).title
@@ -238,74 +266,55 @@ export default {
     },
 
     handleSelectProject({ id }) {
-      let selectedProject;
       if (id === DEFAULT) {
         this.project = {
           id: DEFAULT,
           projectName: DEFAULT
         };
       } else {
-        selectedProject = this.projects.find(p => p.id === id);
+        const selectedProject = this.projects.find(p => p.id === id);
         this.isLoading = true;
         this.project = {
           projectName: selectedProject.projectName,
           id: selectedProject.id
         };
+        console.log(this.project)
         if (this.surveys.length > 0) {
+          // temporary get survey for project
           const surveyId = this.surveys[0].id;
-          Promise.all(
-            [
-              fetch(
-                `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
-              ).then(res => res.json()),
-              fetch(
-                `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
-              ).then(res => res.json()),
-              fetch(`${END_POINT}/api/dashboard/projects/summary`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  sectionId:
-                    this.overviewSection === "default"
-                      ? null
-                      : this.overviewSection,
-                  projectId:
-                    this.project.id === ALL_PROJECTS ? null : this.project.id
-                })
-              }).then(res => res.json())
-            ].concat(
-              this.historySections.map(section =>
-                fetch(`${END_POINT}/api/dashboard/projects/history`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({
-                    sectionId: section === "overview" ? null : section,
-                    projectId:
-                      this.project.id === ALL_PROJECTS ? null : this.project.id
+          Promise.all([
+            request(
+              `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
+            ),
+            request(
+              `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
+            ),
+            request(`${END_POINT}/api/dashboard/projects/summary`, {
+              method: "POST"
+            }),
+            request(`${END_POINT}/api/dashboard/projects/history`, {
+              method: "POST"
+            })
+          ])
+            .then(([survey, feedback, overviewData, historyData]) => {
+              this.overviewData = DASHBOARD_LABELS_LIST.map(
+                item => overviewData[item]
+              );
+
+              if (historyData) {
+                this.historyData = [
+                  historyData.sort((a, b) => {
+                    return moment(a.date, DATE_FORMAT) <
+                      moment(b.date, DATE_FORMAT)
+                      ? -1
+                      : 1;
                   })
-                }).then(res => res.json())
-              )
-            )
-          )
-            .then(values => {
-              const [survey, feedback, pieChartData, ...lineChartData] = values;
-              this.pieChartData = DASHBOARD_LABELS_LIST.map(
-                item => pieChartData[item]
-              );
-              this.lineChartData = lineChartData.map(val =>
-                val.sort((a, b) => {
-                  return moment(a.date, "YYYY-MM-DD") <
-                    moment(b.date, "YYYY-MM-DD")
-                    ? -1
-                    : 1;
-                })
-              );
+                ];
+              }
+
               this.survey = { ...survey, id: surveyId };
-              this.selectedSections = survey.sections.map(section => {
+
+              this.surveySections = survey.sections.map(section => {
                 return {
                   ...section,
                   title: this.sections.find(
@@ -313,11 +322,12 @@ export default {
                   ).title
                 };
               });
+
               if (feedback) {
                 this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
                 this.review = feedback.review;
 
-                this.selectedSections = this.selectedSections.map(section => {
+                this.surveySections = this.surveySections.map(section => {
                   return {
                     ...section,
                     questions: section.questions.map(q => {
@@ -346,7 +356,7 @@ export default {
     },
 
     handleRateChange({ sectionId, questionId, rating }) {
-      this.selectedSections = this.selectedSections.map(s => {
+      this.surveySections = this.surveySections.map(s => {
         if (s.sectionId === sectionId) {
           return {
             ...s,
@@ -366,15 +376,15 @@ export default {
     },
 
     handleSubmitProject({ event, review }) {
-      const { project, selectedSections } = this;
+      const { project, surveySections } = this;
       this.isLoading = true;
-      const request = {
+      const requestBody = {
         userId: USER_ID,
         surveyId: this.survey.id,
         projectId: project.id,
         review,
         event,
-        ratings: selectedSections.map(s => ({
+        ratings: surveySections.map(s => ({
           sectionId: s.sectionId,
           questions: s.questions.map(q => ({
             questionId: q.questionId,
@@ -382,23 +392,17 @@ export default {
           }))
         }))
       };
-      fetch(`${END_POINT}/api/feedbacks/submit`, {
+
+      request(`${END_POINT}/api/feedbacks/submit`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(request)
+        body: JSON.stringify(requestBody)
       })
-        .then(res => {
+        .then(() => {
           this.isLoading = false;
           this.eventName = event;
           this.review = review;
-          if (res.ok) {
-            this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-            this.message.success("Thanks for your review");
-          } else {
-            this.message.error(res.statusText);
-          }
+          this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+          this.message.success("Thanks for your review");
         })
         .catch(e => {
           this.isLoading = false;
@@ -409,19 +413,15 @@ export default {
     changeOverviewSection({ sectionId }) {
       this.isLoading = true;
       this.overviewSection = sectionId;
-      fetch(`${END_POINT}/api/dashboard/projects/summary`, {
+      request(`${END_POINT}/api/dashboard/projects/summary`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({
-          sectionId: sectionId === "default" ? null : sectionId,
-          projectId: this.project.id === ALL_PROJECTS ? null : this.project.id
+          sectionId: sectionId === DEFAULT ? null : sectionId,
+          projectId: this.project.id === DEFAULT ? null : this.project.id
         })
       })
-        .then(res => res.json())
         .then(data => {
-          this.pieChartData = DASHBOARD_LABELS_LIST.map(item => data[item]);
+          this.overviewData = DASHBOARD_LABELS_LIST.map(item => data[item]);
           this.isLoading = false;
         })
         .catch(e => {
@@ -435,22 +435,18 @@ export default {
       this.historySections = sections;
       Promise.all(
         sections.map(section =>
-          fetch(`${END_POINT}/api/dashboard/projects/history`, {
+          request(`${END_POINT}/api/dashboard/projects/history`, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
             body: JSON.stringify({
-              sectionId: section === "overview" ? null : section,
-              projectId:
-                this.project.id === ALL_PROJECTS ? null : this.project.id
+              sectionId: section === DEFAULT ? null : section,
+              projectId: this.project.id === DEFAULT ? null : this.project.id
             })
-          }).then(res => res.json())
+          })
         )
       )
         .then(values => {
           if (values) {
-            this.lineChartData = values.map(val =>
+            this.historyData = values.map(val =>
               val.sort((a, b) => {
                 return moment(a.date, "YYYY-MM-DD") <
                   moment(b.date, "YYYY-MM-DD")

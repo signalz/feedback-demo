@@ -19,7 +19,7 @@
           :key="project.id"
           :name="project.projectName"
           :id="project.id"
-          :selected="project.id === selectedProject"
+          :selected="project.id === selectedProject.id"
           @itemSelect="handleProjectSelect"
         />
         <SelectableItem
