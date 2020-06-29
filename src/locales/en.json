@@ -5,15 +5,6 @@
       "second": "evaluation tool"
     }
   },
-  "header": {
-    "banner": {
-      "text": "Vietnam shoring team evaluation"
-    },
-    "nav": {
-      "feedback": "Feedback",
-      "dashboard": "Dashboard"
-    }
-  },
   "dashboard": {
     "history": {
       "sections": "History of:",
@@ -40,23 +31,11 @@
       "project-all": "All projects"
     }
   },
-  "sideMenu": {
-    "yourProjects": "Project list:",
-    "searchProject": "Search a project",
-    "manager": "Manager:"
-  },
-  "bar-menu": {
-    "project-label": "Chosen project:",
-    "no-project": "No project",
-    "event-label": "Last evaluation event:"
-  },
   "feedback": {
     "feedback": "Feedback",
     "new": "new",
     "new-feedback": "Click New button to review this project",
     "dashboard": "Dashboard",
-    "esc": "ESC",
-    "header": "Provide feedback",
     "submit": "Submit"
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="project-feedback-wrapper">
     <div class="project-feedback-event">
-      <div class="project-feedback-event-label">Event:</div>
+      <div class="project-feedback-event-label">{{$t('feedback.event')}}</div>
       <div>
         <Input
           :defaultValue="event"
@@ -24,7 +24,7 @@
     </div>
     <div class="project-feedback-review">
       <div style="padding-bottom: 20px">
-        <div class="project-feedback-section-header" style="padding-bottom: 20px">Review</div>
+        <div class="project-feedback-section-header" style="padding-bottom: 20px">{{$t('feedback.review')}}</div>
         <TextArea
           v-if="feedbackStates.NEW_FEEDBACK === state"
           :defaultValue="review"
