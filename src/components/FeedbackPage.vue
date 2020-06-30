@@ -191,11 +191,14 @@ export default {
 
         if (historyData) {
           this.historyData = [
-            historyData.sort((a, b) => {
-              return moment(a.date, DATE_FORMAT) < moment(b.date, DATE_FORMAT)
-                ? -1
-                : 1;
-            })
+            {
+              title: DEFAULT,
+              data: historyData.sort((a, b) => {
+                return moment(a.date, DATE_FORMAT) < moment(b.date, DATE_FORMAT)
+                  ? -1
+                  : 1;
+              })
+            }
           ];
         }
 
@@ -293,12 +296,15 @@ export default {
 
               if (historyData) {
                 this.historyData = [
-                  historyData.sort((a, b) => {
-                    return moment(a.date, DATE_FORMAT) <
-                      moment(b.date, DATE_FORMAT)
-                      ? -1
-                      : 1;
-                  })
+                  {
+                    title: DEFAULT,
+                    data: historyData.sort((a, b) => {
+                      return moment(a.date, DATE_FORMAT) <
+                        moment(b.date, DATE_FORMAT)
+                        ? -1
+                        : 1;
+                    })
+                  }
                 ];
               }
 
@@ -334,7 +340,7 @@ export default {
                 });
               }
               // trigger re-mount overview dashboard
-              this.key = Math.random()
+              this.key = Math.random();
               this.isLoading = false;
             })
             .catch(e => {
@@ -428,7 +434,7 @@ export default {
           request(`${END_POINT}/api/dashboard/projects/history`, {
             method: "POST",
             body: JSON.stringify({
-              sectionId: section === DEFAULT ? null : section,
+              sectionId: section.id === DEFAULT ? null : section.id,
               projectId: this.project.id === DEFAULT ? null : this.project.id
             })
           })
@@ -436,14 +442,15 @@ export default {
       )
         .then(values => {
           if (values) {
-            this.historyData = values.map(val =>
-              val.sort((a, b) => {
+            this.historyData = values.map((val, idx) => ({
+              title: sections[idx].title,
+              data: val.sort((a, b) => {
                 return moment(a.date, "YYYY-MM-DD") <
                   moment(b.date, "YYYY-MM-DD")
                   ? -1
                   : 1;
               })
-            );
+            }));
           }
           this.isLoading = false;
         })

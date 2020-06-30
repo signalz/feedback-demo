@@ -36,6 +36,14 @@ import LineChart from "./chart/LineChart";
 const { Group } = Checkbox;
 const { Option } = Select;
 
+const COLORS = [
+  "rgba(54, 162, 235, 0.2)",
+  "#cd7f32 ",
+  "#aaa9ad",
+  "#faf369",
+  "#e5e4e2"
+];
+
 export default {
   name: "HistoryDashboard",
   components: {
@@ -56,28 +64,49 @@ export default {
     data: {
       type: Array,
       default: () => {
-        return [[{ date: String, rating: String }]];
+        return [{ title: String, data: [{ date: String, rating: String }] }];
       }
     }
   },
   methods: {
     onChangeCheckboxes(value) {
       this.checkboxesValues = value;
-      this.$emit("changeSection", { sections: this.checkboxesValues });
+      this.$emit("changeSection", {
+        sections: this.checkboxesValues.map(ckValue => ({
+          id: ckValue,
+          title:
+            ckValue === DEFAULT
+              ? DEFAULT
+              : this.sections.find(section => section.id === ckValue).title
+        }))
+      });
     },
 
     onSelectAll() {
-      this.checkboxesValues = this.sections.map(section => section.id).concat(DEFAULT);
-      this.$emit("changeSection", { sections: this.checkboxesValues });
+      this.checkboxesValues = this.sections
+        .map(section => section.id)
+        .concat(DEFAULT);
+      this.$emit("changeSection", {
+        sections: this.checkboxesValues.map(ckValue => ({
+          id: ckValue,
+          title:
+            ckValue === DEFAULT
+              ? DEFAULT
+              : this.sections.find(section => section.id === ckValue).title
+        }))
+      });
     }
   },
   computed: {
     lineChartData() {
+      // console.log(this.data, this.sections);
       return {
-        labels: this.data.length > 0 ? this.data[0].map(item => item.date) : [],
-        datasets: this.data.map(item => ({
-          data: item.map(data => data.rating),
-          borderColor: "rgba(54, 162, 235, 0.2)",
+        labels:
+          this.data.length > 0 ? this.data[0].data.map(item => item.date) : [],
+        datasets: this.data.map((item, idx) => ({
+          data: item.data.map(data => data.rating),
+          borderColor: COLORS[idx],
+          label: item.title === DEFAULT ? "Overview" : item.title,
           fill: false
         }))
       };
@@ -87,9 +116,9 @@ export default {
     return {
       lineChartOptions: {
         maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
+        // legend: {
+        //   display: false
+        // },
         scales: {
           yAxes: [
             {
