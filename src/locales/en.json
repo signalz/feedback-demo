@@ -38,8 +38,10 @@
     "dashboard": "Dashboard",
     "submit": "Submit",
     "event": "Event:",
-    "review": "Review",
+    "last-event": "Last evaluation event:",
+    "review": "Comment",
     "thanks": "Thanks for your review",
-    "write-review": "Write a review"
+    "write-review": "Write a comment",
+    "cancel": "Cancel"
   }
 }

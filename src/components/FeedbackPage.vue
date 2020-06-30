@@ -27,6 +27,7 @@
               :ratings="ratings"
               @ratechange="handleRateChange"
               @submitProject="handleSubmitProject"
+              @cancelProject="handleCancelProject"
               :state="feedbackState"
               :event="eventName"
               :review="review"
@@ -76,6 +77,7 @@
               :ratings="ratings"
               @ratechange="handleRateChange"
               @submitProject="handleSubmitProject"
+              @cancelProject="handleCancelProject"
               :state="feedbackState"
               :event="eventName"
               :review="review"
@@ -427,6 +429,10 @@ export default {
           this.isLoading = false;
           this.message.error(e);
         });
+    },
+
+    handleCancelProject() {
+      this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK
     },
 
     changeOverviewSection({ sectionId }) {

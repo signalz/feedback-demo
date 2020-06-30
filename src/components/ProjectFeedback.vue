@@ -1,7 +1,9 @@
 <template>
   <div class="project-feedback-wrapper">
     <div class="project-feedback-event">
-      <div class="project-feedback-event-label">{{$t('feedback.event')}}</div>
+      <div
+        class="project-feedback-event-label"
+      >{{feedbackStates.LAST_FEEDBACK === state ? $t('feedback.last-event') : $t('feedback.event')}}</div>
       <div>
         <Input
           :defaultValue="event"
@@ -36,6 +38,7 @@
       </div>
     </div>
     <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
+      <Button type="primary" class="feedback-button" @click="handleCancel">{{$t("feedback.cancel")}}</Button>
       <Button type="primary" class="feedback-button" @click="handleSubmit">{{$t("feedback.submit")}}</Button>
     </div>
   </div>
@@ -89,6 +92,10 @@ export default {
     handleSubmit() {
       const { eventName, reviewText } = this;
       this.$emit("submitProject", { event: eventName, review: reviewText });
+    },
+
+    handleCancel() {
+      this.$emit('cancelProject')
     }
   }
 };
@@ -141,6 +148,7 @@ export default {
       background-color: #ec1940;
       border-color: #ec1940;
       text-transform: uppercase;
+      margin-right: 10px;
     }
   }
 }
