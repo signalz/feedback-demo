@@ -99,14 +99,13 @@ export default {
   },
   computed: {
     lineChartData() {
-      // console.log(this.data, this.sections);
       return {
         labels:
           this.data.length > 0 ? this.data[0].data.map(item => item.date) : [],
         datasets: this.data.map((item, idx) => ({
           data: item.data.map(data => data.rating),
           borderColor: COLORS[idx],
-          label: item.title === DEFAULT ? "Overview" : item.title,
+          label: item.title === DEFAULT ? this.$t('dashboard.history.default') : item.title,
           fill: false
         }))
       };
@@ -116,9 +115,6 @@ export default {
     return {
       lineChartOptions: {
         maintainAspectRatio: false,
-        // legend: {
-        //   display: false
-        // },
         scales: {
           yAxes: [
             {

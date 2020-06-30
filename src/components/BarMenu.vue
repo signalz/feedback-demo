@@ -53,15 +53,23 @@ export default {
   .bar-menu-information {
     display: flex;
     width: 100%;
+    height: 100%;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
     margin-left: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     .bar-menu-project {
       display: flex;
 
       .bar-menu-project-label {
         margin-right: 5px;
+      }
+
+      .bar-menu-project-name {
+        word-break: break-all;
       }
     }
 
@@ -70,6 +78,10 @@ export default {
 
       .bar-menu-event-label {
         margin-right: 5px;
+      }
+
+      .bar-menu-event-name {
+        word-break: break-all;
       }
     }
   }

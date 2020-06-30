@@ -183,11 +183,7 @@ export default {
           this.sections = sections;
         }
 
-        if (overviewData) {
-          this.overviewData = DASHBOARD_LABELS_LIST.map(
-            item => overviewData[item]
-          );
-        }
+        this.setOverviewData(overviewData);
 
         if (historyData) {
           this.historyData = [
@@ -259,15 +255,84 @@ export default {
       });
     },
 
+    setOverviewData(overviewData) {
+      if (overviewData) {
+        this.overviewData = DASHBOARD_LABELS_LIST.map(
+          item => overviewData[item]
+        );
+      }
+    },
+
     handleSelectProject({ id }) {
+      if (this.project.id === id) {
+        return
+      }
+      this.isLoading = true;
       if (id === DEFAULT) {
         this.project = {
           id: DEFAULT,
           projectName: DEFAULT
         };
+
+        Promise.all([
+          request(`${END_POINT}/api/dashboard/projects/summary`, {
+            method: "POST"
+          }),
+          request(`${END_POINT}/api/dashboard/projects/history`, {
+            method: "POST"
+          })
+        ])
+          .then(([overviewData, historyData]) => {
+            this.setOverviewData(overviewData);
+
+            if (historyData) {
+              this.historyData = [
+                {
+                  title: DEFAULT,
+                  data: historyData.sort((a, b) => {
+                    return moment(a.date, DATE_FORMAT) <
+                      moment(b.date, DATE_FORMAT)
+                      ? -1
+                      : 1;
+                  })
+                }
+              ];
+            }
+            // trigger re-mount overview dashboard
+            this.key = Math.random();
+            this.isLoading = false;
+          })
+          .then(() => {
+            if (this.sections.length > 0) {
+              this.isLoading = true;
+              Promise.all(
+                this.sections.map(section =>
+                  request(`${END_POINT}/api/dashboard/projects/summary`, {
+                    method: "POST",
+                    body: JSON.stringify({
+                      sectionId: section.id
+                    })
+                  })
+                )
+              )
+                .then(values => {
+                  this.sections = this.sections.map((section, idx) => ({
+                    ...section,
+                    ...values[idx]
+                  }));
+                  this.isLoading = false;
+                })
+                .catch(e => {
+                  throw e;
+                });
+            }
+          })
+          .catch(e => {
+            this.isLoading = false;
+            this.message.error(e);
+          });
       } else {
         const selectedProject = this.projects.find(p => p.id === id);
-        this.isLoading = true;
         this.project = {
           projectName: selectedProject.projectName,
           id: selectedProject.id
@@ -290,9 +355,7 @@ export default {
             })
           ])
             .then(([survey, feedback, overviewData, historyData]) => {
-              this.overviewData = DASHBOARD_LABELS_LIST.map(
-                item => overviewData[item]
-              );
+              this.setOverviewData(overviewData);
 
               if (historyData) {
                 this.historyData = [
@@ -418,7 +481,7 @@ export default {
         })
       })
         .then(data => {
-          this.overviewData = DASHBOARD_LABELS_LIST.map(item => data[item]);
+          this.setOverviewData(data);
           this.isLoading = false;
         })
         .catch(e => {
