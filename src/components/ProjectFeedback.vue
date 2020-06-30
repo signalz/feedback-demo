@@ -23,18 +23,16 @@
       </div>
     </div>
     <div class="project-feedback-review">
-      <div style="padding-bottom: 20px">
-        <div class="project-feedback-section-header" style="padding-bottom: 20px">{{$t('feedback.review')}}</div>
-        <TextArea
-          v-if="feedbackStates.NEW_FEEDBACK === state"
-          :defaultValue="review"
-          v-model="reviewText"
-          style="resize: none"
-          placeholder="Write a review"
-        />
-        <div v-if="feedbackStates.LAST_FEEDBACK === state">
-          <div>{{review}}</div>
-        </div>
+      <div class="project-feedback-section-header">{{$t('feedback.review')}}</div>
+      <TextArea
+        v-if="feedbackStates.NEW_FEEDBACK === state"
+        :defaultValue="review"
+        v-model="reviewText"
+        class="project-feedback-review-input"
+        :placeholder="$t('feedback.write-review')"
+      />
+      <div v-if="feedbackStates.LAST_FEEDBACK === state">
+        <div>{{review}}</div>
       </div>
     </div>
     <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
@@ -121,9 +119,16 @@ export default {
 
   .project-feedback-review {
     margin-top: 40px;
+    padding-bottom: 20px;
+
     .project-feedback-section-header {
       font-size: 22px;
       color: #22282d;
+      padding-bottom: 20px;
+    }
+
+    .project-feedback-review-input {
+      resize: none;
     }
   }
 

@@ -184,19 +184,7 @@ export default {
         }
 
         this.setOverviewData(overviewData);
-
-        if (historyData) {
-          this.historyData = [
-            {
-              title: DEFAULT,
-              data: historyData.sort((a, b) => {
-                return moment(a.date, DATE_FORMAT) < moment(b.date, DATE_FORMAT)
-                  ? -1
-                  : 1;
-              })
-            }
-          ];
-        }
+        this.setHistoryData([historyData], [{ title: DEFAULT }]);
 
         this.ratings = RATINGS;
 
@@ -210,31 +198,7 @@ export default {
 
         this.isLoading = false;
       })
-      .then(() => {
-        if (this.sections.length > 0) {
-          this.isLoading = true;
-          Promise.all(
-            this.sections.map(section =>
-              request(`${END_POINT}/api/dashboard/projects/summary`, {
-                method: "POST",
-                body: JSON.stringify({
-                  sectionId: section.id
-                })
-              })
-            )
-          )
-            .then(values => {
-              this.sections = this.sections.map((section, idx) => ({
-                ...section,
-                ...values[idx]
-              }));
-              this.isLoading = false;
-            })
-            .catch(e => {
-              throw e;
-            });
-        }
-      })
+      .then(() => this.getOverviewTableData())
       .catch(e => {
         this.isLoading = false;
         this.message.error(e);
@@ -263,9 +227,48 @@ export default {
       }
     },
 
+    setHistoryData(historyData, sections) {
+      if (historyData && historyData.length > 0) {
+        this.historyData = sections.map((section, idx) => ({
+          title: section.title,
+          data: historyData[idx].sort((a, b) => {
+            return moment(a.date, DATE_FORMAT) < moment(b.date, DATE_FORMAT)
+              ? -1
+              : 1;
+          })
+        }));
+      }
+    },
+
+    getOverviewTableData() {
+      if (this.sections.length > 0) {
+        this.isLoading = true;
+        Promise.all(
+          this.sections.map(section =>
+            request(`${END_POINT}/api/dashboard/projects/summary`, {
+              method: "POST",
+              body: JSON.stringify({
+                sectionId: section.id
+              })
+            })
+          )
+        )
+          .then(values => {
+            this.sections = this.sections.map((section, idx) => ({
+              ...section,
+              ...values[idx]
+            }));
+            this.isLoading = false;
+          })
+          .catch(e => {
+            throw e;
+          });
+      }
+    },
+
     handleSelectProject({ id }) {
       if (this.project.id === id) {
-        return
+        return;
       }
       this.isLoading = true;
       if (id === DEFAULT) {
@@ -284,49 +287,12 @@ export default {
         ])
           .then(([overviewData, historyData]) => {
             this.setOverviewData(overviewData);
-
-            if (historyData) {
-              this.historyData = [
-                {
-                  title: DEFAULT,
-                  data: historyData.sort((a, b) => {
-                    return moment(a.date, DATE_FORMAT) <
-                      moment(b.date, DATE_FORMAT)
-                      ? -1
-                      : 1;
-                  })
-                }
-              ];
-            }
+            this.setHistoryData([historyData], [{ title: DEFAULT }]);
             // trigger re-mount overview dashboard
             this.key = Math.random();
             this.isLoading = false;
           })
-          .then(() => {
-            if (this.sections.length > 0) {
-              this.isLoading = true;
-              Promise.all(
-                this.sections.map(section =>
-                  request(`${END_POINT}/api/dashboard/projects/summary`, {
-                    method: "POST",
-                    body: JSON.stringify({
-                      sectionId: section.id
-                    })
-                  })
-                )
-              )
-                .then(values => {
-                  this.sections = this.sections.map((section, idx) => ({
-                    ...section,
-                    ...values[idx]
-                  }));
-                  this.isLoading = false;
-                })
-                .catch(e => {
-                  throw e;
-                });
-            }
-          })
+          .then(() => this.getOverviewTableData())
           .catch(e => {
             this.isLoading = false;
             this.message.error(e);
@@ -356,20 +322,7 @@ export default {
           ])
             .then(([survey, feedback, overviewData, historyData]) => {
               this.setOverviewData(overviewData);
-
-              if (historyData) {
-                this.historyData = [
-                  {
-                    title: DEFAULT,
-                    data: historyData.sort((a, b) => {
-                      return moment(a.date, DATE_FORMAT) <
-                        moment(b.date, DATE_FORMAT)
-                        ? -1
-                        : 1;
-                    })
-                  }
-                ];
-              }
+              this.setHistoryData([historyData], [{ title: DEFAULT }]);
 
               this.survey = { ...survey, id: surveyId };
 
@@ -385,6 +338,7 @@ export default {
               if (feedback) {
                 this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
                 this.review = feedback.review;
+                this.eventName = "";
 
                 this.surveySections = this.surveySections.map(section => {
                   return {
@@ -401,6 +355,10 @@ export default {
                     })
                   };
                 });
+              } else {
+                this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
+                this.eventName = "";
+                this.review = "";
               }
               // trigger re-mount overview dashboard
               this.key = Math.random();
@@ -463,7 +421,7 @@ export default {
           this.eventName = event;
           this.review = review;
           this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-          this.message.success("Thanks for your review");
+          this.message.success(this.$t("feedback.thanks"));
         })
         .catch(e => {
           this.isLoading = false;
@@ -504,17 +462,7 @@ export default {
         )
       )
         .then(values => {
-          if (values) {
-            this.historyData = values.map((val, idx) => ({
-              title: sections[idx].title,
-              data: val.sort((a, b) => {
-                return moment(a.date, "YYYY-MM-DD") <
-                  moment(b.date, "YYYY-MM-DD")
-                  ? -1
-                  : 1;
-              })
-            }));
-          }
+          this.setHistoryData(values, sections);
           this.isLoading = false;
         })
         .catch(e => {

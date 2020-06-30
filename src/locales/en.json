@@ -38,6 +38,8 @@
     "dashboard": "Dashboard",
     "submit": "Submit",
     "event": "Event:",
-    "review": "review"
+    "review": "Review",
+    "thanks": "Thanks for your review",
+    "write-review": "Write a review"
   }
 }
