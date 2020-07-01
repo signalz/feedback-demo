@@ -43,5 +43,11 @@
     "thanks": "Thanks for your review",
     "write-review": "Write a comment",
     "cancel": "Cancel"
+  },
+  "login": {
+    "login": "Login",
+    "login-form": "Login Form",
+    "username": "User Name",
+    "pass": "Password"
   }
 }

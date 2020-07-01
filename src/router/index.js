@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import FeedbackPage from '../components/FeedbackPage.vue'
+import LoginPage from '../components/Login.vue'
 
 Vue.use(VueRouter)
 
@@ -10,6 +11,11 @@ Vue.use(VueRouter)
     path: '/',
     name: 'Feedback',
     component: FeedbackPage
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginPage
   },
   // {
   //   path: '/dashboard',
