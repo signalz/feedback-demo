@@ -164,6 +164,8 @@ export default {
     height: 100%;
     margin-top: 5px;
     background-color: #c6d9f1;
+    border: 2px solid #16619c;
+    border-radius: 5px;
   }
 }
 

@@ -432,7 +432,7 @@ export default {
     },
 
     handleCancelProject() {
-      this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK
+      this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
     },
 
     changeOverviewSection({ sectionId }) {
@@ -483,12 +483,42 @@ export default {
 <style scoped lang="scss">
 .feedback-page-wrapper {
   .feedback-page-content {
-    padding-top: $header-height;
+    padding-top: 59px;
     display: flex;
-
+    position: relative;
+    &::before {
+      content: "";
+      position: fixed;
+      border: 2px solid #16619c;
+      @media screen and (min-width: $desktop-width) {
+        left: 300px;
+        right: 0;
+        top: 60px;
+        bottom: 0;
+      }
+      @media screen and (max-width: $desktop-width) {
+        left: 0;
+        right: 0;
+        top: 60px;
+        bottom: 0;
+      }
+    }
+    &:after {
+      content: "";
+      height: calc(100% - 40px);
+      left: calc((100% - 30px) / 2);
+      width: 2px;
+      background: #16619c;
+      @media screen and (min-width: $tablet-width) {
+        position: absolute;
+      }
+    }
     .feedback-page-content-left {
       width: 50%;
-      margin: 20px 10px auto 10px;
+      height: 100%;
+      margin: 0px 0px 0 10px;
+      padding-top: 20px;
+      padding-right: 10px;
 
       .feedback-page-content-left-header {
         @include header-wrapper;
@@ -506,7 +536,10 @@ export default {
 
     .feedback-page-content-right {
       width: 50%;
-      margin: 20px 10px auto 10px;
+      height: 100%;
+      min-height: 100%;
+      margin: 0px 10px 0 10px;
+      padding-top: 20px;
 
       .feedback-page-content-right-header {
         @include header-wrapper;
