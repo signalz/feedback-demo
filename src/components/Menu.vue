@@ -15,7 +15,7 @@
       :selectedProject="selectedProject"
       @selectProject="handleSelectProject"
     />
-    <Loading :isSpin="false" v-if="isOpen" class="menu-loading-wrapper" />
+    <Loading :isSpin="false" v-if="isOpen" class="menu-loading-wrapper loading-invisible-desktop" />
   </div>
 </template>
 <script>
@@ -34,7 +34,9 @@ export default {
   },
   computed: {
     projectName: function() {
-      return this.selectedProject.id === DEFAULT ? '' : this.selectedProject.projectName
+      return this.selectedProject.id === DEFAULT
+        ? ""
+        : this.selectedProject.projectName;
     }
   },
   props: {
@@ -49,7 +51,7 @@ export default {
       default: () => {
         return {
           projectName: String,
-          id: String,
+          id: String
         };
       }
     },
@@ -68,7 +70,7 @@ export default {
     handleSelectProject({ id }) {
       this.$emit("selectProject", { id });
       this.isOpen = false;
-    },
+    }
   }
 };
 </script>
@@ -98,8 +100,16 @@ export default {
   }
 }
 
-.sideBarOpen {
-  margin-left: $side-menu-width;
+@media screen and (max-width: $desktop-width) {
+  .sideBarOpen {
+    margin-left: $side-menu-width;
+  }
+}
+
+@media screen and (min-width: $desktop-width) {
+  .loading-invisible-desktop {
+    display: none;
+  }
 }
 
 .visible {
