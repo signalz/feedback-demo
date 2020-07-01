@@ -7,7 +7,7 @@
   },
   "dashboard": {
     "history": {
-      "sections": "History of:",
+      "sections": "Trend of:",
       "select-all": "Select all",
       "select-below": "Select below",
       "default": "Overview"
