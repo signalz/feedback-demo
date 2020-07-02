@@ -23,7 +23,14 @@
         </Select>
       </Group>
     </div>
-    <LineChart :chartData="lineChartData" :options="lineChartOptions" :width="300" :height="300" />
+    <LineChart
+      v-if="lineChartData.length > 0"
+      :chartData="lineChartData"
+      :options="lineChartOptions"
+      :width="300"
+      :height="300"
+    />
+    <div v-else class="history-dashboard-no-data">{{$t("dashboard.history.no-data")}}</div>
   </div>
 </template>
 
@@ -99,16 +106,22 @@ export default {
   },
   computed: {
     lineChartData() {
-      return {
-        labels:
-          this.data.length > 0 ? this.data[0].data.map(item => item.date) : [],
-        datasets: this.data.map((item, idx) => ({
-          data: item.data.map(data => data.rating),
-          borderColor: COLORS[idx],
-          label: item.title === DEFAULT ? this.$t('dashboard.history.default') : item.title,
-          fill: false
-        }))
-      };
+      if (this.data.length > 0) {
+        return {
+          labels: this.data[0].data.map(item => item.date),
+          datasets: this.data.map((item, idx) => ({
+            data: item.data.map(data => data.rating),
+            borderColor: COLORS[idx],
+            label:
+              item.title === DEFAULT
+                ? this.$t("dashboard.history.default")
+                : item.title,
+            fill: false
+          }))
+        };
+      } else {
+        return [];
+      }
     }
   },
   data: () => {
@@ -147,6 +160,10 @@ export default {
   .history-dashboard-description-select {
     width: 200px;
   }
+}
+
+.history-dashboard-no-data {
+  color: rgba(0, 0, 0, 0.65);
 }
 </style>
 

@@ -10,11 +10,13 @@
       "sections": "Trend of:",
       "select-all": "Select all",
       "select-below": "Select below",
-      "default": "Overview"
+      "default": "Overview",
+      "no-data": "No data available"
     },
     "overview": {
       "section": "Overview by:",
-      "default": "Overall"
+      "default": "Overall",
+      "no-data": "No data available"
     }
   },
   "menu": {

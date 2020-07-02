@@ -8,21 +8,28 @@
         @change="handleChangeSection"
       >
         <Option :key="defaultValue" :value="defaultValue">{{$t("dashboard.overview.default")}}</Option>
-        <Option
-          v-for="section in sections"
-          :key="section.id"
-          :value="section.id"
-        >{{section.title}}</Option>
+        <Option v-for="section in sections" :key="section.id" :value="section.id">{{section.title}}</Option>
       </Select>
     </div>
-    <PieChart :chartData="pieChartData" :width="300" :height="300" :options="pieChartOptions" />
+    <PieChart
+      v-if="isDataAvailable"
+      :chartData="pieChartData"
+      :width="300"
+      :height="300"
+      :options="pieChartOptions"
+    />
+    <div v-else class="overview-dashboard-no-data">{{$t("dashboard.overview.no-data")}}</div>
   </div>
 </template>
 
 <script>
 import { Select } from "ant-design-vue";
 
-import { DASHBOARD_LABELS_LIST, DASHBOARD_PIE_COLORS, DEFAULT } from "../config";
+import {
+  DASHBOARD_LABELS_LIST,
+  DASHBOARD_PIE_COLORS,
+  DEFAULT
+} from "../config";
 import PieChart from "./chart/PieChart";
 
 const { Option } = Select;
@@ -32,7 +39,7 @@ export default {
   components: {
     Option,
     PieChart,
-    Select,
+    Select
   },
   props: {
     sections: {
@@ -50,7 +57,7 @@ export default {
   },
   computed: {
     pieChartData() {
-      return  {
+      return {
         datasets: [
           {
             data: this.data,
@@ -60,7 +67,12 @@ export default {
           }
         ],
         labels: DASHBOARD_LABELS_LIST
-      }
+      };
+    },
+
+    isDataAvailable() {
+      const isAvailable = this.data.filter(item => item > 0);
+      return isAvailable.length > 0;
     }
   },
   data: () => {
@@ -88,12 +100,15 @@ export default {
 
   .overview-dashboard-label {
     margin-right: 10px;
-    color: rgba(0, 0, 0, 0.65)
+    color: rgba(0, 0, 0, 0.65);
   }
 
   .overview-dashboard-select {
     width: 200px;
   }
+}
+.overview-dashboard-no-data {
+  color: rgba(0, 0, 0, 0.65);
 }
 </style>
 
