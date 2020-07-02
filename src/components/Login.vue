@@ -2,34 +2,118 @@
   <div class="login-wrapper">
     <div class="login-container">
       <div class="login-label">{{$t('login.login-form')}}</div>
-      <form class="login-form">
-        <input type="text" :placeholder="$t('login.username')" />
-        <input type="password" :placeholder="$t('login.pass')" />
-        <button @click="onClickLogin" class="login-btn">{{$t('login.login')}}</button>
-      </form>
+      <FormModel class="login-form" ref="ruleForm" :model="formInline" :rules="rules">
+        <Item ref="user" prob="user" required>
+          <Input
+            v-model="formInline.user"
+            :placeholder="$t('login.username')"
+            @blur="
+          () => {
+            $refs.user.onFieldBlur();
+          }
+        "
+          >
+            <Icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
+          </Input>
+        </Item>
+        <Item ref="password" prob="password" required>
+          <Input
+            v-model="formInline.password"
+            type="password"
+            :placeholder="$t('login.pass')"
+            @blur="
+          () => {
+            $refs.password.onFieldBlur();
+          }
+        "
+          >
+            <Icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
+          </Input>
+        </Item>
+        <Item>
+          <Button
+            @click="handleSubmit"
+            class="login-btn"
+            type="primary"
+            html-type="submit"
+          >{{$t('login.login')}}</Button>
+        </Item>
+      </FormModel>
+      <div class="message" v-if="isShowMessage">{{messageToShow}}</div>
     </div>
     <Loading :isSpin="true" v-if="isLoading" class="menu-loading-wrapper" />
   </div>
 </template>
 <script>
 import { DEFAULT } from "../config";
-
 import Loading from "./Loading";
+import { Button, FormModel, Input, Icon } from "ant-design-vue";
+const { Item } = FormModel;
 
 export default {
   name: "Login",
   components: {
-    Loading
+    Loading,
+    Button,
+    FormModel,
+    Input,
+    Icon,
+    Item
   },
   data: () => {
     return {
-      isLoading: false
+      isLoading: false,
+      isShowMessage: false,
+      messageToShow: "",
+      formInline: {
+        user: "",
+        password: ""
+      },
+      rules: {
+        user: [
+          {
+            required: true,
+            message: "Please fill in User Name",
+            trigger: "blur"
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: "Please fill in Password",
+            trigger: "blur"
+          },
+          {
+            min: 4,
+            message: "Length should be more than 4",
+            trigger: "blur"
+          }
+        ]
+      }
     };
   },
   methods: {
-    onClickLogin() {
-      this.isLoading = true;
-      this.$router.push('/')
+    handleSubmit(e) {
+      this.isShowMessage = false;
+      var userName = this.formInline.user;
+      var passWord = this.formInline.password;
+
+      this.$refs.ruleForm.validate(valid => {
+        if (userName && passWord) {
+          this.isShowMessage = false;
+          this.$router.push("/");
+        } else {
+          if (passWord == "1") {
+            this.messageToShow = this.$t("login.wrong-user-pass");
+          } else {
+            this.messageToShow = this.$t("login.missing-user-pass");
+          }
+          this.isShowMessage = true;
+          return false;
+        }
+      });
+      //this.isLoading = true;
+      //this.$router.push("/");
     }
   }
 };
@@ -39,12 +123,13 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #558ed5;
+  background: $primary-color;
   display: flex;
   .login-container {
     margin: auto;
     background: white;
     width: 450px;
+    position: relative;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
     .login-form {
       display: flex;
@@ -64,23 +149,37 @@ export default {
       }
       .login-btn {
         text-transform: uppercase;
-        background: #16619c;
+        background: $dark-blue-color;
         border: 0;
         padding: 15px;
         color: #ffffff;
         font-size: 14px;
         outline: 0;
         cursor: pointer;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
       }
     }
     .login-label {
-      background: #16619c;
+      background: $dark-blue-color;
       height: 40px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 24px;
       font-weight: bold;
+    }
+    .message {
+      color: red;
+      display: flex;
+      justify-content: flex-start;
+      font-size: 16px;
+      position: absolute;
+      bottom: 15px;
+      left: 95px;
     }
   }
 }

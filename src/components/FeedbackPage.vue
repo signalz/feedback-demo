@@ -489,7 +489,7 @@ export default {
     &::before {
       content: "";
       position: fixed;
-      border: 2px solid #16619c;
+      border: 2px solid $dark-blue-color;
       @media screen and (min-width: $desktop-width) {
         left: 300px;
         right: 0;
@@ -508,7 +508,7 @@ export default {
       height: calc(100% - 40px);
       left: calc((100% - 30px) / 2);
       width: 2px;
-      background: #16619c;
+      background: $dark-blue-color;
       @media screen and (min-width: $tablet-width) {
         position: absolute;
       }

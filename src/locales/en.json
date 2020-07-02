@@ -46,8 +46,10 @@
   },
   "login": {
     "login": "Login",
-    "login-form": "Login Form",
+    "login-form": "Dashboard Login",
     "username": "User Name",
-    "pass": "Password"
+    "pass": "Password",
+    "wrong-user-pass": "User Name or Password is uncorrect!",
+    "missing-user-pass": "Enter your username and password!"
   }
 }
