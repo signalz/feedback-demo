@@ -36,7 +36,7 @@ export default {
     projectName: function() {
       return this.selectedProject.id === DEFAULT
         ? ""
-        : this.selectedProject.projectName;
+        : this.selectedProject.name;
     }
   },
   props: {
@@ -50,7 +50,7 @@ export default {
       type: Object,
       default: () => {
         return {
-          projectName: String,
+          name: String,
           id: String
         };
       }

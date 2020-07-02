@@ -147,7 +147,7 @@ export default {
       projects: [],
       project: {
         id: DEFAULT,
-        projectName: DEFAULT
+        name: DEFAULT
       },
       screenBreakpoints: SCREEN_BREAK_POINTS_DEFINITION,
       defaultValue: DEFAULT,
@@ -276,7 +276,7 @@ export default {
       if (id === DEFAULT) {
         this.project = {
           id: DEFAULT,
-          projectName: DEFAULT
+          name: DEFAULT
         };
 
         Promise.all([
@@ -302,7 +302,7 @@ export default {
       } else {
         const selectedProject = this.projects.find(p => p.id === id);
         this.project = {
-          projectName: selectedProject.projectName,
+          name: selectedProject.name,
           id: selectedProject.id
         };
         if (this.surveys.length > 0) {

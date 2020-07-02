@@ -15,9 +15,9 @@
       </div>
       <div class="side-menu-projects">
         <SelectableItem
-          v-for="project in projects.filter(prj => prj.projectName.toLocaleLowerCase().includes(filterKey))"
+          v-for="project in projects.filter(prj => prj.name.toLocaleLowerCase().includes(filterKey))"
           :key="project.id"
-          :name="project.projectName"
+          :name="project.name"
           :id="project.id"
           :selected="project.id === selectedProject.id"
           @itemSelect="handleProjectSelect"
@@ -50,7 +50,7 @@ export default {
       default: () => {
         return {
           id: String,
-          projectName: String
+          name: String
         };
       }
     },
