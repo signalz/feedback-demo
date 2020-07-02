@@ -33,6 +33,7 @@
               :review="review"
             />
             <div
+              class="feedback-page-content-new"
               v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
             >{{$t('feedback.new-feedback')}}</div>
           </div>
@@ -83,6 +84,7 @@
               :review="review"
             />
             <div
+              class="feedback-page-content-new"
               v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
             >{{$t('feedback.new-feedback')}}</div>
           </div>
@@ -126,7 +128,6 @@ import {
   DEFAULT,
   SCREEN_BREAK_POINTS_DEFINITION,
   RATINGS,
-  USER_ID,
   FEEDBACK_STATE
 } from "../config";
 
@@ -165,7 +166,8 @@ export default {
       feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
       key: Math.random(),
       eventName: "",
-      review: ""
+      review: "",
+      feedback: {}
     };
   },
   mounted() {
@@ -216,7 +218,7 @@ export default {
       this.surveySections = this.survey.sections.map(section => {
         return {
           ...section,
-          title: this.sections.find(item => item.id === section.sectionId).title
+          title: this.sections.find(item => item.id === section.id).title
         };
       });
     },
@@ -239,6 +241,7 @@ export default {
               : 1;
           })
         }));
+        console.log(this.historyData)
       }
     },
 
@@ -307,13 +310,11 @@ export default {
         };
         if (this.surveys.length > 0) {
           // temporary get survey for project
-          const surveyId = this.surveys[0].id;
+          const { surveyId } = selectedProject;
           Promise.all([
+            request(`${END_POINT}/api/surveys/${surveyId}`),
             request(
-              `${END_POINT}/api/surveys/${surveyId}/project/${selectedProject.id}`
-            ),
-            request(
-              `${END_POINT}/api/feedbacks/survey/${surveyId}/project/${selectedProject.id}/user/${USER_ID}`
+              `${END_POINT}/api/feedbacks?surveyId=${surveyId}&projectId=${selectedProject.id}`
             ),
             request(`${END_POINT}/api/dashboard/projects/summary`, {
               method: "POST"
@@ -331,16 +332,16 @@ export default {
               this.surveySections = survey.sections.map(section => {
                 return {
                   ...section,
-                  title: this.sections.find(
-                    item => item.id === section.sectionId
-                  ).title
+                  title: this.sections.find(item => item.id === section.id)
+                    .title
                 };
               });
-
-              if (feedback) {
+              // temp check feedback existed
+              if (feedback.id) {
+                this.feedback = feedback;
                 this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
                 this.review = feedback.review;
-                this.eventName = "";
+                this.eventName = feedback.event;
 
                 this.surveySections = this.surveySections.map(section => {
                   return {
@@ -349,10 +350,9 @@ export default {
                       return {
                         ...q,
                         rating: feedback.ratings
-                          .find(item => item.sectionId === section.sectionId)
-                          .questions.find(
-                            item => item.questionId === q.questionId
-                          ).rating
+                          .find(item => item.sectionId === section.id)
+                          .questions.find(itemQ => itemQ.questionId === q.id)
+                          .rating
                       };
                     })
                   };
@@ -367,6 +367,7 @@ export default {
               this.isLoading = false;
             })
             .catch(e => {
+              console.log(e);
               this.isLoading = false;
               this.message.error(e);
             });
@@ -378,11 +379,11 @@ export default {
 
     handleRateChange({ sectionId, questionId, rating }) {
       this.surveySections = this.surveySections.map(s => {
-        if (s.sectionId === sectionId) {
+        if (s.id === sectionId) {
           return {
             ...s,
             questions: s.questions.map(q => {
-              if (q.questionId === questionId) {
+              if (q.id === questionId) {
                 return {
                   ...q,
                   rating
@@ -400,21 +401,20 @@ export default {
       const { project, surveySections } = this;
       this.isLoading = true;
       const requestBody = {
-        userId: USER_ID,
         surveyId: this.survey.id,
         projectId: project.id,
         review,
         event,
         ratings: surveySections.map(s => ({
-          sectionId: s.sectionId,
+          sectionId: s.id,
           questions: s.questions.map(q => ({
-            questionId: q.questionId,
+            questionId: q.id,
             rating: q.rating
           }))
         }))
       };
 
-      request(`${END_POINT}/api/feedbacks/submit`, {
+      request(`${END_POINT}/api/feedbacks`, {
         method: "POST",
         body: JSON.stringify(requestBody)
       })
@@ -432,7 +432,24 @@ export default {
     },
 
     handleCancelProject() {
-      this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+      if (this.feedback.id) {
+        this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+        this.surveySections = this.surveySections.map(section => {
+          return {
+            ...section,
+            questions: section.questions.map(q => {
+              return {
+                ...q,
+                rating: this.feedback.ratings
+                  .find(item => item.sectionId === section.id)
+                  .questions.find(itemQ => itemQ.questionId === q.id).rating
+              };
+            })
+          };
+        });
+      } else {
+        this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
+      }
     },
 
     changeOverviewSection({ sectionId }) {
@@ -531,6 +548,10 @@ export default {
           text-transform: uppercase;
           margin-right: 20px;
         }
+      }
+
+      .feedback-page-content-left-section {
+        color: rgba(0, 0, 0, 0.65);
       }
     }
 

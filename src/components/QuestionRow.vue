@@ -41,7 +41,7 @@ export default {
       type: Object,
       default: () => {
         return {
-          questionId: String,
+          id: String,
           index: Number,
           text: String
         };
@@ -52,7 +52,7 @@ export default {
     handleRateChange({ rating }) {
       this.$emit("ratechange", {
         rating,
-        questionId: this.question.questionId
+        questionId: this.question.id
       });
     }
   }

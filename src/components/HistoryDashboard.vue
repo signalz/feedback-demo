@@ -24,7 +24,7 @@
       </Group>
     </div>
     <LineChart
-      v-if="lineChartData.length > 0"
+      v-if="data.length > 0"
       :chartData="lineChartData"
       :options="lineChartOptions"
       :width="300"
@@ -120,7 +120,7 @@ export default {
           }))
         };
       } else {
-        return [];
+        return {};
       }
     }
   },
