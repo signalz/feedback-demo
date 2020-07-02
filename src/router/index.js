@@ -1,20 +1,26 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-import FeedbackPage from '../components/FeedbackPage.vue'
-import LoginPage from '../components/Login.vue'
+import { request } from "../api";
+import { END_POINT } from "../config";
 
-Vue.use(VueRouter)
+import FeedbackPage from "../components/FeedbackPage.vue";
+import LoginPage from "../components/Login.vue";
 
-  const routes = [
+Vue.use(VueRouter);
+
+const routes = [
   {
-    path: '/',
-    name: 'Feedback',
-    component: FeedbackPage
+    path: "/",
+    name: "Feedback",
+    component: FeedbackPage,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
-    path: '/login',
-    name: 'Login',
+    path: "/login",
+    name: "Login",
     component: LoginPage
   },
   // {
@@ -26,16 +32,84 @@ Vue.use(VueRouter)
   //   component: () => import(/* webpackChunkName: "about" */ '../components/DashboardPage.vue')
   // },
   {
-    path: '*',
-    name: 'Notfound',
-    component: () => import(/* webpackChunkName: "about" */ '../components/NotFoundPage.vue')
-  },
-]
+    path: "*",
+    name: "Notfound",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../components/NotFoundPage.vue")
+  }
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
   routes
-})
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  const jwt = localStorage.getItem("jwt");
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (jwt === null) {
+      next({
+        path: "/login",
+        params: { nextUrl: to.fullPath }
+      });
+    } else {
+      request(`${END_POINT}/signin-with-token`, { method: "POST" })
+        .then(() => {
+          next();
+        })
+        .catch(e => {
+          localStorage.removeItem("jwt");
+          console.log(e);
+          next({
+            path: "/login",
+            params: { nextUrl: to.fullPath }
+          });
+        });
+      // next();
+      // let user = JSON.parse(localStorage.getItem("user"));
+      // if (to.matched.some(record => record.meta.is_admin)) {
+      //   if (user.is_admin == 1) {
+      //     next();
+      //   } else {
+      //     next({ name: "userboard" });
+      //   }
+      // } else {
+      //   next();
+      // }
+    }
+    // } else if (to.matched.some(record => record.meta.guest)) {
+    //   if (localStorage.getItem("jwt") == null) {
+    //     next();
+    //   } else {
+    //     next({ name: "userboard" });
+    //   }
+    // } else {
+  } else {
+    if (to.path === '/login') {
+      if (jwt === null) {
+        next()
+      } else {
+        request(`${END_POINT}/signin-with-token`, { method: "POST" })
+        .then(() => {
+          next({
+            path: "/",
+            params: { nextUrl: to.fullPath }
+          });
+        })
+        .catch(e => {
+          localStorage.removeItem("jwt");
+          console.log(e);
+          next({
+            path: "/login",
+            params: { nextUrl: to.fullPath }
+          });
+        });
+      }
+    } else {
+      next();
+    }
+  }
+});
+
+export default router;
