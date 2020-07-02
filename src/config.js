@@ -1,6 +1,6 @@
 // export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
-// export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com"
-export const END_POINT = "http://localhost:3000"
+export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com"
+
 export const USER_ID = "1234";
 
 export const SCREEN_BREAK_POINTS_DEFINITION = {
