@@ -12,6 +12,7 @@
       class="side-menu"
       v-bind:class="{visible: isOpen}"
       :projects="projects"
+      :event="eventName"
       :selectedProject="selectedProject"
       @selectProject="handleSelectProject"
     />
@@ -96,13 +97,13 @@ export default {
 
 @media screen and (max-width: $extra-small-phone-width) {
   .sideBarOpen {
-    margin-left: $minimum-side-menu-width !important;
+    padding-left: $minimum-side-menu-width !important;
   }
 }
 
 @media screen and (max-width: $desktop-width) {
   .sideBarOpen {
-    margin-left: $side-menu-width;
+    padding-left: $side-menu-width;
   }
 }
 

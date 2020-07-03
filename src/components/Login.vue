@@ -2,12 +2,7 @@
   <div class="login-wrapper">
     <div class="login-container">
       <div class="login-label">{{ $t("login.login-form") }}</div>
-      <FormModel
-        class="login-form"
-        ref="ruleForm"
-        :model="formInline"
-        :rules="rules"
-      >
+      <FormModel class="login-form" ref="ruleForm" :model="formInline" :rules="rules">
         <Item ref="user" prob="user" required>
           <Input
             v-model="formInline.user"
@@ -41,8 +36,7 @@
             class="login-btn"
             type="primary"
             html-type="submit"
-            >{{ $t("login.login") }}</Button
-          >
+          >{{ $t("login.login") }}</Button>
         </Item>
       </FormModel>
       <div class="message" v-if="isShowMessage">{{ messageToShow }}</div>
@@ -53,8 +47,8 @@
 <script>
 import { Button, FormModel, Input, Icon } from "ant-design-vue";
 
-import { request } from '../api'
-import { END_POINT } from '../config'
+import { request } from "../api";
+import { END_POINT } from "../config";
 import Loading from "./Loading";
 
 const { Item } = FormModel;
@@ -117,21 +111,20 @@ export default {
               username,
               password
             })
-          }).then(data => {
-            localStorage.setItem('jwt', data.token)
-            this.isLoading = false
-            this.$router.push("/");
-          }).catch(e => {
-            this.isLoading = false
-            console.log(e);
           })
-          // this.$router.push("/");
+            .then(data => {
+              localStorage.setItem("jwt", data.token);
+              this.isLoading = false;
+              this.$router.push("/");
+            })
+            .catch(e => {
+              this.isLoading = false;
+              this.messageToShow = this.$t("login.wrong-user-pass");
+              this.isShowMessage = true;
+              console.log(e);
+            });
         } else {
-          // if (passWord == "1") {
-          //   this.messageToShow = this.$t("login.wrong-user-pass");
-          // } else {
-          //   this.messageToShow = this.$t("login.missing-user-pass");
-          // }
+          this.messageToShow = this.$t("login.missing-user-pass");
           this.isShowMessage = true;
           return false;
         }

@@ -6,6 +6,7 @@ import { END_POINT } from "../config";
 
 import FeedbackPage from "../components/FeedbackPage.vue";
 import LoginPage from "../components/Login.vue";
+import AdminPage from "../components/AdminPage.vue";
 
 Vue.use(VueRouter);
 
@@ -22,6 +23,11 @@ const routes = [
     path: "/login",
     name: "Login",
     component: LoginPage
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: AdminPage
   },
   // {
   //   path: '/dashboard',
@@ -91,20 +97,20 @@ router.beforeEach((to, from, next) => {
         next()
       } else {
         request(`${END_POINT}/signin-with-token`, { method: "POST" })
-        .then(() => {
-          next({
-            path: "/",
-            params: { nextUrl: to.fullPath }
+          .then(() => {
+            next({
+              path: "/",
+              params: { nextUrl: to.fullPath }
+            });
+          })
+          .catch(e => {
+            localStorage.removeItem("jwt");
+            console.log(e);
+            next({
+              path: "/login",
+              params: { nextUrl: to.fullPath }
+            });
           });
-        })
-        .catch(e => {
-          localStorage.removeItem("jwt");
-          console.log(e);
-          next({
-            path: "/login",
-            params: { nextUrl: to.fullPath }
-          });
-        });
       }
     } else {
       next();

@@ -46,6 +46,7 @@
   },
   "login": {
     "login": "Login",
+    "logout": "Logout",
     "login-form": "Dashboard Login",
     "username": "User Name",
     "pass": "Password",
