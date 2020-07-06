@@ -6,10 +6,13 @@
       >{{feedbackStates.LAST_FEEDBACK === state ? $t('feedback.last-event') : $t('feedback.event')}}</div>
       <div>
         <Input
-          :defaultValue="event"
+          v-if="feedbackStates.NEW_FEEDBACK === state"
           v-model="eventName"
           :disabled="feedbackStates.LAST_FEEDBACK === state"
         />
+        <div v-else>
+          <div>{{event}}</div>
+        </div>
       </div>
     </div>
     <div v-for="section in sections" :key="section.id" class="project-feedback-section">
@@ -19,7 +22,7 @@
           <QuestionRow
             :ratings="ratings"
             :question="{...question, index: qIdx + 1}"
-            @ratechange="handleRateChange({sectionId: section.sectionId}, $event)"
+            @ratechange="handleRateChange({sectionId: section.id}, $event)"
           />
         </div>
       </div>
@@ -28,7 +31,6 @@
       <div class="project-feedback-section-header">{{$t('feedback.review')}}</div>
       <TextArea
         v-if="feedbackStates.NEW_FEEDBACK === state"
-        :defaultValue="review"
         v-model="reviewText"
         class="project-feedback-review-input"
         :placeholder="$t('feedback.write-review')"

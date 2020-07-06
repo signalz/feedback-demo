@@ -5,8 +5,16 @@
       <div class="side-menu-app-name-second">{{$t('app.name.second')}}</div>
     </div>
     <div class="side-menu-project-manager">
-      <div class="side-menu-project-manager-label">{{$t('menu.side.manager')}}</div>
-      <div class="side-menu-project-manager-name">{{manager}}</div>
+      <div class="side-menu-row">
+        <div class="side-menu-project-manager-label manager-mobile">{{$t('menu.bar.event-label')}}</div>
+        <div
+          class="side-menu-project-manager-name manager-mobile"
+        >{{event || $t('menu.bar.no-event')}}</div>
+      </div>
+      <div class="side-menu-row">
+        <div class="side-menu-project-manager-label">{{$t('menu.side.manager')}}</div>
+        <div class="side-menu-project-manager-name">{{manager}}</div>
+      </div>
     </div>
     <div class="side-menu-search">
       <div class="side-menu-search-box">
@@ -15,9 +23,9 @@
       </div>
       <div class="side-menu-projects">
         <SelectableItem
-          v-for="project in projects.filter(prj => prj.projectName.toLocaleLowerCase().includes(filterKey))"
+          v-for="project in projects.filter(prj => prj.name.toLocaleLowerCase().includes(filterKey))"
           :key="project.id"
-          :name="project.projectName"
+          :name="project.name"
           :id="project.id"
           :selected="project.id === selectedProject.id"
           @itemSelect="handleProjectSelect"
@@ -45,12 +53,13 @@ export default {
   },
   props: {
     projects: Array,
+    event: String,
     selectedProject: {
       type: Object,
       default: () => {
         return {
           id: String,
-          projectName: String
+          name: String
         };
       }
     },
@@ -79,6 +88,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@media screen and (max-width: $desktop-width) {
+  .manager-mobile {
+    display: block !important;
+  }
+}
+
 @media screen and (max-width: $extra-small-phone-width) {
   .side-menu-wrapper {
     width: $minimum-side-menu-width !important;
@@ -93,6 +108,10 @@ export default {
       }
     }
   }
+}
+
+.manager-mobile {
+  display: none;
 }
 
 .side-menu-wrapper {
@@ -126,7 +145,12 @@ export default {
     display: flex;
     padding: 0 10px 0 10px;
     font-size: 16px;
-    align-items: center;
+    flex-direction: column;
+
+    .side-menu-row {
+      align-items: center;
+      display: flex;
+    }
 
     .side-menu-project-manager-label {
       margin-right: 20px;

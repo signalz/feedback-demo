@@ -13,17 +13,20 @@
       <div class="bar-menu-event">
         <div class="bar-menu-event-label">{{$t('menu.bar.event-label')}}</div>
         <div class="bar-menu-event-name">{{event || $t('menu.bar.no-event')}}</div>
+        <Button class="logout-btn" @click="onClickLogout">{{$t('login.logout')}}</Button>
       </div>
     </div>
   </div>
 </template>
 <script>
 import MobileMenuButton from "./MobileMenuButton";
+import { Button } from "ant-design-vue";
 
 export default {
   name: "BarMenu",
   components: {
-    MobileMenuButton
+    MobileMenuButton,
+    Button
   },
   props: {
     isOpen: Boolean,
@@ -33,6 +36,11 @@ export default {
   methods: {
     onMobileMenuClick() {
       this.$emit("open", { isOpen: !this.isOpen });
+    },
+
+    onClickLogout() {
+      localStorage.removeItem("jwt");
+      this.$router.push("/login");
     }
   }
 };
@@ -46,7 +54,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 20px 0 20px;
-  font-size: 24px;
+  font-size: 21px;
   z-index: 99;
   min-width: $min-width;
 
@@ -83,12 +91,33 @@ export default {
       .bar-menu-event-name {
         word-break: break-all;
       }
+
+      .logout-btn {
+        margin: 0 10px;
+        background: #16619c;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
     }
   }
 
   @media screen and (max-width: $desktop-width) {
     .bar-menu-information {
       font-size: 17px;
+      justify-content: flex-end;
+    }
+
+    .bar-menu-project {
+      display: none !important;
+    }
+
+    .bar-menu-event-label {
+      display: none;
+    }
+
+    .bar-menu-event-name {
+      display: none;
     }
   }
 
