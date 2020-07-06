@@ -241,7 +241,7 @@ export default {
               : 1;
           })
         }));
-        console.log(this.historyData)
+        console.log(this.historyData);
       }
     },
 
@@ -522,12 +522,16 @@ export default {
     }
     &:after {
       content: "";
-      height: calc(100% - 40px);
-      left: calc((100% - 30px) / 2);
-      width: 2px;
-      background: $dark-blue-color;
-      @media screen and (min-width: $tablet-width) {
-        position: absolute;
+      position: fixed;
+      background: #16619c;
+      top: 0;
+      bottom: 0;
+      right: calc((100% - 260px) / 2);
+      @media screen and (min-width: $desktop-width) {
+        width: 2px;
+      }
+      @media screen and (max-width: $desktop-width) {
+        width: 0px;
       }
     }
     .feedback-page-content-left {
@@ -581,7 +585,7 @@ export default {
 
   @media screen and (min-width: $desktop-width) {
     .feedback-page-content {
-      margin-left: $side-menu-width;
+      padding-left: $side-menu-width;
     }
   }
 }
