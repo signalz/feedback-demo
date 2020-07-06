@@ -54,7 +54,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 20px 0 20px;
-  font-size: 21px;
+  font-size: 19px;
   z-index: 99;
   min-width: $min-width;
 
