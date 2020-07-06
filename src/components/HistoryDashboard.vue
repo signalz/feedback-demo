@@ -106,7 +106,7 @@ export default {
   },
   computed: {
     lineChartData() {
-      if (this.data.length > 0) {
+      if (this.data && this.data.length > 0) {
         return {
           labels: this.data[0].data.map(item => item.date),
           datasets: this.data.map((item, idx) => ({

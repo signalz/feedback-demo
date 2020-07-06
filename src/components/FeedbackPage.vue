@@ -11,18 +11,27 @@
       <div class="feedback-page-content">
         <div class="feedback-page-content-left">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{$t('feedback.feedback')}}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <Button
               v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
-            >{{$t('feedback.new')}}</Button>
+              >{{ $t("feedback.new") }}</Button
+            >
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
-              v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
+              v-if="
+                project.id !== defaultValue &&
+                  feedbackState !== feedbackStates.NO_FEEDBACK
+              "
               :sections="surveySections"
               :ratings="ratings"
               @ratechange="handleRateChange"
@@ -34,13 +43,20 @@
             />
             <div
               class="feedback-page-content-new"
-              v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
-            >{{$t('feedback.new-feedback')}}</div>
+              v-if="
+                project.id !== defaultValue &&
+                  feedbackState === feedbackStates.NO_FEEDBACK
+              "
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{$t('feedback.dashboard')}}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
           </div>
           <Dashboard
             :key="key"
@@ -53,27 +69,39 @@
         </div>
       </div>
     </mq-layout>
-    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
+    <mq-layout
+      :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]"
+    >
       <div class="feedback-page-content">
         <div class="feedback-page-content-left" v-if="showOverview">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{$t('feedback.feedback')}}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <Button
               v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
-            >{{$t('feedback.new')}}</Button>
+              >{{ $t("feedback.new") }}</Button
+            >
             <Button
               type="primary"
               class="feedback-page-content-left-header-dashboard"
               @click="onClickChangeSection"
-            >{{$t('feedback.dashboard')}}</Button>
+              >{{ $t("feedback.dashboard") }}</Button
+            >
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
-              v-if="project.id !== defaultValue && feedbackState !== feedbackStates.NO_FEEDBACK"
+              v-if="
+                project.id !== defaultValue &&
+                  feedbackState !== feedbackStates.NO_FEEDBACK
+              "
               :sections="surveySections"
               :ratings="ratings"
               @ratechange="handleRateChange"
@@ -85,18 +113,26 @@
             />
             <div
               class="feedback-page-content-new"
-              v-if="project.id !== defaultValue && feedbackState === feedbackStates.NO_FEEDBACK"
-            >{{$t('feedback.new-feedback')}}</div>
+              v-if="
+                project.id !== defaultValue &&
+                  feedbackState === feedbackStates.NO_FEEDBACK
+              "
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right" v-if="!showOverview">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{$t('feedback.dashboard')}}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
             <Button
               type="primary"
               class="feedback-page-content-right-header-feedback"
               @click="onClickChangeSection"
-            >{{$t('feedback.feedback')}}</Button>
+              >{{ $t("feedback.feedback") }}</Button
+            >
           </div>
           <Dashboard
             :sections="sections"
@@ -188,7 +224,10 @@ export default {
         }
 
         this.setOverviewData(overviewData);
-        this.setHistoryData([historyData], [{ title: DEFAULT }]);
+
+        if (historyData && historyData.length > 0) {
+          this.setHistoryData([historyData], [{ title: DEFAULT }]);
+        }
 
         this.ratings = RATINGS;
 
@@ -241,7 +280,6 @@ export default {
               : 1;
           })
         }));
-        console.log(this.historyData)
       }
     },
 
@@ -269,6 +307,22 @@ export default {
             throw e;
           });
       }
+    },
+
+    getRating({ ratings, section, question }) {
+      let rating;
+      const ratingSection = ratings.find(item => item.sectionId === section.id);
+      if (ratingSection) {
+        const { questions } = ratingSection;
+        const ratingQuestion = questions.find(
+          itemQ => itemQ.questionId === question.id
+        );
+
+        if (ratingQuestion) {
+          rating = ratingQuestion.rating;
+        }
+      }
+      return rating;
     },
 
     handleSelectProject({ id }) {
@@ -349,10 +403,15 @@ export default {
                     questions: section.questions.map(q => {
                       return {
                         ...q,
-                        rating: feedback.ratings
-                          .find(item => item.sectionId === section.id)
-                          .questions.find(itemQ => itemQ.questionId === q.id)
-                          .rating
+                        // rating: feedback.ratings
+                        //   .find(item => item.sectionId === section.id)
+                        //   .questions.find(itemQ => itemQ.questionId === q.id)
+                        //   .rating,
+                        rating: this.getRating({
+                          ratings: feedback.ratings,
+                          section,
+                          question: q
+                        })
                       };
                     })
                   };
@@ -440,9 +499,14 @@ export default {
             questions: section.questions.map(q => {
               return {
                 ...q,
-                rating: this.feedback.ratings
-                  .find(item => item.sectionId === section.id)
-                  .questions.find(itemQ => itemQ.questionId === q.id).rating
+                // rating: this.feedback.ratings
+                //   .find(item => item.sectionId === section.id)
+                //   .questions.find(itemQ => itemQ.questionId === q.id).rating,
+                rating: this.getRating({
+                  ratings: this.feedback.ratings,
+                  section,
+                  question: q
+                })
               };
             })
           };
