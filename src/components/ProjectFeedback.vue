@@ -11,7 +11,7 @@
           :disabled="feedbackStates.LAST_FEEDBACK === state"
         />
         <div v-else>
-          <div>{{event}}</div>
+          <div class="padding-top-3">{{event}}</div>
         </div>
       </div>
     </div>
@@ -114,6 +114,10 @@ export default {
       margin-right: 10px;
       font-size: 22px;
       color: #22282d;
+    }
+    
+    .padding-top-3{
+      padding-top: 3px;
     }
   }
 
