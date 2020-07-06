@@ -374,7 +374,8 @@ export default {
               method: "POST"
             }),
             request(`${END_POINT}/api/dashboard/projects/history`, {
-              method: "POST"
+              method: "POST",
+              body: JSON.stringify({ projectId: id })
             })
           ])
             .then(([survey, feedback, overviewData, historyData]) => {
@@ -403,10 +404,6 @@ export default {
                     questions: section.questions.map(q => {
                       return {
                         ...q,
-                        // rating: feedback.ratings
-                        //   .find(item => item.sectionId === section.id)
-                        //   .questions.find(itemQ => itemQ.questionId === q.id)
-                        //   .rating,
                         rating: this.getRating({
                           ratings: feedback.ratings,
                           section,
@@ -499,9 +496,6 @@ export default {
             questions: section.questions.map(q => {
               return {
                 ...q,
-                // rating: this.feedback.ratings
-                //   .find(item => item.sectionId === section.id)
-                //   .questions.find(itemQ => itemQ.questionId === q.id).rating,
                 rating: this.getRating({
                   ratings: this.feedback.ratings,
                   section,

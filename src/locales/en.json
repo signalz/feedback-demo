@@ -50,9 +50,9 @@
     "login": "Login",
     "logout": "Logout",
     "login-form": "Dashboard Login",
-    "username": "User Name",
+    "username": "Username",
     "pass": "Password",
-    "wrong-user-pass": "User Name or Password is uncorrect!",
+    "wrong-user-pass": "Username or password is not correct!",
     "missing-user-pass": "Enter your username and password!"
   }
 }

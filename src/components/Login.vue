@@ -2,30 +2,34 @@
   <div class="login-wrapper">
     <div class="login-container">
       <div class="login-label">{{ $t("login.login-form") }}</div>
-      <FormModel class="login-form" ref="ruleForm" :model="formInline" :rules="rules">
-        <Item ref="user" prob="user" required>
+      <Form class="login-form" :form="form" @submit="handleSubmit">
+        <Item>
           <Input
-            v-model="formInline.user"
             :placeholder="$t('login.username')"
-            @blur="
-              () => {
-                $refs.user.onFieldBlur();
+            v-decorator="[
+              'username',
+              {
+                rules: [
+                  { required: true, message: 'Please input your username!' }
+                ]
               }
-            "
+            ]"
           >
             <Icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
           </Input>
         </Item>
-        <Item ref="password" prob="password" required>
+        <Item>
           <Input
-            v-model="formInline.password"
             type="password"
             :placeholder="$t('login.pass')"
-            @blur="
-              () => {
-                $refs.password.onFieldBlur();
+            v-decorator="[
+              'password',
+              {
+                rules: [
+                  { required: true, message: 'Please input your password!' }
+                ]
               }
-            "
+            ]"
           >
             <Icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
           </Input>
@@ -36,74 +40,51 @@
             class="login-btn"
             type="primary"
             html-type="submit"
-          >{{ $t("login.login") }}</Button>
+            >{{ $t("login.login") }}</Button
+          >
         </Item>
-      </FormModel>
+      </Form>
       <div class="message" v-if="isShowMessage">{{ messageToShow }}</div>
     </div>
     <Loading :isSpin="true" v-if="isLoading" class="menu-loading-wrapper" />
   </div>
 </template>
 <script>
-import { Button, FormModel, Input, Icon } from "ant-design-vue";
+import { Button, Form, Icon, Input, message } from "ant-design-vue";
 
 import { request } from "../api";
 import { END_POINT } from "../config";
 import Loading from "./Loading";
 
-const { Item } = FormModel;
+const { Item } = Form;
 
 export default {
   name: "Login",
   components: {
-    Loading,
     Button,
-    FormModel,
-    Input,
+    Form,
     Icon,
-    Item
+    Input,
+    Item,
+    Loading
+  },
+  mounted() {
+    this.form = this.$form.createForm(this, { name: "login" });
   },
   data: () => {
     return {
       isLoading: false,
       isShowMessage: false,
-      messageToShow: "",
-      formInline: {
-        user: "",
-        password: ""
-      },
-      rules: {
-        user: [
-          {
-            required: true,
-            message: "Please fill in User Name",
-            trigger: "blur"
-          }
-        ],
-        password: [
-          {
-            required: true,
-            message: "Please fill in Password",
-            trigger: "blur"
-          },
-          {
-            min: 4,
-            message: "Length should be more than 4",
-            trigger: "blur"
-          }
-        ]
-      }
+      form: {},
+      message
     };
   },
   methods: {
-    handleSubmit() {
-      this.isShowMessage = false;
-      const username = this.formInline.user;
-      const password = this.formInline.password;
-
-      this.$refs.ruleForm.validate(() => {
-        if (username && password) {
-          this.isShowMessage = false;
+    handleSubmit(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          const { username, password } = values;
           this.isLoading = true;
           request(`${END_POINT}/signin`, {
             method: "POST",
@@ -119,18 +100,11 @@ export default {
             })
             .catch(e => {
               this.isLoading = false;
-              this.messageToShow = this.$t("login.wrong-user-pass");
-              this.isShowMessage = true;
+              this.message.error(this.$t("login.wrong-user-pass"));
               console.log(e);
             });
-        } else {
-          this.messageToShow = this.$t("login.missing-user-pass");
-          this.isShowMessage = true;
-          return false;
         }
       });
-      //this.isLoading = true;
-      //this.$router.push("/");
     }
   }
 };
