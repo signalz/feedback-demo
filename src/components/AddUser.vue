@@ -4,7 +4,6 @@
   </div>
 </template>
 <script>
-import { DEFAULT } from "../config";
 
 
 export default {

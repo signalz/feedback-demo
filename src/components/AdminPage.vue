@@ -61,12 +61,12 @@
   </div>
 </template>
 <script>
-import { DEFAULT } from "../config";
-import Loading from "./Loading";
+
+
 import { Layout, Menu, Icon, Button, Radio } from "ant-design-vue";
 import AddUser from "./AddUser.vue";
-const { Header, Content, Footer, Sider } = Layout;
-const { Item, SubMenu } = Menu;
+const { Header, Content, Sider } = Layout;
+const { Item } = Menu;
 const { Group, Button: radioButton } = Radio;
 
 export default {
@@ -76,14 +76,11 @@ export default {
     Group,
     radioButton,
     Layout,
-    Loading,
     Menu,
     Icon,
     Header,
     Sider,
     Content,
-    Footer,
-    SubMenu,
     Item,
     Button
   },
@@ -108,7 +105,7 @@ export default {
       console.log(e);
     },
 
-    onSelectMenuItem({ item, key, keyPath, selectedKeys, domEvent }) {
+    onSelectMenuItem({ key }) {
       if (this.menuSelected != key) {
         this.menuSelected = key;
         this.operatorSelected = "";
