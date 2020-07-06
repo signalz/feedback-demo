@@ -371,7 +371,8 @@ export default {
               `${END_POINT}/api/feedbacks?surveyId=${surveyId}&projectId=${selectedProject.id}`
             ),
             request(`${END_POINT}/api/dashboard/projects/summary`, {
-              method: "POST"
+              method: "POST",
+              body: JSON.stringify({ projectId: id })
             }),
             request(`${END_POINT}/api/dashboard/projects/history`, {
               method: "POST",
