@@ -590,7 +590,7 @@ export default {
       background: #16619c;
       top: 0;
       bottom: 0;
-      right: calc((100% - 260px) / 2);
+      right: calc((100% - 276px) / 2);
       @media screen and (min-width: $desktop-width) {
         width: 2px;
       }
