@@ -34,7 +34,7 @@ export const RATINGS_LABELS = {
   BRONZE: "Bronze",
   SILVER: "Silver",
   GOLD: "Gold",
-  PLATINUM: "Platin"
+  PLATINUM: "Platinum"
 };
 
 export const RATINGS_RATE = {

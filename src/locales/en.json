@@ -54,5 +54,16 @@
     "pass": "Password",
     "wrong-user-pass": "Username or password is not correct!",
     "missing-user-pass": "Enter your username and password!"
+  },
+  "admin": {
+    "first-name": "First Name",
+    "last-name": "Last Name",
+    "user-name": "User Name",
+    "email": "Email",
+    "add-user": "Add User",
+    "edit": "Edit",
+    "delete": "Delete",
+    "pass-confirm": "Confirm Password",
+    "pass-old": "Old Password"
   }
 }

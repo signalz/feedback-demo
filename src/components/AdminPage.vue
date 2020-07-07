@@ -33,7 +33,7 @@
         >
           <div v-if="menuSelected == 'User'  ">
             <div class="content-label">User</div>
-            <Table></Table>
+            <UserTable></UserTable>
           </div>
           <div v-if="menuSelected == 'Project' ">
             <div class="content-label">Project</div>
@@ -49,14 +49,14 @@
 </template>
 <script>
 import { Layout, Menu, Icon, Button } from "ant-design-vue";
-import Table from "./Table.vue";
+import UserTable from "./UserTable.vue";
 const { Header, Content, Sider } = Layout;
 const { Item } = Menu;
 
 export default {
   name: "Admin",
   components: {
-    Table,
+    UserTable,
     Layout,
     Menu,
     Icon,

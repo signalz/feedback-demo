@@ -1,0 +1,552 @@
+<template>
+  <div>
+    <Loading :isSpin="true" v-if="isLoading" class="menu-loading-wrapper" />
+    <Modal
+      @ok="onConfirmDelete"
+      v-model="deleteModalVisible"
+    >Are you sure to delete user {{selectedUser}}?</Modal>
+    <Modal @ok="onConfirmChangePass" v-model="changePassModalVisible">
+      <Form class="detail-form" :form="formChangePass" @submit="onConfirmChangePass">
+        <Item class="form-item form-full-width">
+          <div class="label-form">Old Password</div>
+          <Input
+            :placeholder="$t('admin.pass-old')"
+            type="password"
+            v-decorator="[
+              'passwordOld',
+              {
+                rules: [
+                  { 
+                    required: true, message: 'Please input your old password!' 
+                  },
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item">
+          <div class="label-form">Password</div>
+          <Input
+            :placeholder="$t('login.pass')"
+            type="password"
+            v-decorator="[
+              'password',
+              {
+                rules: [
+                  { 
+                    required: true, message: 'Please input your password!' 
+                  },
+                  {
+                    validator: validateToNextPassword,
+                  },
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item">
+          <div class="label-form">Confirm Password</div>
+          <Input
+            :placeholder="$t('admin.pass-confirm')"
+            type="password"
+            v-decorator="[
+              'passwordConfirm',
+              {
+                rules: [
+                  { 
+                    required: true, message: 'Please input your confirm password!' 
+                  },
+                  {
+                    validator: compareToFirstPassword,
+                  },
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+      </Form>
+    </Modal>
+    <Modal @ok="onConfirmDetail" v-model="detailModalVisible">
+      <div class="form-header">{{typeDetailModal}}</div>
+      <Form class="detail-form" :form="form" @submit="onConfirmDetail">
+        <Item class="form-item">
+          <div class="label-form">User Name</div>
+          <Input
+            :placeholder="$t('admin.user-name')"
+            v-decorator="[
+              'username',
+              {
+                rules: [
+                  { required: true, message: 'Please input your username!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item">
+          <div class="label-form">Email</div>
+          <Input
+            :placeholder="$t('admin.email')"
+            v-decorator="[
+              'email',
+              {
+                rules: [
+                  { required: true, message: 'Please input your email!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item v-if="typeDetailModal == 'Add'" class="form-item">
+          <div class="label-form">Password</div>
+          <Input
+            :placeholder="$t('login.pass')"
+            type="password"
+            v-decorator="[
+              'password',
+              {
+                rules: [
+                  { 
+                    required: true, message: 'Please input your password!' 
+                  },
+                  {
+                    validator: validateToNextPassword,
+                  },
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item v-if="typeDetailModal == 'Add'" class="form-item">
+          <div class="label-form">Confirm Password</div>
+          <Input
+            :placeholder="$t('admin.pass-confirm')"
+            type="password"
+            v-decorator="[
+              'passwordConfirm',
+              {
+                rules: [
+                  { 
+                    required: true, message: 'Please input your confirm password!' 
+                  },
+                  {
+                    validator: compareToFirstPassword,
+                  },
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item">
+          <div class="label-form">First Name</div>
+          <Input
+            :placeholder="$t('admin.first-name')"
+            v-decorator="[
+              'firstName',
+              {
+                rules: [
+                  { required: true, message: 'Please input your first name!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item">
+          <div class="label-form">Last Name</div>
+          <Input
+            :placeholder="$t('admin.last-name')"
+            v-decorator="[
+              'lastName',
+              {
+                rules: [
+                  { required: true, message: 'Please input your last name!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item radio-wrapper">
+          <Group v-model="roleModel" button-style="solid">
+            <div class="radio-title">Role:</div>
+            <radioButton value="USER">User</radioButton>
+            <radioButton value="ADMIN">Admin</radioButton>
+          </Group>
+        </Item>
+      </Form>
+    </Modal>
+    <Button @click="onClickAdd" class="add-btn" type="primary">Add user</Button>
+    <Table
+      :columns="columns"
+      :row-key="record => record.id"
+      :data-source="users"
+      class="table-wrapper"
+    >
+      <a slot="email" slot-scope="text">{{ text }}</a>
+      <span slot="roles" slot-scope="roles">
+        <Tag v-for="role in roles" :key="role" :color="handleColor(role)">{{ role.toUpperCase() }}</Tag>
+      </span>
+      <span slot="action" slot-scope="text, record">
+        <a v-if="record.roles.length == 1" @click="onClickChangePass(record)">Change Password</a>
+        <Divider v-if="record.roles.length == 1" type="vertical" />
+        <a v-if="record.roles.length == 1" @click="onClickEdit(record)">Edit</a>
+        <Divider v-if="record.roles.length == 1" type="vertical" />
+        <a v-if="record.roles.length == 1" @click="onClickDelete(record)">Delete</a>
+      </span>
+    </Table>
+  </div>
+</template>
+<script>
+const columns = [
+  {
+    dataIndex: "username",
+    key: "username",
+    title: "User Name"
+  },
+  {
+    title: "First Name",
+    dataIndex: "firstName",
+    key: "firstName"
+  },
+  {
+    title: "Last Name",
+    dataIndex: "lastName",
+    key: "lastName"
+  },
+  {
+    dataIndex: "email",
+    key: "email",
+    title: "Email",
+    scopedSlots: { customRender: "email" }
+  },
+  {
+    title: "Roles",
+    key: "roles",
+    dataIndex: "roles",
+    scopedSlots: { customRender: "roles" }
+  },
+  {
+    title: "Action",
+    key: "action",
+    scopedSlots: { customRender: "action" }
+  }
+];
+
+import { Table, Form, Tag, Divider, Modal, Radio } from "ant-design-vue";
+import Loading from "./Loading";
+import { request } from "../api";
+import { END_POINT } from "../config";
+import Vue from "vue";
+const { Button: radioButton, Group } = Radio;
+const { Item } = Form;
+Vue.use(Modal);
+export default {
+  components: {
+    Table,
+    Modal,
+    Loading,
+    Tag,
+    Divider,
+    Form,
+    Item,
+    Group,
+    radioButton
+  },
+  data() {
+    return {
+      columns,
+      isLoading: true,
+      deleteModalVisible: false,
+      changePassModalVisible: false,
+      detailModalVisible: false,
+      typeDetailModal: "",
+      selectedUser: "",
+      selectedID: "",
+      roleModel: "USER",
+      form: {},
+      formChangePass: {},
+      users: []
+    };
+  },
+  mounted() {
+    this.form = this.$form.createForm(this, { name: "detail" });
+    this.formChangePass = this.$form.createForm(this, { name: "changePass" });
+    this.formChangePass.getFieldDecorator("password", {
+      initialValue: ""
+    });
+    this.formChangePass.getFieldDecorator("passwordConfirm", {
+      initialValue: ""
+    });
+    this.formChangePass.getFieldDecorator("passwordOld", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("username", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("password", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("firstName", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("lastName", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("email", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("passwordConfirm", {
+      initialValue: ""
+    });
+    Promise.all([
+      request(`${END_POINT}/api/users`, {
+        method: "GET"
+      })
+    ])
+      .then(([users]) => {
+        if (users && users.length > 0) {
+          this.users = users;
+          console.log(users);
+        }
+        this.isLoading = false;
+      })
+      .catch(e => {
+        this.isLoading = false;
+        this.message.error(e);
+      });
+  },
+  methods: {
+    handleColor(role) {
+      if (role.includes("ADMIN")) {
+        return "green";
+      } else {
+        return "geekblue";
+      }
+    },
+
+    _reloadForm() {
+      this.isLoading = true;
+      request(`${END_POINT}/api/users`, {
+        method: "GET"
+      }).then(resultGetAllUser => {
+        this.isLoading = false;
+        this.users = resultGetAllUser;
+      });
+    },
+
+    compareToFirstPassword(rule, value, callback) {
+      let form = {};
+      if (this.changePassModalVisible) {
+        form = this.formChangePass;
+      } else {
+        form = this.form;
+      }
+      if (value && value !== form.getFieldValue("password")) {
+        callback("Two passwords that you enter is inconsistent!");
+      } else {
+        callback();
+      }
+    },
+
+    validateToNextPassword(rule, value, callback) {
+      let form = {};
+      if (this.changePassModalVisible) {
+        form = this.formChangePass;
+      } else {
+        form = this.form;
+      }
+      if (value && this.confirmDirty) {
+        form.validateFields(["confirm"], { force: true });
+      }
+      callback();
+    },
+
+    onClickChangePass(record) {
+      this.selectedID = record.id;
+      this.formChangePass.setFieldsValue({
+        password: "",
+        passwordOld: "",
+        passwordConfirm: ""
+      });
+      this.changePassModalVisible = true;
+    },
+
+    onConfirmChangePass(e) {
+      e.preventDefault();
+      this.formChangePass.validateFields((err, values) => {
+        const { passwordOld: password, password: newPassword, passwordConfirm: confirmNewPassword } = values;
+        const obj = {
+          password,
+          newPassword,
+          confirmNewPassword
+        };
+        if (!err) {
+          request(`${END_POINT}/api/users/` + this.selectedID, {
+            method: "PUT",
+            body: JSON.stringify(obj)
+          }).then( () => {
+            console.log('da sua pass');
+          }).catch(e => {
+            console.log('sua pass fail');
+            console.log(e);
+          })
+        }
+      });
+    },
+
+    onClickEdit(record) {
+      this.typeDetailModal = "Edit";
+      this.selectedID = record.id;
+      this.form.setFieldsValue({
+        username: record.username,
+        firstName: record.firstName,
+        lastName: record.lastName,
+        email: record.email
+      });
+      this.roleModel = record.roles[0];
+      this.detailModalVisible = true;
+    },
+
+    onClickDelete(record) {
+      this.selectedUser = record.username;
+      this.selectedID = record.id;
+      this.deleteModalVisible = true;
+    },
+
+    onConfirmDelete() {
+      this.deleteModalVisible = false;
+      request(`${END_POINT}/api/users/` + this.selectedID, {
+        method: "DELETE"
+      }).then( () => {
+        this._reloadForm();
+      });
+    },
+
+    onClickAdd() {
+      this.typeDetailModal = "Add";
+      this.form.getFieldDecorator("password", {
+        initialValue: ""
+      });
+      this.form.getFieldDecorator("passwordConfirm", {
+        initialValue: ""
+      });
+      this.form.setFieldsValue({
+        username: "",
+        password: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        passwordConfirm: ""
+      });
+      this.roleModel = "USER";
+      this.detailModalVisible = true;
+    },
+
+    onConfirmDetail(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        const { username, email, firstName, lastName, password } = values;
+        const obj = {
+          username,
+          email,
+          firstName,
+          lastName,
+          password,
+          roles: [this.roleModel]
+        };
+        if (!err) {
+          if (this.typeDetailModal == "Add") {
+            console.log("add");
+            request(`${END_POINT}/api/users`, {
+              method: "POST",
+              body: JSON.stringify(obj)
+            })
+              .then( () => {
+                this.detailModalVisible = false;
+                this._reloadForm();
+                console.log("add thanh cong");
+              })
+              .catch(e => {
+                this.detailModalVisible = false;
+                console.log("add fail");
+                console.log(e);
+              });
+          } else {
+            console.log("edit");
+            delete obj.password;
+            request(`${END_POINT}/api/users/` + this.selectedID, {
+              method: "PATCH",
+              body: JSON.stringify(obj)
+            })
+              .then( () => {
+                this.detailModalVisible = false;
+                this._reloadForm();
+                console.log("edit thanh cong");
+              })
+              .catch(e => {
+                this.detailModalVisible = false;
+                console.log("edit fail");
+                console.log(e);
+              });
+          }
+        } else {
+          console.log("loi");
+        }
+      });
+    }
+  }
+};
+</script>
+<style scoped lang="scss">
+.table-wrapper {
+  margin: 30px 0;
+}
+
+.add-btn {
+  background: #52c41a;
+  border: 1px solid #52c41a;
+  color: white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: none;
+}
+
+.form-header {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.detail-form {
+  display: flex;
+  flex-wrap: wrap;
+
+  .form-item {
+    width: 50%;
+
+    input {
+      line-height: 35px;
+      outline: none;
+      border: 1px solid black;
+      border-radius: 3px;
+    }
+  }
+
+  .form-full-width {
+    width: 100% !important;
+  }
+
+  .radio-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+
+    .radio-title {
+      line-height: 40px;
+    }
+  }
+}
+</style>
