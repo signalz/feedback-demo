@@ -6,6 +6,7 @@
       <div>{{typeDetailModal}}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
         <Item>
+          <div class="label-form">User Name</div>
           <Input
             :placeholder="$t('login.username')"
             v-decorator="[
@@ -19,6 +20,7 @@
           ></Input>
         </Item>
         <Item>
+          <div class="label-form">Password</div>
           <Input
             :placeholder="$t('login.pass')"
             v-decorator="[
@@ -26,6 +28,48 @@
               {
                 rules: [
                   { required: true, message: 'Please input your password!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item>
+          <div class="label-form">First Name</div>
+          <Input
+            placeholder="$t('login.firstName')"
+            v-decorator="[
+              'firstName',
+              {
+                rules: [
+                  { required: true, message: 'Please input your first name!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item>
+          <div class="label-form">Last Name</div>
+          <Input
+            placeholder="$t('login.lastName')"
+            v-decorator="[
+              'lastName',
+              {
+                rules: [
+                  { required: true, message: 'Please input your last name!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item>
+          <div class="label-form">Email</div>
+          <Input
+            placeholder="$t('login.email')"
+            v-decorator="[
+              'email',
+              {
+                rules: [
+                  { required: true, message: 'Please input your email!' }
                 ]
               }
             ]"
@@ -94,7 +138,8 @@ const data = [
     firstName: "John",
     lastName: "Brown",
     email: "johnbrown@gmail.com",
-    tags: ["admin", "user"]
+    tags: ["admin", "user"],
+    password: "1234"
   },
   {
     key: "2",
@@ -102,7 +147,8 @@ const data = [
     firstName: "Jim",
     lastName: "Green",
     email: "jimgreen@gmail.com",
-    tags: ["user"]
+    tags: ["user"],
+    password: "1234"
   },
   {
     key: "3",
@@ -110,8 +156,8 @@ const data = [
     firstName: "Joe",
     email: "joeblack@gmail.com",
     lastName: "Black",
-
-    tags: ["admin", "user"]
+    tags: ["admin", "user"],
+    password: "1234"
   }
 ];
 import { Table, Form, Tag, Divider, Modal } from "ant-design-vue";
@@ -146,6 +192,21 @@ export default {
   },
   mounted() {
     this.form = this.$form.createForm(this, { name: "detail" });
+    this.form.getFieldDecorator("username", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("password", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("firstName", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("lastName", {
+      initialValue: ""
+    });
+    this.form.getFieldDecorator("email", {
+      initialValue: ""
+    });
     Promise.all([
       request(`${END_POINT}/api/users`, {
         method: "GET"
@@ -165,8 +226,14 @@ export default {
   },
   methods: {
     onClickEdit(record) {
-      console.log(record);
       this.typeDetailModal = "Edit";
+      this.form.setFieldsValue({
+        username: record.username,
+        password: record.password,
+        firstName: record.firstName,
+        lastName: record.lastName,
+        email: record.email
+      });
       this.detailModalVisible = true;
     },
 
@@ -181,6 +248,13 @@ export default {
 
     onClickAdd() {
       this.typeDetailModal = "Add";
+      this.form.setFieldsValue({
+        username: "",
+        password: "",
+        firstName: "",
+        lastName: "",
+        email: ""
+      });
       this.detailModalVisible = true;
     },
 
