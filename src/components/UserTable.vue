@@ -4,8 +4,9 @@
     <Modal
       @ok="onConfirmDelete"
       v-model="deleteModalVisible"
-    >Are you sure to delete user {{selectedUser}}?</Modal>
+    >Are you sure to delete {{selectedUser}}?</Modal>
     <Modal @ok="onConfirmChangePass" v-model="changePassModalVisible">
+      <div class="change-modal-label">Change password for {{selectedUser}}</div>
       <Form class="detail-form" :form="formChangePass" @submit="onConfirmChangePass">
         <Item class="form-item form-full-width">
           <div class="label-form">Old Password</div>
@@ -70,28 +71,28 @@
       <div class="form-header">{{typeDetailModal}}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
         <Item class="form-item">
-          <div class="label-form">User Name</div>
+          <div class="label-form">{{ $t('admin.email') }}</div>
           <Input
-            :placeholder="$t('admin.user-name')"
+            :placeholder="$t('admin.email')"
             v-decorator="[
               'username',
               {
                 rules: [
-                  { required: true, message: 'Please input your username!' }
+                  { required: true, message: 'Please input your email!' }
                 ]
               }
             ]"
           ></Input>
         </Item>
         <Item class="form-item">
-          <div class="label-form">Email</div>
+          <div class="label-form">{{ $t('admin.phone') }}</div>
           <Input
-            :placeholder="$t('admin.email')"
+            :placeholder="$t('admin.phone')"
             v-decorator="[
               'email',
               {
                 rules: [
-                  { required: true, message: 'Please input your email!' }
+                  { required: true, message: 'Please input your phone number!' }
                 ]
               }
             ]"
@@ -181,7 +182,7 @@
       :data-source="users"
       class="table-wrapper"
     >
-      <a slot="email" slot-scope="text">{{ text }}</a>
+      <a slot="username" slot-scope="text">{{ text }}</a>
       <span slot="roles" slot-scope="roles">
         <Tag v-for="role in roles" :key="role" :color="handleColor(role)">{{ role.toUpperCase() }}</Tag>
       </span>
@@ -200,7 +201,8 @@ const columns = [
   {
     dataIndex: "username",
     key: "username",
-    title: "User Name"
+    title: "Email",
+    scopedSlots: { customRender: "username" }
   },
   {
     title: "First Name",
@@ -215,8 +217,7 @@ const columns = [
   {
     dataIndex: "email",
     key: "email",
-    title: "Email",
-    scopedSlots: { customRender: "email" }
+    title: "Phone"
   },
   {
     title: "Roles",
@@ -362,6 +363,7 @@ export default {
 
     onClickChangePass(record) {
       this.selectedID = record.id;
+      this.selectedUser = record.username;
       this.formChangePass.setFieldsValue({
         password: "",
         passwordOld: "",
@@ -373,7 +375,11 @@ export default {
     onConfirmChangePass(e) {
       e.preventDefault();
       this.formChangePass.validateFields((err, values) => {
-        const { passwordOld: password, password: newPassword, passwordConfirm: confirmNewPassword } = values;
+        const {
+          passwordOld: password,
+          password: newPassword,
+          passwordConfirm: confirmNewPassword
+        } = values;
         const obj = {
           password,
           newPassword,
@@ -383,12 +389,14 @@ export default {
           request(`${END_POINT}/api/users/` + this.selectedID, {
             method: "PUT",
             body: JSON.stringify(obj)
-          }).then( () => {
-            console.log('da sua pass');
-          }).catch(e => {
-            console.log('sua pass fail');
-            console.log(e);
           })
+            .then(() => {
+              console.log("da sua pass");
+            })
+            .catch(e => {
+              console.log("sua pass fail");
+              console.log(e);
+            });
         }
       });
     },
@@ -416,7 +424,7 @@ export default {
       this.deleteModalVisible = false;
       request(`${END_POINT}/api/users/` + this.selectedID, {
         method: "DELETE"
-      }).then( () => {
+      }).then(() => {
         this._reloadForm();
       });
     },
@@ -460,7 +468,7 @@ export default {
               method: "POST",
               body: JSON.stringify(obj)
             })
-              .then( () => {
+              .then(() => {
                 this.detailModalVisible = false;
                 this._reloadForm();
                 console.log("add thanh cong");
@@ -477,7 +485,7 @@ export default {
               method: "PATCH",
               body: JSON.stringify(obj)
             })
-              .then( () => {
+              .then(() => {
                 this.detailModalVisible = false;
                 this._reloadForm();
                 console.log("edit thanh cong");
@@ -518,6 +526,11 @@ export default {
   font-weight: bold;
   text-align: start;
   text-transform: uppercase;
+}
+
+.change-modal-label {
+  font-size: 17px;
+  font-weight: bold;
 }
 
 .detail-form {

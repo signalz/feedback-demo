@@ -161,6 +161,7 @@ export default {
 
   .content-wrapper {
     color: black;
+    overflow: auto;
 
     .group-label {
       font-size: 18px;
