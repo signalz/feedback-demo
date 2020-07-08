@@ -37,6 +37,7 @@
           </div>
           <div v-if="menuSelected == 'Project' ">
             <div class="content-label">Project</div>
+            <ProjectTable></ProjectTable>
           </div>
           <div v-if="menuSelected == 'Survey' ">
             <div class="content-label">Survey</div>
@@ -50,6 +51,7 @@
 <script>
 import { Layout, Menu, Icon, Button } from "ant-design-vue";
 import UserTable from "./UserTable.vue";
+import ProjectTable from "./ProjectTable.vue"
 const { Header, Content, Sider } = Layout;
 const { Item } = Menu;
 
@@ -57,6 +59,7 @@ export default {
   name: "Admin",
   components: {
     UserTable,
+    ProjectTable,
     Layout,
     Menu,
     Icon,

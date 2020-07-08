@@ -71,127 +71,50 @@
       <div class="form-header">{{typeDetailModal}}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
         <Item class="form-item">
-          <div class="label-form">{{ $t('admin.email') }}</div>
+          <div class="label-form">Project Name</div>
           <Input
-            :placeholder="$t('admin.email')"
+            placeholder="Project Name"
             v-decorator="[
-              'username',
+              'projectName',
               {
                 rules: [
-                  { required: true, message: 'Please input your email!' }
+                  { required: true, message: 'Please input your project name!' }
                 ]
               }
             ]"
           ></Input>
         </Item>
         <Item class="form-item">
-          <div class="label-form">{{ $t('admin.phone') }}</div>
-          <Input
-            :placeholder="$t('admin.phone')"
-            v-decorator="[
-              'email',
-              {
-                rules: [
-                  { required: true, message: 'Please input your phone number!' }
-                ]
-              }
-            ]"
-          ></Input>
-        </Item>
-        <Item v-if="typeDetailModal == 'Add'" class="form-item">
-          <div class="label-form">Password</div>
-          <Input
-            :placeholder="$t('login.pass')"
-            type="password"
-            v-decorator="[
-              'password',
-              {
-                rules: [
-                  { 
-                    required: true, message: 'Please input your password!' 
-                  },
-                  {
-                    validator: validateToNextPassword,
-                  },
-                ]
-              }
-            ]"
-          ></Input>
-        </Item>
-        <Item v-if="typeDetailModal == 'Add'" class="form-item">
-          <div class="label-form">Confirm Password</div>
-          <Input
-            :placeholder="$t('admin.pass-confirm')"
-            type="password"
-            v-decorator="[
-              'passwordConfirm',
-              {
-                rules: [
-                  { 
-                    required: true, message: 'Please input your confirm password!' 
-                  },
-                  {
-                    validator: compareToFirstPassword,
-                  },
-                ]
-              }
-            ]"
-          ></Input>
+          <div class="label-form">Manager</div>
+          manager typeahead single choice
         </Item>
         <Item class="form-item">
-          <div class="label-form">First Name</div>
-          <Input
-            :placeholder="$t('admin.first-name')"
-            v-decorator="[
-              'firstName',
-              {
-                rules: [
-                  { required: true, message: 'Please input your first name!' }
-                ]
-              }
-            ]"
-          ></Input>
+          <div class="label-form">Survey</div>
+          survey dropdown list
         </Item>
         <Item class="form-item">
-          <div class="label-form">Last Name</div>
-          <Input
-            :placeholder="$t('admin.last-name')"
-            v-decorator="[
-              'lastName',
-              {
-                rules: [
-                  { required: true, message: 'Please input your last name!' }
-                ]
-              }
-            ]"
-          ></Input>
-        </Item>
-        <Item class="form-item radio-wrapper">
-          <Group v-model="roleModel" button-style="solid">
-            <div class="radio-title">Role:</div>
-            <radioButton value="USER">User</radioButton>
-            <radioButton value="ADMIN">Admin</radioButton>
-          </Group>
+          <div class="label-form">Associate</div>
+          Associate multy choice
         </Item>
       </Form>
     </Modal>
-    <Button @click="onClickAdd" class="add-btn" type="primary">Add user</Button>
+    <Button @click="onClickAdd" class="add-btn" type="primary">Add Project</Button>
     <Table
       :columns="columns"
-      :row-key="record => record.id"
-      :data-source="users"
+      :row-key="record => record.key"
+      :data-source="mockData"
       class="table-wrapper"
     >
-      <a slot="username" slot-scope="text">{{ text }}</a>
-      <span slot="roles" slot-scope="roles">
-        <Tag v-for="role in roles" :key="role" :color="handleColor(role)">{{ role.toUpperCase() }}</Tag>
+      <a slot="projectName" slot-scope="text">{{ text }}</a>
+      <span slot="associate" slot-scope="associate">
+        <Tag v-for="user in associate" :key="user" :color="handleColor(user)">{{ user.toUpperCase() }}</Tag>
       </span>
       <span slot="action" slot-scope="text, record">
-        <a v-if="record.roles.length == 1" @click="onClickChangePass(record)">Change Password</a>
-        <Divider v-if="record.roles.length == 1" type="vertical" />
-        <a v-if="record.roles.length == 1" @click="onClickEdit(record)">Edit</a>
-        <Divider v-if="record.roles.length == 1" type="vertical" />
-        <a v-if="record.roles.length == 1" @click="onClickDelete(record)">Delete</a>
+        <a @click="onClickChangePass(record)">Change Password</a>
+        <Divider type="vertical" />
+        <a @click="onClickEdit(record)">Edit</a>
+        <Divider type="vertical" />
+        <a @click="onClickDelete(record)">Delete</a>
       </span>
     </Table>
   </div>
@@ -199,31 +122,26 @@
 <script>
 const columns = [
   {
-    dataIndex: "username",
-    key: "username",
-    title: "Email",
-    scopedSlots: { customRender: "username" }
+    dataIndex: "projectName",
+    key: "projectName",
+    title: "Project Name",
+    scopedSlots: { customRender: "projectName" }
   },
   {
-    title: "First Name",
-    dataIndex: "firstName",
-    key: "firstName"
+    title: "Manager",
+    dataIndex: "manager",
+    key: "manager"
   },
   {
-    title: "Last Name",
-    dataIndex: "lastName",
-    key: "lastName"
+    title: "Survey",
+    dataIndex: "survey",
+    key: "survey"
   },
   {
-    dataIndex: "email",
-    key: "email",
-    title: "Phone"
-  },
-  {
-    title: "Roles",
-    key: "roles",
-    dataIndex: "roles",
-    scopedSlots: { customRender: "roles" }
+    title: "Associate",
+    key: "associate",
+    dataIndex: "associate",
+    scopedSlots: { customRender: "associate" }
   },
   {
     title: "Action",
@@ -232,15 +150,7 @@ const columns = [
   }
 ];
 
-import {
-  Table,
-  Form,
-  Tag,
-  Divider,
-  Modal,
-  Radio,
-  message
-} from "ant-design-vue";
+import { Table, Form, Tag, Divider, Modal, Radio } from "ant-design-vue";
 import Loading from "./Loading";
 import { request } from "../api";
 import { END_POINT } from "../config";
@@ -273,8 +183,18 @@ export default {
       roleModel: "USER",
       form: {},
       formChangePass: {},
-      users: [],
-      message
+      mockData: [{
+          key: "1",
+          projectName: "Du an 1",
+          manager: "Son Nguyen Ngoc",
+          survey: "Foundation Survey",
+          associate: [
+              "Thanh Nguyen Khac",
+              "Son Nguyen Ngoc",
+              "Quang Nguyen Phan"
+              ]
+      }],
+      users: []
     };
   },
   mounted() {
@@ -315,6 +235,7 @@ export default {
       .then(([users]) => {
         if (users && users.length > 0) {
           this.users = users;
+          console.log(users);
         }
         this.isLoading = false;
       })
@@ -399,10 +320,11 @@ export default {
             body: JSON.stringify(obj)
           })
             .then(() => {
-              this.message.info("Change password successful!");
+              console.log("da sua pass");
             })
             .catch(e => {
-              this.message.error("Change password fail!");
+              console.log("sua pass fail");
+              console.log(e);
             });
         }
       });
@@ -431,14 +353,9 @@ export default {
       this.deleteModalVisible = false;
       request(`${END_POINT}/api/users/` + this.selectedID, {
         method: "DELETE"
-      })
-        .then(() => {
-          this._reloadForm();
-          this.message.info("Delete user successful!");
-        })
-        .catch(e => {
-          this.message.error("Delete user fail!");
-        });
+      }).then(() => {
+        this._reloadForm();
+      });
     },
 
     onClickAdd() {
@@ -475,6 +392,7 @@ export default {
         };
         if (!err) {
           if (this.typeDetailModal == "Add") {
+            console.log("add");
             request(`${END_POINT}/api/users`, {
               method: "POST",
               body: JSON.stringify(obj)
@@ -482,13 +400,15 @@ export default {
               .then(() => {
                 this.detailModalVisible = false;
                 this._reloadForm();
-                this.message.info("Add new user successful!");
+                console.log("add thanh cong");
               })
               .catch(e => {
                 this.detailModalVisible = false;
-                this.message.error("Add new user fail!");
+                console.log("add fail");
+                console.log(e);
               });
           } else {
+            console.log("edit");
             delete obj.password;
             request(`${END_POINT}/api/users/` + this.selectedID, {
               method: "PATCH",
@@ -497,15 +417,16 @@ export default {
               .then(() => {
                 this.detailModalVisible = false;
                 this._reloadForm();
-                this.message.info("Edit user successful!");
+                console.log("edit thanh cong");
               })
               .catch(e => {
                 this.detailModalVisible = false;
-                this.message.error("Edit user fail!");
+                console.log("edit fail");
+                console.log(e);
               });
           }
         } else {
-          //console.log("loi");
+          console.log("loi");
         }
       });
     }
@@ -546,7 +467,7 @@ export default {
   flex-wrap: wrap;
 
   .form-item {
-    width: 50%;
+    width: 100%;
 
     input {
       line-height: 35px;
