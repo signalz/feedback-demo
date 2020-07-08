@@ -28,20 +28,41 @@
             <Tag
               v-if="managerSelected.name != ''"
               :color="handleColor(managerSelected.name)"
+              closable
+              @close="clearSelectedManager"
             >{{ managerSelected.name }}</Tag>
           </div>
           <AutoComplete
-            @search="handleSearchUser"
-            @select="handleSelectUser"
+            @search="handleSearchManager"
+            @select="handleSelectManager"
             placeholder="Seach manager"
-            :dataSource="result"
+            :dataSource="resultManager"
+            v-model="managerSearchModel"
           />
         </Item>
         <Item class="form-item">
           <div class="label-form">Survey</div>survey dropdown list
         </Item>
         <Item class="form-item">
-          <div class="label-form">Associate</div>Associate multy choice
+          <div class="label-form">
+            Associate:
+            <div v-if="associateSelected.length > 0">
+              <Tag
+                v-for="user in associateSelected"
+                :key="user.value"
+                :color="handleColor(user.name)"
+                closable
+                @close="popTag(user.value, associateSelected)"
+              >{{ user.name }}</Tag>
+            </div>
+          </div>
+          <AutoComplete
+            @search="handleSearchAssociate"
+            @select="handleSelectAssociate"
+            placeholder="Seach associate"
+            :dataSource="resultAssociate"
+            v-model="associateSearchModel"
+          />
         </Item>
       </Form>
     </Modal>
@@ -101,14 +122,7 @@ const columns = [
   }
 ];
 
-import {
-  Table,
-  Form,
-  Tag,
-  Divider,
-  Modal,
-  AutoComplete
-} from "ant-design-vue";
+import { Table, Form, Tag, Divider, Modal, AutoComplete } from "ant-design-vue";
 import Loading from "./Loading";
 import { request } from "../api";
 import { END_POINT } from "../config";
@@ -124,7 +138,7 @@ export default {
     Tag,
     Divider,
     Form,
-    Item,
+    Item
   },
   data() {
     return {
@@ -154,11 +168,15 @@ export default {
       ],
       projects: [],
       users: [],
-      result: [],
+      resultManager: [],
+      resultAssociate: [],
       managerSelected: {
         value: "",
         name: ""
-      }
+      },
+      associateSelected: [],
+      associateSearchModel: "",
+      managerSearchModel: ""
     };
   },
   mounted() {
@@ -199,6 +217,8 @@ export default {
             value.name = value.firstName + " " + value.lastName;
           });
           this.users = users;
+          this.handleSearchManager();
+          this.handleSearchAssociate();
           console.log(this.users);
         }
         this.isLoading = false;
@@ -227,10 +247,30 @@ export default {
       });
     },
 
-    handleSearchUser(value) {
+    popTag(id, array) {
+      array.splice(array.indexOf(id), 1);
+      if(array.length == 0){
+          this.handleSearchAssociate();
+      }
+    },
+
+    clearSelectedManager() {
+      this.managerSelected = {
+        value: "",
+        name: ""
+      };
+      this.handleSearchManager();
+    },
+
+    handleSearchManager(value) {
       let result = [];
       if (!value) {
-        result = [];
+        this.users.map(record => {
+          result.push({
+            value: record.id,
+            text: record.name
+          });
+        });
       } else {
         this.users.map(record => {
           if (record.name.includes(value)) {
@@ -241,16 +281,65 @@ export default {
           }
         });
       }
-      this.result = result;
-      console.log(this.result);
+      if (result.length > 5) {
+        result.splice(5, result.length - 5);
+      }
+      this.resultManager = result;
     },
 
-    handleSelectUser(value) {
-      const selectedObj = this.users.filter((e) => {
-          return e.id == value;
+    handleSearchAssociate(value) {
+      let result = [];
+      if (!value) {
+        this.users.map(record => {
+          result.push({
+            value: record.id,
+            text: record.name
+          });
+        });
+      } else {
+        this.users.map(record => {
+          if (record.name.includes(value)) {
+            result.push({
+              value: record.id,
+              text: record.name
+            });
+          }
+        });
+      }
+      if (result.length > 5) {
+        result.splice(5, result.length - 5);
+      }
+      this.resultAssociate = result;
+    },
+
+    handleSelectAssociate(value) {
+      const selectedObj = this.users.filter(e => {
+        return e.id == value;
+      });
+      let existAssociate = false;
+      this.associateSelected.filter(e => {
+        if (e.value == value) {
+          existAssociate = true;
+        }
+      });
+      if (!existAssociate) {
+        this.associateSelected.push({
+          value: selectedObj[0].id,
+          name: selectedObj[0].name
+        });
+      }
+      this.associateSearchModel = "";
+      this.resultAssociate = [];
+    },
+
+    handleSelectManager(value) {
+      const selectedObj = this.users.filter(e => {
+        return e.id == value;
       });
       this.managerSelected.value = selectedObj[0].id;
       this.managerSelected.name = selectedObj[0].name;
+      this.managerSearchModel = "";
+      this.resultManager = [];
     },
 
     onClickEdit(record) {
@@ -383,6 +472,10 @@ export default {
 .change-modal-label {
   font-size: 17px;
   font-weight: bold;
+}
+
+.ant-tag {
+  margin: 3px;
 }
 
 .detail-form {
