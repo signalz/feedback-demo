@@ -566,6 +566,7 @@ export default {
       content: "";
       position: fixed;
       border: 2px solid $dark-blue-color;
+      z-index: -1;
       @media screen and (min-width: $desktop-width) {
         left: 300px;
         right: 0;

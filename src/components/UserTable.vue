@@ -401,7 +401,7 @@ export default {
             .then(() => {
               this.message.info("Change password successful!");
             })
-            .catch(e => {
+            .catch(() => {
               this.message.error("Change password fail!");
             });
         }
@@ -436,7 +436,7 @@ export default {
           this._reloadForm();
           this.message.info("Delete user successful!");
         })
-        .catch(e => {
+        .catch(() => {
           this.message.error("Delete user fail!");
         });
     },
@@ -484,7 +484,7 @@ export default {
                 this._reloadForm();
                 this.message.info("Add new user successful!");
               })
-              .catch(e => {
+              .catch(() => {
                 this.detailModalVisible = false;
                 this.message.error("Add new user fail!");
               });
@@ -499,7 +499,7 @@ export default {
                 this._reloadForm();
                 this.message.info("Edit user successful!");
               })
-              .catch(e => {
+              .catch(() => {
                 this.detailModalVisible = false;
                 this.message.error("Edit user fail!");
               });

@@ -5,68 +5,6 @@
       @ok="onConfirmDelete"
       v-model="deleteModalVisible"
     >Are you sure to delete {{selectedUser}}?</Modal>
-    <Modal @ok="onConfirmChangePass" v-model="changePassModalVisible">
-      <div class="change-modal-label">Change password for {{selectedUser}}</div>
-      <Form class="detail-form" :form="formChangePass" @submit="onConfirmChangePass">
-        <Item class="form-item form-full-width">
-          <div class="label-form">Old Password</div>
-          <Input
-            :placeholder="$t('admin.pass-old')"
-            type="password"
-            v-decorator="[
-              'passwordOld',
-              {
-                rules: [
-                  { 
-                    required: true, message: 'Please input your old password!' 
-                  },
-                ]
-              }
-            ]"
-          ></Input>
-        </Item>
-        <Item class="form-item">
-          <div class="label-form">Password</div>
-          <Input
-            :placeholder="$t('login.pass')"
-            type="password"
-            v-decorator="[
-              'password',
-              {
-                rules: [
-                  { 
-                    required: true, message: 'Please input your password!' 
-                  },
-                  {
-                    validator: validateToNextPassword,
-                  },
-                ]
-              }
-            ]"
-          ></Input>
-        </Item>
-        <Item class="form-item">
-          <div class="label-form">Confirm Password</div>
-          <Input
-            :placeholder="$t('admin.pass-confirm')"
-            type="password"
-            v-decorator="[
-              'passwordConfirm',
-              {
-                rules: [
-                  { 
-                    required: true, message: 'Please input your confirm password!' 
-                  },
-                  {
-                    validator: compareToFirstPassword,
-                  },
-                ]
-              }
-            ]"
-          ></Input>
-        </Item>
-      </Form>
-    </Modal>
     <Modal @ok="onConfirmDetail" v-model="detailModalVisible">
       <div class="form-header">{{typeDetailModal}}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
@@ -85,16 +23,25 @@
           ></Input>
         </Item>
         <Item class="form-item">
-          <div class="label-form">Manager</div>
-          manager typeahead single choice
+          <div class="label-form">
+            Manager:
+            <Tag
+              v-if="managerSelected.name != ''"
+              :color="handleColor(managerSelected.name)"
+            >{{ managerSelected.name }}</Tag>
+          </div>
+          <AutoComplete
+            @search="handleSearchUser"
+            @select="handleSelectUser"
+            placeholder="Seach manager"
+            :dataSource="result"
+          />
         </Item>
         <Item class="form-item">
-          <div class="label-form">Survey</div>
-          survey dropdown list
+          <div class="label-form">Survey</div>survey dropdown list
         </Item>
         <Item class="form-item">
-          <div class="label-form">Associate</div>
-          Associate multy choice
+          <div class="label-form">Associate</div>Associate multy choice
         </Item>
       </Form>
     </Modal>
@@ -107,7 +54,11 @@
     >
       <a slot="projectName" slot-scope="text">{{ text }}</a>
       <span slot="associate" slot-scope="associate">
-        <Tag v-for="user in associate" :key="user" :color="handleColor(user)">{{ user.toUpperCase() }}</Tag>
+        <Tag
+          v-for="user in associate"
+          :key="user"
+          :color="handleColor(user)"
+        >{{ user.toUpperCase() }}</Tag>
       </span>
       <span slot="action" slot-scope="text, record">
         <a @click="onClickChangePass(record)">Change Password</a>
@@ -150,25 +101,30 @@ const columns = [
   }
 ];
 
-import { Table, Form, Tag, Divider, Modal, Radio } from "ant-design-vue";
+import {
+  Table,
+  Form,
+  Tag,
+  Divider,
+  Modal,
+  AutoComplete
+} from "ant-design-vue";
 import Loading from "./Loading";
 import { request } from "../api";
 import { END_POINT } from "../config";
 import Vue from "vue";
-const { Button: radioButton, Group } = Radio;
 const { Item } = Form;
 Vue.use(Modal);
 export default {
   components: {
     Table,
+    AutoComplete,
     Modal,
     Loading,
     Tag,
     Divider,
     Form,
     Item,
-    Group,
-    radioButton
   },
   data() {
     return {
@@ -183,32 +139,30 @@ export default {
       roleModel: "USER",
       form: {},
       formChangePass: {},
-      mockData: [{
+      mockData: [
+        {
           key: "1",
           projectName: "Du an 1",
           manager: "Son Nguyen Ngoc",
           survey: "Foundation Survey",
           associate: [
-              "Thanh Nguyen Khac",
-              "Son Nguyen Ngoc",
-              "Quang Nguyen Phan"
-              ]
-      }],
-      users: []
+            "Thanh Nguyen Khac",
+            "Son Nguyen Ngoc",
+            "Quang Nguyen Phan"
+          ]
+        }
+      ],
+      projects: [],
+      users: [],
+      result: [],
+      managerSelected: {
+        value: "",
+        name: ""
+      }
     };
   },
   mounted() {
     this.form = this.$form.createForm(this, { name: "detail" });
-    this.formChangePass = this.$form.createForm(this, { name: "changePass" });
-    this.formChangePass.getFieldDecorator("password", {
-      initialValue: ""
-    });
-    this.formChangePass.getFieldDecorator("passwordConfirm", {
-      initialValue: ""
-    });
-    this.formChangePass.getFieldDecorator("passwordOld", {
-      initialValue: ""
-    });
     this.form.getFieldDecorator("username", {
       initialValue: ""
     });
@@ -228,14 +182,24 @@ export default {
       initialValue: ""
     });
     Promise.all([
+      request(`${END_POINT}/api/projects`, {
+        method: "GET"
+      }),
       request(`${END_POINT}/api/users`, {
         method: "GET"
       })
     ])
-      .then(([users]) => {
+      .then(([projects, users]) => {
+        if (projects && projects.length > 0) {
+          this.projects = projects;
+          console.log(projects);
+        }
         if (users && users.length > 0) {
+          users.map(function(value) {
+            value.name = value.firstName + " " + value.lastName;
+          });
           this.users = users;
-          console.log(users);
+          console.log(this.users);
         }
         this.isLoading = false;
       })
@@ -245,8 +209,8 @@ export default {
       });
   },
   methods: {
-    handleColor(role) {
-      if (role.includes("ADMIN")) {
+    handleColor(text) {
+      if (text.includes("ADMIN")) {
         return "green";
       } else {
         return "geekblue";
@@ -255,79 +219,38 @@ export default {
 
     _reloadForm() {
       this.isLoading = true;
-      request(`${END_POINT}/api/users`, {
+      request(`${END_POINT}/api/projects`, {
         method: "GET"
-      }).then(resultGetAllUser => {
+      }).then(projects => {
         this.isLoading = false;
-        this.users = resultGetAllUser;
+        this.projects = projects;
       });
     },
 
-    compareToFirstPassword(rule, value, callback) {
-      let form = {};
-      if (this.changePassModalVisible) {
-        form = this.formChangePass;
+    handleSearchUser(value) {
+      let result = [];
+      if (!value) {
+        result = [];
       } else {
-        form = this.form;
-      }
-      if (value && value !== form.getFieldValue("password")) {
-        callback("Two passwords that you enter is inconsistent!");
-      } else {
-        callback();
-      }
-    },
-
-    validateToNextPassword(rule, value, callback) {
-      let form = {};
-      if (this.changePassModalVisible) {
-        form = this.formChangePass;
-      } else {
-        form = this.form;
-      }
-      if (value && this.confirmDirty) {
-        form.validateFields(["confirm"], { force: true });
-      }
-      callback();
-    },
-
-    onClickChangePass(record) {
-      this.selectedID = record.id;
-      this.selectedUser = record.username;
-      this.formChangePass.setFieldsValue({
-        password: "",
-        passwordOld: "",
-        passwordConfirm: ""
-      });
-      this.changePassModalVisible = true;
-    },
-
-    onConfirmChangePass(e) {
-      e.preventDefault();
-      this.formChangePass.validateFields((err, values) => {
-        const {
-          passwordOld: password,
-          password: newPassword,
-          passwordConfirm: confirmNewPassword
-        } = values;
-        const obj = {
-          password,
-          newPassword,
-          confirmNewPassword
-        };
-        if (!err) {
-          request(`${END_POINT}/api/users/` + this.selectedID, {
-            method: "PUT",
-            body: JSON.stringify(obj)
-          })
-            .then(() => {
-              console.log("da sua pass");
-            })
-            .catch(e => {
-              console.log("sua pass fail");
-              console.log(e);
+        this.users.map(record => {
+          if (record.name.includes(value)) {
+            result.push({
+              value: record.id,
+              text: record.name
             });
-        }
+          }
+        });
+      }
+      this.result = result;
+      console.log(this.result);
+    },
+
+    handleSelectUser(value) {
+      const selectedObj = this.users.filter((e) => {
+          return e.id == value;
       });
+      this.managerSelected.value = selectedObj[0].id;
+      this.managerSelected.name = selectedObj[0].name;
     },
 
     onClickEdit(record) {
