@@ -59,7 +59,7 @@ import Loading from "./Loading";
 const { Item } = Form;
 
 export default {
-  name: "Login",
+  name: "LoginPage",
   components: {
     Button,
     Form,
@@ -68,7 +68,7 @@ export default {
     Item,
     Loading
   },
-  mounted() {
+  beforeMount() {
     this.form = this.$form.createForm(this, { name: "login" });
   },
   data: () => {
@@ -100,8 +100,12 @@ export default {
             })
             .catch(e => {
               this.isLoading = false;
-              this.message.error(this.$t("login.wrong-user-pass"));
-              console.log(e);
+              if (e.response && e.response.status === 401) {
+                // unauthorized
+                this.message.error(this.$t("login.wrong-user-pass"));
+              } else {
+                this.message.error(e)
+              }
             });
         }
       });

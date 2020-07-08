@@ -5,7 +5,7 @@ import { request } from "../api";
 import { END_POINT } from "../config";
 
 import FeedbackPage from "../components/FeedbackPage.vue";
-import LoginPage from "../components/Login.vue";
+import LoginPage from "../components/LoginPage.vue";
 import AdminPage from "../components/AdminPage.vue";
 
 Vue.use(VueRouter);
@@ -25,18 +25,10 @@ const routes = [
     component: LoginPage
   },
   {
-    path: '/admin',
-    name: 'Admin',
+    path: "/admin",
+    name: "Admin",
     component: AdminPage
   },
-  // {
-  //   path: '/dashboard',
-  //   name: 'Dashboard',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../components/DashboardPage.vue')
-  // },
   {
     path: "*",
     name: "Notfound",
@@ -66,11 +58,11 @@ router.beforeEach((to, from, next) => {
         })
         .catch(e => {
           localStorage.removeItem("jwt");
-          console.log(e);
           next({
             path: "/login",
             params: { nextUrl: to.fullPath }
           });
+          console.log(e);
         });
       // next();
       // let user = JSON.parse(localStorage.getItem("user"));
@@ -92,9 +84,9 @@ router.beforeEach((to, from, next) => {
     //   }
     // } else {
   } else {
-    if (to.path === '/login') {
+    if (to.path === "/login") {
       if (jwt === null) {
-        next()
+        next();
       } else {
         request(`${END_POINT}/signin-with-token`, { method: "POST" })
           .then(() => {
@@ -105,11 +97,11 @@ router.beforeEach((to, from, next) => {
           })
           .catch(e => {
             localStorage.removeItem("jwt");
-            console.log(e);
             next({
               path: "/login",
               params: { nextUrl: to.fullPath }
             });
+            console.log(e);
           });
       }
     } else {

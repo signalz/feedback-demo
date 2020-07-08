@@ -1,36 +1,48 @@
 <template>
   <div>
     <div class="history-dashboard-description">
-      <div class="history-dashboard-description-label">{{$t('dashboard.history.sections')}}</div>
-      <Group @change="onChangeCheckboxes" :value="checkboxesValues">
+      <div class="history-dashboard-description-label">
+        {{ $t("dashboard.history.sections") }}
+      </div>
+      <Group :value="checkboxesValues">
         <Select
+          :open="isOpen"
+          @mousedown.native="handleClickSelect"
+          @blur.native="handleBlurSelect"
           :value="$t('dashboard.history.select-below')"
           class="history-dashboard-description-select"
         >
-          <Option value="select-all">
-            <Button
-              type="primary"
-              style="width: 100%"
-              @click="onSelectAll"
-            >{{$t('dashboard.history.select-all')}}</Button>
+          <Option value="select-all" @click.native="handleSelect">
+            <Button type="primary" style="width: 100%">{{
+              $t("dashboard.history.select-all")
+            }}</Button>
           </Option>
-          <Option :value="defaultValue">
-            <Checkbox :value="defaultValue">{{$t('dashboard.history.default')}}</Checkbox>
+          <Option :value="defaultValue" @click.native="handleSelect">
+            <Checkbox :value="defaultValue">{{
+              $t("dashboard.history.default")
+            }}</Checkbox>
           </Option>
-          <Option v-for="section in sections" :key="section.id" :value="section.id">
-            <Checkbox :value="section.id">{{section.title}}</Checkbox>
+          <Option
+            v-for="section in sections"
+            :key="section.id"
+            :value="section.id"
+            @click.native="handleSelect"
+          >
+            <Checkbox :value="section.id">{{ section.title }}</Checkbox>
           </Option>
         </Select>
       </Group>
     </div>
     <LineChart
-      v-if="data.length > 0"
+      v-if="isDataAvailable"
       :chartData="lineChartData"
       :options="lineChartOptions"
       :width="300"
       :height="300"
     />
-    <div v-else class="history-dashboard-no-data">{{$t("dashboard.history.no-data")}}</div>
+    <div v-else class="history-dashboard-no-data">
+      {{ $t("dashboard.history.no-data") }}
+    </div>
   </div>
 </template>
 
@@ -76,23 +88,30 @@ export default {
     }
   },
   methods: {
-    onChangeCheckboxes(value) {
-      this.checkboxesValues = value;
-      this.$emit("changeSection", {
-        sections: this.checkboxesValues.map(ckValue => ({
-          id: ckValue,
-          title:
-            ckValue === DEFAULT
-              ? DEFAULT
-              : this.sections.find(section => section.id === ckValue).title
-        }))
-      });
+    handleClickSelect() {
+      this.isOpen = !this.isOpen;
     },
 
-    onSelectAll() {
-      this.checkboxesValues = this.sections
-        .map(section => section.id)
-        .concat(DEFAULT);
+    handleBlurSelect() {
+      this.isOpen = false;
+    },
+
+    handleSelect(e) {
+      e.domEvent.preventDefault();
+      if (e.key === "select-all") {
+        this.checkboxesValues = this.sections
+          .map(section => section.id)
+          .concat(DEFAULT);
+      } else {
+        if (this.checkboxesValues.includes(e.key)) {
+          this.checkboxesValues = this.checkboxesValues.filter(
+            val => val !== e.key
+          );
+        } else {
+          this.checkboxesValues = this.checkboxesValues.concat(e.key);
+        }
+      }
+
       this.$emit("changeSection", {
         sections: this.checkboxesValues.map(ckValue => ({
           id: ckValue,
@@ -122,6 +141,21 @@ export default {
       } else {
         return {};
       }
+    },
+
+    isDataAvailable() {
+      let isAvailable = false;
+      if (this.data && this.data.length > 0) {
+        this.data.map(lineItem => {
+          if (lineItem.data.length > 0) {
+            isAvailable = true;
+          }
+        });
+      } else {
+        isAvailable = false;
+      }
+
+      return isAvailable;
     }
   },
   data: () => {
@@ -139,7 +173,8 @@ export default {
         }
       },
       checkboxesValues: [DEFAULT],
-      defaultValue: DEFAULT
+      defaultValue: DEFAULT,
+      isOpen: false
     };
   }
 };
@@ -166,4 +201,3 @@ export default {
   color: rgba(0, 0, 0, 0.65);
 }
 </style>
-

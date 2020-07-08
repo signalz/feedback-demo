@@ -203,7 +203,10 @@ export default {
       key: Math.random(),
       eventName: "",
       review: "",
-      feedback: {}
+      feedback: {},
+      // keep dashboard selection
+      overviewSection: DEFAULT,
+      historySections: [{ title: DEFAULT }]
     };
   },
   mounted() {
@@ -225,9 +228,7 @@ export default {
 
         this.setOverviewData(overviewData);
 
-        if (historyData && historyData.length > 0) {
-          this.setHistoryData([historyData], [{ title: DEFAULT }]);
-        }
+        this.setHistoryData([historyData], [{ title: DEFAULT }]);
 
         this.ratings = RATINGS;
 
@@ -476,11 +477,50 @@ export default {
         body: JSON.stringify(requestBody)
       })
         .then(() => {
-          this.isLoading = false;
           this.eventName = event;
           this.review = review;
           this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
           this.message.success(this.$t("feedback.thanks"));
+        })
+        .then(() => {
+          // load dashboard data again
+          Promise.all(
+            [
+              request(`${END_POINT}/api/dashboard/projects/summary`, {
+                method: "POST",
+                body: JSON.stringify({
+                  sectionId:
+                    this.overviewSection === DEFAULT
+                      ? null
+                      : this.overviewSection,
+                  projectId:
+                    this.project.id === DEFAULT ? null : this.project.id
+                })
+              })
+            ].concat(
+              this.historySections.length > 0
+                ? this.historySections.map(section =>
+                    request(`${END_POINT}/api/dashboard/projects/history`, {
+                      method: "POST",
+                      body: JSON.stringify({
+                        sectionId: section.id === DEFAULT ? null : section.id,
+                        projectId:
+                          this.project.id === DEFAULT ? null : this.project.id
+                      })
+                    })
+                  )
+                : []
+            )
+          )
+            .then(([overviewData, ...historyData]) => {
+              this.setOverviewData(overviewData);
+              this.setHistoryData(historyData, this.historySections);
+              this.isLoading = false;
+            })
+            .catch(error => {
+              this.isLoading = false;
+              this.message.error(error);
+            });
         })
         .catch(e => {
           this.isLoading = false;
@@ -513,6 +553,7 @@ export default {
 
     changeOverviewSection({ sectionId }) {
       this.isLoading = true;
+      this.overviewSection = sectionId;
       request(`${END_POINT}/api/dashboard/projects/summary`, {
         method: "POST",
         body: JSON.stringify({
@@ -531,26 +572,31 @@ export default {
     },
 
     changeHistorySection({ sections }) {
-      this.isLoading = true;
-      Promise.all(
-        sections.map(section =>
-          request(`${END_POINT}/api/dashboard/projects/history`, {
-            method: "POST",
-            body: JSON.stringify({
-              sectionId: section.id === DEFAULT ? null : section.id,
-              projectId: this.project.id === DEFAULT ? null : this.project.id
+      this.historySections = sections;
+      if (sections.length > 0) {
+        this.isLoading = true;
+        Promise.all(
+          sections.map(section =>
+            request(`${END_POINT}/api/dashboard/projects/history`, {
+              method: "POST",
+              body: JSON.stringify({
+                sectionId: section.id === DEFAULT ? null : section.id,
+                projectId: this.project.id === DEFAULT ? null : this.project.id
+              })
             })
-          })
+          )
         )
-      )
-        .then(values => {
-          this.setHistoryData(values, sections);
-          this.isLoading = false;
-        })
-        .catch(e => {
-          this.isLoading = false;
-          this.message.error(e);
-        });
+          .then(values => {
+            this.setHistoryData(values, sections);
+            this.isLoading = false;
+          })
+          .catch(e => {
+            this.isLoading = false;
+            this.message.error(e);
+          });
+      } else {
+        this.historyData = [];
+      }
     }
   }
 };
@@ -566,6 +612,7 @@ export default {
       content: "";
       position: fixed;
       border: 2px solid $dark-blue-color;
+      z-index: -1;
       @media screen and (min-width: $desktop-width) {
         left: 300px;
         right: 0;

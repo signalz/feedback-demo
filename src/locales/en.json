@@ -52,7 +52,7 @@
     "login-form": "Dashboard Login",
     "username": "Username",
     "pass": "Password",
-    "wrong-user-pass": "Username or password is not correct!",
+    "wrong-user-pass": "Incorrect username or password!",
     "missing-user-pass": "Enter your username and password!"
   }
 }
