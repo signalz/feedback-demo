@@ -3,16 +3,16 @@
     <Layout id="menu-layout">
       <Sider class="menu-sider" v-model="collapsed" :trigger="null" collapsible>
         <div class="logo">Admin Page</div>
-        <Menu theme="dark" mode="inline" :default-selected-keys="['1']">
-          <Item key="1" @click="onSelectMenuItem">
+        <Menu theme="dark" mode="inline" :default-selected-keys="['User']">
+          <Item key="User" @click="onSelectMenuItem">
             <Icon type="user" />
             <span>User</span>
           </Item>
-          <Item key="2" @click="onSelectMenuItem">
+          <Item key="Project" @click="onSelectMenuItem">
             <Icon type="project" />
             <span>Project</span>
           </Item>
-          <Item key="3" @click="onSelectMenuItem">
+          <Item key="Survey" @click="onSelectMenuItem">
             <Icon type="unordered-list" />
             <span>Survey</span>
           </Item>
@@ -31,50 +31,35 @@
           class="content-wrapper"
           :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
         >
-          <div class="group-label">Select an operator:</div>
-          <Group class="group-wrapper" buttonStyle="solid" :value="this.operatorSelected">
-            <radioButton
-              class="radio-button"
-              value="Add"
-              @click="()=>(this.operatorSelected = 'Add')"
-            >Add</radioButton>
-            <radioButton
-              class="radio-button"
-              value="Edit"
-              @click="()=>(this.operatorSelected = 'Edit')"
-            >Edit</radioButton>
-            <radioButton
-              class="radio-button"
-              value="Delete"
-              @click="()=>(this.operatorSelected = 'Delete')"
-            >Delete</radioButton>
-          </Group>
-          <div v-if="operatorSelected == ''" class="suggest-banner">Please select an operator!</div>
-          <div v-if="menuSelected == 1 && operatorSelected ">
-            <AddUser v-if="operatorSelected == 'Add'"></AddUser>
+          <div v-if="menuSelected == 'User'  ">
+            <div class="content-label">User</div>
+            <UserTable></UserTable>
           </div>
-          <div v-if="menuSelected == 2 && operatorSelected ">2</div>
-          <div v-if="menuSelected == 3 && operatorSelected ">3</div>
+          <div v-if="menuSelected == 'Project' ">
+            <div class="content-label">Project</div>
+            <ProjectTable></ProjectTable>
+          </div>
+          <div v-if="menuSelected == 'Survey' ">
+            <div class="content-label">Survey</div>
+          </div>
+          <div v-if="false" class="suggest-banner">Please select an operator!</div>
         </Content>
       </Layout>
     </Layout>
   </div>
 </template>
 <script>
-
-
-import { Layout, Menu, Icon, Button, Radio } from "ant-design-vue";
-import AddUser from "./AddUser.vue";
+import { Layout, Menu, Icon, Button } from "ant-design-vue";
+import UserTable from "./UserTable.vue";
+import ProjectTable from "./ProjectTable.vue"
 const { Header, Content, Sider } = Layout;
 const { Item } = Menu;
-const { Group, Button: radioButton } = Radio;
 
 export default {
   name: "Admin",
   components: {
-    AddUser,
-    Group,
-    radioButton,
+    UserTable,
+    ProjectTable,
     Layout,
     Menu,
     Icon,
@@ -87,8 +72,7 @@ export default {
   data: () => {
     return {
       collapsed: false,
-      menuSelected: 1,
-      operatorSelected: ""
+      menuSelected: "User"
     };
   },
   methods: {
@@ -108,7 +92,6 @@ export default {
     onSelectMenuItem({ key }) {
       if (this.menuSelected != key) {
         this.menuSelected = key;
-        this.operatorSelected = "";
       }
     }
   }
@@ -181,12 +164,23 @@ export default {
 
   .content-wrapper {
     color: black;
+    overflow: auto;
+
     .group-label {
       font-size: 18px;
       font-weight: bold;
     }
+
+    .content-label {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
     .group-wrapper {
       display: flex;
+
       .radio-button {
         position: relative;
         display: flex;
@@ -200,6 +194,7 @@ export default {
         font-weight: bold;
       }
     }
+
     .suggest-banner {
       font-size: 40px;
       font-weight: lighter;
