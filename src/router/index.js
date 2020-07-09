@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 
 import { request } from "../api";
-import { END_POINT } from "../config";
+import { END_POINT, ROLE_ADMIN } from "../config";
 
 import FeedbackPage from "../components/FeedbackPage.vue";
 import LoginPage from "../components/LoginPage.vue";
@@ -27,7 +27,11 @@ const routes = [
   {
     path: "/admin",
     name: "Admin",
-    component: AdminPage
+    component: AdminPage,
+    meta: {
+      requiresAuth: true,
+      isAdmin: true
+    }
   },
   {
     path: "*",
@@ -53,8 +57,16 @@ router.beforeEach((to, from, next) => {
       });
     } else {
       request(`${END_POINT}/signin-with-token`, { method: "POST" })
-        .then(() => {
-          next();
+        .then(user => {
+          if (to.matched.some(record => record.meta.isAdmin)) {
+            if (user.roles.includes(ROLE_ADMIN)) {
+              next();
+            } else {
+              next({ path: "/", params: { nextUrl: to.fullPath } });
+            }
+          } else {
+            next();
+          }
         })
         .catch(e => {
           localStorage.removeItem("jwt");
@@ -64,25 +76,7 @@ router.beforeEach((to, from, next) => {
           });
           console.log(e);
         });
-      // next();
-      // let user = JSON.parse(localStorage.getItem("user"));
-      // if (to.matched.some(record => record.meta.is_admin)) {
-      //   if (user.is_admin == 1) {
-      //     next();
-      //   } else {
-      //     next({ name: "userboard" });
-      //   }
-      // } else {
-      //   next();
-      // }
     }
-    // } else if (to.matched.some(record => record.meta.guest)) {
-    //   if (localStorage.getItem("jwt") == null) {
-    //     next();
-    //   } else {
-    //     next({ name: "userboard" });
-    //   }
-    // } else {
   } else {
     if (to.path === "/login") {
       if (jwt === null) {

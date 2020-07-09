@@ -78,19 +78,21 @@
             <div class="feedback-page-content-left-header-text">
               {{ $t("feedback.feedback") }}
             </div>
-            <Button
-              v-if="project.id !== defaultValue"
-              type="primary"
-              class="feedback-page-content-left-header-new"
-              @click="onClickNew"
-              >{{ $t("feedback.new") }}</Button
-            >
-            <Button
-              type="primary"
-              class="feedback-page-content-left-header-dashboard"
-              @click="onClickChangeSection"
-              >{{ $t("feedback.dashboard") }}</Button
-            >
+            <div>
+              <Button
+                v-if="project.id !== defaultValue"
+                type="primary"
+                class="feedback-page-content-left-header-new"
+                @click="onClickNew"
+                >{{ $t("feedback.new") }}</Button
+              >
+              <Button
+                type="primary"
+                class="feedback-page-content-left-header-dashboard"
+                @click="onClickChangeSection"
+                >{{ $t("feedback.dashboard") }}</Button
+              >
+            </div>
           </div>
           <div class="feedback-page-content-left-section">
             <OverviewTable
@@ -365,7 +367,7 @@ export default {
         };
         if (this.surveys.length > 0) {
           // temporary get survey for project
-          const { surveyId } = selectedProject;
+          const surveyId = selectedProject.survey.id;
           Promise.all([
             request(`${END_POINT}/api/surveys/${surveyId}`),
             request(
@@ -647,6 +649,13 @@ export default {
       padding-top: 20px;
       padding-right: 10px;
 
+      @media screen and (max-width: 390px) {
+        .feedback-page-content-left-header {
+          flex-direction: column;
+          align-items: normal !important;
+        }
+      }
+
       .feedback-page-content-left-header {
         @include header-wrapper;
 
@@ -656,7 +665,7 @@ export default {
 
         .feedback-page-content-left-header-new {
           text-transform: uppercase;
-          margin-right: 20px;
+          margin-right: 10px;
         }
       }
 

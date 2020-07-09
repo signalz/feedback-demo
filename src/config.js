@@ -1,16 +1,16 @@
 // export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
-export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com"
+export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com";
 
-export const USER_ID = "1234";
+export const ROLE_ADMIN = "ADMIN";
 
 export const SCREEN_BREAK_POINTS_DEFINITION = {
-  xxs: 'xxs',
-  xs: 'xs',
-  sm: 'sm',
-  md: 'md',
-  lg: 'lg',
-  xl: 'xl'
-}
+  xxs: "xxs",
+  xs: "xs",
+  sm: "sm",
+  md: "md",
+  lg: "lg",
+  xl: "xl"
+};
 
 export const SCREEN_BREAK_POINTS_VALUE = {
   xxs: 360,
@@ -19,7 +19,7 @@ export const SCREEN_BREAK_POINTS_VALUE = {
   md: 992,
   lg: 1200,
   xl: Infinity
-}
+};
 
 export const DASHBOARD_LABELS_LIST = ["BRONZE", "SILVER", "GOLD", "PLATINUM"];
 
@@ -64,9 +64,9 @@ export const RATINGS = [
 ];
 
 export const FEEDBACK_STATE = {
-  NO_FEEDBACK: 'no-feedback',
-  LAST_FEEDBACK: 'last-feedback',
-  NEW_FEEDBACK: 'new-feedback',
-}
+  NO_FEEDBACK: "no-feedback",
+  LAST_FEEDBACK: "last-feedback",
+  NEW_FEEDBACK: "new-feedback"
+};
 
-export const DEFAULT = 'default'
+export const DEFAULT = "default";

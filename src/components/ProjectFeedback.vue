@@ -1,34 +1,39 @@
 <template>
   <div class="project-feedback-wrapper">
-    <div class="project-feedback-event">
-      <div
-        class="project-feedback-event-label"
-      >{{feedbackStates.LAST_FEEDBACK === state ? $t('feedback.last-event') : $t('feedback.event')}}</div>
-      <div>
-        <Input
-          v-if="feedbackStates.NEW_FEEDBACK === state"
-          v-model="eventName"
-          :disabled="feedbackStates.LAST_FEEDBACK === state"
-        />
-        <div v-else>
-          <div class="padding-top-3">{{event}}</div>
+    <div>
+      <div v-if="feedbackStates.LAST_FEEDBACK === state" class="project-feedback-event">
+        <div class="project-feedback-event-label">
+          {{ $t("feedback.last-event") }}
         </div>
+        <div class="project-feedback-event">{{ event }}</div>
+      </div>
+      <div v-else class="project-feedback-event">
+        <div class="project-feedback-event-label">
+          {{ $t("feedback.event") }}
+        </div>
+        <div><Input v-model="eventName" /></div>
       </div>
     </div>
-    <div v-for="section in sections" :key="section.id" class="project-feedback-section">
-      <div class="project-feedback-section-header">{{section.title}}</div>
+    <div
+      v-for="section in sections"
+      :key="section.id"
+      class="project-feedback-section"
+    >
+      <div class="project-feedback-section-header">{{ section.title }}</div>
       <div>
         <div v-for="(question, qIdx) in section.questions" :key="question.id">
           <QuestionRow
             :ratings="ratings"
-            :question="{...question, index: qIdx + 1}"
-            @ratechange="handleRateChange({sectionId: section.id}, $event)"
+            :question="{ ...question, index: qIdx + 1 }"
+            @ratechange="handleRateChange({ sectionId: section.id }, $event)"
           />
         </div>
       </div>
     </div>
     <div class="project-feedback-review">
-      <div class="project-feedback-section-header">{{$t('feedback.review')}}</div>
+      <div class="project-feedback-section-header">
+        {{ $t("feedback.review") }}
+      </div>
       <TextArea
         v-if="feedbackStates.NEW_FEEDBACK === state"
         v-model="reviewText"
@@ -36,12 +41,19 @@
         :placeholder="$t('feedback.write-review')"
       />
       <div v-if="feedbackStates.LAST_FEEDBACK === state">
-        <div>{{review}}</div>
+        <div>{{ review }}</div>
       </div>
     </div>
-    <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
-      <Button type="primary" class="feedback-button" @click="handleCancel">{{$t("feedback.cancel")}}</Button>
-      <Button type="primary" class="feedback-button" @click="handleSubmit">{{$t("feedback.submit")}}</Button>
+    <div
+      class="feedback-button-wrapper"
+      v-if="feedbackStates.LAST_FEEDBACK !== state"
+    >
+      <Button type="primary" class="feedback-button" @click="handleCancel">{{
+        $t("feedback.cancel")
+      }}</Button>
+      <Button type="primary" class="feedback-button" @click="handleSubmit">{{
+        $t("feedback.submit")
+      }}</Button>
     </div>
   </div>
 </template>
@@ -97,7 +109,7 @@ export default {
     },
 
     handleCancel() {
-      this.$emit('cancelProject')
+      this.$emit("cancelProject");
     }
   }
 };
@@ -105,6 +117,13 @@ export default {
 <style scoped lang="scss">
 .project-feedback-wrapper {
   color: rgba(0, 0, 0, 0.65);
+
+  @media screen and (max-width: 576px){
+    .project-feedback-event {
+      flex-direction: column;
+      align-items: normal !important;
+    }
+  }
 
   .project-feedback-event {
     display: flex;
@@ -115,8 +134,8 @@ export default {
       font-size: 22px;
       color: #22282d;
     }
-    
-    .padding-top-3{
+
+    .project-feedback-event {
       padding-top: 3px;
     }
   }
