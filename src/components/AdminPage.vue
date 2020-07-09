@@ -41,6 +41,7 @@
           </div>
           <div v-if="menuSelected == 'Survey' ">
             <div class="content-label">Survey</div>
+            <SurveyDraggable></SurveyDraggable>
           </div>
           <div v-if="false" class="suggest-banner">Please select an operator!</div>
         </Content>
@@ -52,6 +53,7 @@
 import { Layout, Menu, Icon, Button } from "ant-design-vue";
 import UserTable from "./UserTable.vue";
 import ProjectTable from "./ProjectTable.vue"
+import SurveyDraggable from "./SurveyDraggable.vue"
 const { Header, Content, Sider } = Layout;
 const { Item } = Menu;
 
@@ -60,6 +62,7 @@ export default {
   components: {
     UserTable,
     ProjectTable,
+    SurveyDraggable,
     Layout,
     Menu,
     Icon,

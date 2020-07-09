@@ -52,7 +52,8 @@ export default {
       default: () => {
         return {
           name: String,
-          id: String
+          id: String,
+          manager: String
         };
       }
     },

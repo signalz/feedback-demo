@@ -18,7 +18,8 @@
     "vue-chartjs": "^3.5.0",
     "vue-i18n": "^8.17.3",
     "vue-mq": "^1.0.1",
-    "vue-router": "^3.2.0"
+    "vue-router": "^3.2.0",
+    "vuedraggable": "^2.24.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",

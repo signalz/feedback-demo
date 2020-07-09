@@ -41,7 +41,22 @@
           />
         </Item>
         <Item class="form-item">
-          <div class="label-form">Survey</div>survey dropdown list
+          <div class="label-form">
+            Survey:
+            <Tag
+              v-if="surveySelected.name != ''"
+              :color="handleColor(surveySelected.name)"
+              closable
+              @close="clearSelectedSurvey"
+            >{{ surveySelected.name }}</Tag>
+          </div>
+          <AutoComplete
+            @search="handleSearchSurvey"
+            @select="handleSelectSurvey"
+            placeholder="Seach survey"
+            :dataSource="resultSurvey"
+            v-model="surveySearchModel"
+          />
         </Item>
         <Item class="form-item">
           <div class="label-form">
@@ -70,7 +85,7 @@
     <Table
       :columns="columns"
       :row-key="record => record.key"
-      :data-source="mockData"
+      :data-source="projects"
       class="table-wrapper"
     >
       <a slot="projectName" slot-scope="text">{{ text }}</a>
@@ -82,8 +97,6 @@
         >{{ user.toUpperCase() }}</Tag>
       </span>
       <span slot="action" slot-scope="text, record">
-        <a @click="onClickChangePass(record)">Change Password</a>
-        <Divider type="vertical" />
         <a @click="onClickEdit(record)">Edit</a>
         <Divider type="vertical" />
         <a @click="onClickDelete(record)">Delete</a>
@@ -101,13 +114,13 @@ const columns = [
   },
   {
     title: "Manager",
-    dataIndex: "manager",
-    key: "manager"
+    dataIndex: "managerName",
+    key: "managerName"
   },
   {
     title: "Survey",
-    dataIndex: "survey",
-    key: "survey"
+    dataIndex: "surveyName",
+    key: "surveyName"
   },
   {
     title: "Associate",
@@ -122,7 +135,15 @@ const columns = [
   }
 ];
 
-import { Table, Form, Tag, Divider, Modal, AutoComplete } from "ant-design-vue";
+import {
+  Table,
+  Form,
+  Tag,
+  Divider,
+  Modal,
+  AutoComplete,
+  message
+} from "ant-design-vue";
 import Loading from "./Loading";
 import { request } from "../api";
 import { END_POINT } from "../config";
@@ -150,53 +171,31 @@ export default {
       typeDetailModal: "",
       selectedUser: "",
       selectedID: "",
-      roleModel: "USER",
       form: {},
+      message,
       formChangePass: {},
-      mockData: [
-        {
-          key: "1",
-          projectName: "Du an 1",
-          manager: "Son Nguyen Ngoc",
-          survey: "Foundation Survey",
-          associate: [
-            "Thanh Nguyen Khac",
-            "Son Nguyen Ngoc",
-            "Quang Nguyen Phan"
-          ]
-        }
-      ],
       projects: [],
       users: [],
       resultManager: [],
+      resultSurvey: [],
       resultAssociate: [],
       managerSelected: {
         value: "",
         name: ""
       },
+      surveySelected: {
+        value: "",
+        name: ""
+      },
       associateSelected: [],
       associateSearchModel: "",
-      managerSearchModel: ""
+      managerSearchModel: "",
+      surveySearchModel: ""
     };
   },
   mounted() {
     this.form = this.$form.createForm(this, { name: "detail" });
-    this.form.getFieldDecorator("username", {
-      initialValue: ""
-    });
-    this.form.getFieldDecorator("password", {
-      initialValue: ""
-    });
-    this.form.getFieldDecorator("firstName", {
-      initialValue: ""
-    });
-    this.form.getFieldDecorator("lastName", {
-      initialValue: ""
-    });
-    this.form.getFieldDecorator("email", {
-      initialValue: ""
-    });
-    this.form.getFieldDecorator("passwordConfirm", {
+    this.form.getFieldDecorator("projectName", {
       initialValue: ""
     });
     Promise.all([
@@ -205,13 +204,12 @@ export default {
       }),
       request(`${END_POINT}/api/users`, {
         method: "GET"
+      }),
+      request(`${END_POINT}/api/surveys`, {
+        method: "GET"
       })
     ])
-      .then(([projects, users]) => {
-        if (projects && projects.length > 0) {
-          this.projects = projects;
-          console.log(projects);
-        }
+      .then(([projects, users, surveys]) => {
         if (users && users.length > 0) {
           users.map(function(value) {
             value.name = value.firstName + " " + value.lastName;
@@ -219,7 +217,34 @@ export default {
           this.users = users;
           this.handleSearchManager();
           this.handleSearchAssociate();
-          console.log(this.users);
+        }
+        if (surveys && surveys.length > 0) {
+          this.surveys = surveys;
+          this.handleSearchSurvey();
+        }
+        if (projects && projects.length > 0) {
+          projects.forEach(e => {
+            e.key = e.id;
+            e.projectName = e.name;
+            if (Object.keys(e.manager).length > 0) {
+              e.managerName = e.manager.firstName + " " + e.manager.lastName;
+            } else {
+              e.managerName = "";
+            }
+            if (Object.keys(e.survey).length > 0) {
+              e.surveyName = e.survey.description;
+            } else {
+              e.surveyName = "";
+            }
+            e.associate = [];
+            if (e.associates.length > 0) {
+              e.associates.forEach(record => {
+                const name = record.firstName + " " + record.lastName;
+                e.associate.push(name);
+              });
+            }
+          });
+          this.projects = projects;
         }
         this.isLoading = false;
       })
@@ -229,12 +254,8 @@ export default {
       });
   },
   methods: {
-    handleColor(text) {
-      if (text.includes("ADMIN")) {
-        return "green";
-      } else {
+    handleColor() {
         return "geekblue";
-      }
     },
 
     _reloadForm() {
@@ -242,15 +263,43 @@ export default {
       request(`${END_POINT}/api/projects`, {
         method: "GET"
       }).then(projects => {
-        this.isLoading = false;
+        projects.forEach(e => {
+          e.key = e.id;
+          e.projectName = e.name;
+          if (Object.keys(e.manager).length > 0) {
+            e.managerName = e.manager.firstName + " " + e.manager.lastName;
+          } else {
+            e.managerName = "";
+          }
+          if (Object.keys(e.survey).length > 0) {
+            e.surveyName = e.survey.description;
+          } else {
+            e.surveyName = "";
+          }
+          e.associate = [];
+          if (e.associates.length > 0) {
+            e.associates.forEach(record => {
+              const name = record.firstName + " " + record.lastName;
+              e.associate.push(name);
+            });
+          }
+        });
         this.projects = projects;
+        this.isLoading = false;
       });
     },
 
     popTag(id, array) {
-      array.splice(array.indexOf(id), 1);
-      if(array.length == 0){
-          this.handleSearchAssociate();
+      array.splice(
+        array
+          .map(function(e) {
+            return e.value;
+          })
+          .indexOf(id),
+        1
+      );
+      if (array.length == 0) {
+        this.handleSearchAssociate();
       }
     },
 
@@ -260,6 +309,14 @@ export default {
         name: ""
       };
       this.handleSearchManager();
+    },
+
+    clearSelectedSurvey() {
+      this.surveySelected = {
+        value: "",
+        name: ""
+      };
+      this.handleSearchSurvey();
     },
 
     handleSearchManager(value) {
@@ -285,6 +342,31 @@ export default {
         result.splice(5, result.length - 5);
       }
       this.resultManager = result;
+    },
+
+    handleSearchSurvey(value) {
+      let result = [];
+      if (!value) {
+        this.surveys.map(record => {
+          result.push({
+            value: record.id,
+            text: record.description
+          });
+        });
+      } else {
+        this.surveys.map(record => {
+          if (record.description.includes(value)) {
+            result.push({
+              value: record.id,
+              text: record.description
+            });
+          }
+        });
+      }
+      if (result.length > 5) {
+        result.splice(5, result.length - 5);
+      }
+      this.resultSurvey = result;
     },
 
     handleSearchAssociate(value) {
@@ -329,7 +411,7 @@ export default {
         });
       }
       this.associateSearchModel = "";
-      this.resultAssociate = [];
+      this.handleSearchAssociate();
     },
 
     handleSelectManager(value) {
@@ -339,106 +421,141 @@ export default {
       this.managerSelected.value = selectedObj[0].id;
       this.managerSelected.name = selectedObj[0].name;
       this.managerSearchModel = "";
-      this.resultManager = [];
+      this.handleSearchManager();
+    },
+
+    handleSelectSurvey(value) {
+      const selectedObj = this.surveys.filter(e => {
+        return e.id == value;
+      });
+      this.surveySelected.value = selectedObj[0].id;
+      this.surveySelected.name = selectedObj[0].description;
+      this.surveySearchModel = "";
+      this.handleSearchSurvey();
     },
 
     onClickEdit(record) {
       this.typeDetailModal = "Edit";
       this.selectedID = record.id;
       this.form.setFieldsValue({
-        username: record.username,
-        firstName: record.firstName,
-        lastName: record.lastName,
-        email: record.email
+        projectName: record.projectName
       });
-      this.roleModel = record.roles[0];
+      if (Object.keys(record.manager).length > 0) {
+        this.managerSelected = {
+          name: record.managerName,
+          value: record.manager.id
+        };
+      } else {
+        this.managerSelected = {
+          name: "",
+          value: ""
+        };
+      }
+      this.managerSearchModel = "";
+      this.associateSearchModel = "";
+      this.associateSelected = [];
+      if (record.associates.length > 0) {
+        record.associates.forEach(e => {
+          const name = e.firstName + " " + e.lastName;
+          this.associateSelected.push({
+            value: e.id,
+            name: name
+          });
+        });
+      }
+      this.surveySearchModel = "";
+      this.surveySelected = {
+        name: record.survey.description,
+        value: record.survey.id
+      };
+
       this.detailModalVisible = true;
     },
 
     onClickDelete(record) {
-      this.selectedUser = record.username;
+      this.selectedUser = record.projectName;
       this.selectedID = record.id;
       this.deleteModalVisible = true;
     },
 
     onConfirmDelete() {
       this.deleteModalVisible = false;
-      request(`${END_POINT}/api/users/` + this.selectedID, {
+      request(`${END_POINT}/api/projects/` + this.selectedID, {
         method: "DELETE"
       }).then(() => {
         this._reloadForm();
+        this.message.info("Delete project successful!");
       });
     },
 
     onClickAdd() {
       this.typeDetailModal = "Add";
-      this.form.getFieldDecorator("password", {
-        initialValue: ""
-      });
-      this.form.getFieldDecorator("passwordConfirm", {
-        initialValue: ""
-      });
       this.form.setFieldsValue({
-        username: "",
-        password: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        passwordConfirm: ""
+        projectName: ""
       });
-      this.roleModel = "USER";
+      this.managerSelected = {
+        name: "",
+        value: ""
+      };
+      this.managerSearchModel = "";
+      this.associateSearchModel = "";
+      this.associateSelected = [];
+      this.surveySearchModel = "";
+      this.surveySelected = {
+        name: "",
+        value: ""
+      };
       this.detailModalVisible = true;
     },
 
     onConfirmDetail(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
-        const { username, email, firstName, lastName, password } = values;
+        const { projectName: name } = values;
+        let associates = [];
+        this.associateSelected.forEach(e => {
+          associates.push(e.value);
+        });
         const obj = {
-          username,
-          email,
-          firstName,
-          lastName,
-          password,
-          roles: [this.roleModel]
+          name,
+          manager: this.managerSelected.value,
+          associates,
+          surveyId: this.surveySelected.value
         };
-        if (!err) {
+        if (!err && obj.manager && obj.surveyId && obj.associates.length > 0) {
           if (this.typeDetailModal == "Add") {
-            console.log("add");
-            request(`${END_POINT}/api/users`, {
+            request(`${END_POINT}/api/projects`, {
               method: "POST",
-              body: JSON.stringify(obj)
+              body: JSON.stringify([obj])
             })
               .then(() => {
                 this.detailModalVisible = false;
                 this._reloadForm();
-                console.log("add thanh cong");
+                this.message.info("Add project successfully!");
               })
               .catch(e => {
                 this.detailModalVisible = false;
-                console.log("add fail");
+                this.message.error("Add project fail!");
                 console.log(e);
               });
           } else {
-            console.log("edit");
-            delete obj.password;
-            request(`${END_POINT}/api/users/` + this.selectedID, {
+            request(`${END_POINT}/api/projects/` + this.selectedID, {
               method: "PATCH",
               body: JSON.stringify(obj)
             })
               .then(() => {
                 this.detailModalVisible = false;
                 this._reloadForm();
-                console.log("edit thanh cong");
+                this.message.info("Edit project successfully!");
               })
               .catch(e => {
                 this.detailModalVisible = false;
-                console.log("edit fail");
+                this.message.error("Edit project fail!");
                 console.log(e);
               });
           }
         } else {
-          console.log("loi");
+          this.message.error("Please fill all the fields!");
         }
       });
     }

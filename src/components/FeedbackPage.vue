@@ -11,22 +11,16 @@
       <div class="feedback-page-content">
         <div class="feedback-page-content-left">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">
-              {{ $t("feedback.feedback") }}
-            </div>
+            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <Button
               v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
-              >{{ $t("feedback.new") }}</Button
-            >
+            >{{ $t("feedback.new") }}</Button>
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable
-              :sections="sections"
-              v-if="project.id === defaultValue"
-            />
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -47,16 +41,12 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >
-              {{ $t("feedback.new-feedback") }}
-            </div>
+            >{{ $t("feedback.new-feedback") }}</div>
           </div>
         </div>
         <div class="feedback-page-content-right">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">
-              {{ $t("feedback.dashboard") }}
-            </div>
+            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
           </div>
           <Dashboard
             :key="key"
@@ -69,36 +59,27 @@
         </div>
       </div>
     </mq-layout>
-    <mq-layout
-      :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]"
-    >
+    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
       <div class="feedback-page-content">
         <div class="feedback-page-content-left" v-if="showOverview">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">
-              {{ $t("feedback.feedback") }}
-            </div>
+            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <div>
               <Button
                 v-if="project.id !== defaultValue"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
-                >{{ $t("feedback.new") }}</Button
-              >
+              >{{ $t("feedback.new") }}</Button>
               <Button
                 type="primary"
                 class="feedback-page-content-left-header-dashboard"
                 @click="onClickChangeSection"
-                >{{ $t("feedback.dashboard") }}</Button
-              >
+              >{{ $t("feedback.dashboard") }}</Button>
             </div>
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable
-              :sections="sections"
-              v-if="project.id === defaultValue"
-            />
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -119,22 +100,17 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >
-              {{ $t("feedback.new-feedback") }}
-            </div>
+            >{{ $t("feedback.new-feedback") }}</div>
           </div>
         </div>
         <div class="feedback-page-content-right" v-if="!showOverview">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">
-              {{ $t("feedback.dashboard") }}
-            </div>
+            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
             <Button
               type="primary"
               class="feedback-page-content-right-header-feedback"
               @click="onClickChangeSection"
-              >{{ $t("feedback.feedback") }}</Button
-            >
+            >{{ $t("feedback.feedback") }}</Button>
           </div>
           <Dashboard
             :sections="sections"
@@ -361,9 +337,14 @@ export default {
           });
       } else {
         const selectedProject = this.projects.find(p => p.id === id);
+        let managerName = "";
+        if (Object.keys(selectedProject.manager).length > 0) {
+          managerName = selectedProject.manager.firstName + " " + selectedProject.manager.lastName;
+        }
         this.project = {
           name: selectedProject.name,
-          id: selectedProject.id
+          id: selectedProject.id,
+          manager: managerName
         };
         if (this.surveys.length > 0) {
           // temporary get survey for project

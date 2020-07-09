@@ -8,7 +8,7 @@
     <Modal @ok="onConfirmChangePass" v-model="changePassModalVisible">
       <div class="change-modal-label">Change password for {{selectedUser}}</div>
       <Form class="detail-form" :form="formChangePass" @submit="onConfirmChangePass">
-        <Item class="form-item form-full-width">
+        <Item v-if="false" class="form-item form-full-width">
           <div class="label-form">Old Password</div>
           <Input
             :placeholder="$t('admin.pass-old')"
@@ -70,7 +70,7 @@
     <Modal @ok="onConfirmDetail" v-model="detailModalVisible">
       <div class="form-header">{{typeDetailModal}}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
-        <Item class="form-item">
+        <Item class="form-item form-full-width">
           <div class="label-form">{{ $t('admin.email') }}</div>
           <Input
             :placeholder="$t('admin.email')"
@@ -84,7 +84,7 @@
             ]"
           ></Input>
         </Item>
-        <Item class="form-item">
+        <Item v-if="false" class="form-item">
           <div class="label-form">{{ $t('admin.phone') }}</div>
           <Input
             :placeholder="$t('admin.phone')"
@@ -384,12 +384,12 @@ export default {
       e.preventDefault();
       this.formChangePass.validateFields((err, values) => {
         const {
-          passwordOld: password,
+          //passwordOld: password,
           password: newPassword,
           passwordConfirm: confirmNewPassword
         } = values;
         const obj = {
-          password,
+          //password,
           newPassword,
           confirmNewPassword
         };
@@ -464,10 +464,10 @@ export default {
     onConfirmDetail(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
-        const { username, email, firstName, lastName, password } = values;
+        const { username, firstName, lastName, password } = values;
         const obj = {
           username,
-          email,
+          //email,
           firstName,
           lastName,
           password,

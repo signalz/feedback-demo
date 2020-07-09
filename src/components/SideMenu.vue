@@ -13,7 +13,7 @@
       </div>
       <div class="side-menu-row">
         <div class="side-menu-project-manager-label">{{$t('menu.side.manager')}}</div>
-        <div class="side-menu-project-manager-name">{{manager}}</div>
+        <div class="side-menu-project-manager-name">{{selectedProject.manager}}</div>
       </div>
     </div>
     <div class="side-menu-search">
@@ -59,11 +59,11 @@ export default {
       default: () => {
         return {
           id: String,
-          name: String
+          name: String,
+          manager: String
         };
       }
-    },
-    manager: String
+    }
   },
   data: () => {
     return {
