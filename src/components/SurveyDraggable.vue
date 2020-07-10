@@ -1,97 +1,92 @@
 <template>
-  <div class="row">
-    <div class="col-2">
-      <div class="form-group">
-        <div
-          class="btn-group-vertical buttons"
-          role="group"
-          aria-label="Basic example"
-        >
-          <button class="btn btn-secondary" @click="add">Add</button>
-          <button class="btn btn-secondary" @click="replace">Replace</button>
-        </div>
-
-        <div class="form-check">
-          <input
-            id="disabled"
-            type="checkbox"
-            v-model="enabled"
-            class="form-check-input"
-          />
-          <label class="form-check-label" for="disabled">DnD enabled</label>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6">
-      <h3>Draggable {{ draggingInfo }}</h3>
-
-      <draggable
-        :list="list"
-        :disabled="!enabled"
-        class="list-group"
-        ghost-class="ghost"
-        :move="checkMove"
-        @start="dragging = true"
-        @end="dragging = false"
-      >
-        <div
-          class="list-group-item"
-          v-for="element in list"
-          :key="element.name"
-        >
-          {{ element.name }}
+  <div class="survey-component-wrapper">
+    <div class="survey-content">
+      <draggable :list="survey" ghost-class="ghost">
+        <div v-for="(element, index) in survey" :key="index">
+          <Collapse>
+            <Panel :header="element.name">
+              <div>
+                <draggable :list="element.questions" ghost-class="ghost" class="questions-wrapper">
+                  <div v-for="(question, index) in element.questions" :key="index">
+                    <Input v-model="question.questionName"></Input>
+                    <Button
+                      @click="onClickDeleteQuestion(element.questions, index)"
+                    >Delete {{ question.questionName }}</Button>
+                  </div>
+                </draggable>
+              </div>
+              <Input v-model="abstractModel[element.name]" />
+              <Button
+                class="btn btn-secondary"
+                :disabled="!abstractModel[element.name]"
+                @click="addQuestion(element, element.name)"
+              >Add Question</Button>
+            </Panel>
+          </Collapse>
+          <div class="survey-delete">
+            <Icon @click="onDeleteSurvey(survey, index)" slot="prefix" type="delete" style="color:rgba(0,0,0,.25)" />
+          </div>
         </div>
       </draggable>
     </div>
-
-    <rawDisplayer class="col-3" :value="list" title="List" />
+    <Input v-model="addSectionModel" />
+    <Button :disabled="!addSectionModel" class="add-btn" @click="addSection">Add Section</Button>
+    <div class="col-3" title="List">{{ survey }}</div>
   </div>
 </template>
 
 <script>
 import draggable from "vuedraggable";
-let id = 1;
+import { Collapse, Input, Button, Icon } from "ant-design-vue";
+
+const { Panel } = Collapse;
+
 export default {
-  name: "simple",
-  display: "Simple",
-  order: 0,
   components: {
-    draggable
+    draggable,
+    Collapse,
+    Input,
+    Icon,
+    Panel,
+    Button
   },
+
   data() {
     return {
-      enabled: true,
-      list: [
-        { name: "John", id: 0 },
-        { name: "Joao", id: 1 },
-        { name: "Jean", id: 2 }
-      ],
-      dragging: false
+      survey: [],
+      abstractModel: {},
+      addSectionModel: ""
     };
   },
-  computed: {
-    draggingInfo() {
-      return this.dragging ? "under drag" : "";
-    }
-  },
+
   methods: {
-    add: function() {
-      this.list.push({ name: "Juan " + id, id: id++ });
+    addSection() {
+      this.survey.push({ name: this.addSectionModel, questions: [] });
+      this.addSectionModel = "";
     },
-    replace: function() {
-      this.list = [{ name: "Edgard", id: id++ }];
+
+    addQuestion(section, questionModel) {
+      section.questions.push({
+        questionName: this.abstractModel[questionModel]
+      });
+      this.abstractModel[questionModel] = "";
     },
-    checkMove: function(e) {
-      window.console.log("Future index: " + e.draggedContext.futureIndex);
+
+    onClickDeleteQuestion(array, index) {
+      array.splice(index, 1);
+    },
+
+    onDeleteSurvey(array, index){
+      array.splice(index, 1);
     }
   }
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
 .buttons {
   margin-top: 35px;
 }
+
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
