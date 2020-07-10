@@ -11,23 +11,29 @@
       <div class="feedback-page-content">
         <div class="feedback-page-content-left">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <Button
               v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
-            >{{ $t("feedback.new") }}</Button>
+              >{{ $t("feedback.new") }}</Button
+            >
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
                   feedbackState !== feedbackStates.NO_FEEDBACK
               "
-              :sections="surveySections"
               :ratings="ratings"
+              :projectData="projectData"
               @ratechange="handleRateChange"
               @submitProject="handleSubmitProject"
               @cancelProject="handleCancelProject"
@@ -41,12 +47,16 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >{{ $t("feedback.new-feedback") }}</div>
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
           </div>
           <Dashboard
             :key="key"
@@ -59,34 +69,43 @@
         </div>
       </div>
     </mq-layout>
-    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
+    <mq-layout
+      :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]"
+    >
       <div class="feedback-page-content">
         <div class="feedback-page-content-left" v-if="showOverview">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <div>
               <Button
                 v-if="project.id !== defaultValue"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
-              >{{ $t("feedback.new") }}</Button>
+                >{{ $t("feedback.new") }}</Button
+              >
               <Button
                 type="primary"
                 class="feedback-page-content-left-header-dashboard"
                 @click="onClickChangeSection"
-              >{{ $t("feedback.dashboard") }}</Button>
+                >{{ $t("feedback.dashboard") }}</Button
+              >
             </div>
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
                   feedbackState !== feedbackStates.NO_FEEDBACK
               "
-              :sections="surveySections"
               :ratings="ratings"
+              :projectData="projectData"
               @ratechange="handleRateChange"
               @submitProject="handleSubmitProject"
               @cancelProject="handleCancelProject"
@@ -100,17 +119,22 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >{{ $t("feedback.new-feedback") }}</div>
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right" v-if="!showOverview">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
             <Button
               type="primary"
               class="feedback-page-content-right-header-feedback"
               @click="onClickChangeSection"
-            >{{ $t("feedback.feedback") }}</Button>
+              >{{ $t("feedback.feedback") }}</Button
+            >
           </div>
           <Dashboard
             :sections="sections"
@@ -184,14 +208,14 @@ export default {
       feedback: {},
       // keep dashboard selection
       overviewSection: DEFAULT,
-      historySections: [{ title: DEFAULT }]
+      historySections: [{ title: DEFAULT }],
+      projectData: {}
     };
   },
   mounted() {
     Promise.all([
       request(`${END_POINT}/api/projects`),
       request(`${END_POINT}/api/sections`),
-      request(`${END_POINT}/api/surveys`),
       request(`${END_POINT}/api/dashboard/projects/summary`, {
         method: "POST"
       }),
@@ -199,7 +223,7 @@ export default {
         method: "POST"
       })
     ])
-      .then(([projects, sections, surveys, overviewData, historyData]) => {
+      .then(([projects, sections, overviewData, historyData]) => {
         if (sections && sections.length > 0) {
           this.sections = sections;
         }
@@ -212,10 +236,6 @@ export default {
 
         if (projects && projects.length > 0) {
           this.projects = projects;
-        }
-
-        if (surveys && surveys.length > 0) {
-          this.surveys = surveys;
         }
 
         this.isLoading = false;
@@ -233,12 +253,22 @@ export default {
 
     onClickNew() {
       this.feedbackState = FEEDBACK_STATE.NEW_FEEDBACK;
-      this.surveySections = this.survey.sections.map(section => {
-        return {
-          ...section,
-          title: this.sections.find(item => item.id === section.id).title
-        };
-      });
+      if (this.project.survey && this.project.survey.id) {
+        const surveyId = this.project.survey.id;
+        this.isLoading = true;
+
+        request(`${END_POINT}/api/surveys/${surveyId}`)
+          .then(survey => {
+            this.isLoading = false;
+            this.projectData = survey;
+          })
+          .catch(e => {
+            this.isLoading = false;
+            this.message.error(e);
+          });
+      } else {
+        this.message.error("Cannot retrieve survey");
+      }
     },
 
     setOverviewData(overviewData) {
@@ -270,14 +300,14 @@ export default {
             request(`${END_POINT}/api/dashboard/projects/summary`, {
               method: "POST",
               body: JSON.stringify({
-                sectionId: section.id
+                sectionTitle: section.title
               })
             })
           )
         )
           .then(values => {
             this.sections = this.sections.map((section, idx) => ({
-              ...section,
+              title: section.title,
               ...values[idx]
             }));
             this.isLoading = false;
@@ -288,21 +318,21 @@ export default {
       }
     },
 
-    getRating({ ratings, section, question }) {
-      let rating;
-      const ratingSection = ratings.find(item => item.sectionId === section.id);
-      if (ratingSection) {
-        const { questions } = ratingSection;
-        const ratingQuestion = questions.find(
-          itemQ => itemQ.questionId === question.id
-        );
+    // getRating({ ratings, section, question }) {
+    //   let rating;
+    //   const ratingSection = ratings.find(item => item.sectionId === section.id);
+    //   if (ratingSection) {
+    //     const { questions } = ratingSection;
+    //     const ratingQuestion = questions.find(
+    //       itemQ => itemQ.questionId === question.id
+    //     );
 
-        if (ratingQuestion) {
-          rating = ratingQuestion.rating;
-        }
-      }
-      return rating;
-    },
+    //     if (ratingQuestion) {
+    //       rating = ratingQuestion.rating;
+    //     }
+    //   }
+    //   return rating;
+    // },
 
     handleSelectProject({ id }) {
       if (this.project.id === id) {
@@ -314,6 +344,7 @@ export default {
           id: DEFAULT,
           name: DEFAULT
         };
+        this.projectData = {}
 
         Promise.all([
           request(`${END_POINT}/api/dashboard/projects/summary`, {
@@ -338,119 +369,92 @@ export default {
       } else {
         const selectedProject = this.projects.find(p => p.id === id);
         let managerName = "";
-        if (Object.keys(selectedProject.manager).length > 0) {
-          managerName = selectedProject.manager.firstName + " " + selectedProject.manager.lastName;
+        if (selectedProject.manager) {
+          managerName =
+            selectedProject.manager.firstName +
+            " " +
+            selectedProject.manager.lastName;
         }
         this.project = {
-          name: selectedProject.name,
-          id: selectedProject.id,
+          ...selectedProject,
           manager: managerName
         };
-        if (this.surveys.length > 0) {
-          // temporary get survey for project
-          const surveyId = selectedProject.survey.id;
-          Promise.all([
-            request(`${END_POINT}/api/surveys/${surveyId}`),
-            request(
-              `${END_POINT}/api/feedbacks?surveyId=${surveyId}&projectId=${selectedProject.id}`
-            ),
-            request(`${END_POINT}/api/dashboard/projects/summary`, {
-              method: "POST",
-              body: JSON.stringify({ projectId: id })
-            }),
-            request(`${END_POINT}/api/dashboard/projects/history`, {
-              method: "POST",
-              body: JSON.stringify({ projectId: id })
-            })
-          ])
-            .then(([survey, feedback, overviewData, historyData]) => {
-              this.setOverviewData(overviewData);
-              this.setHistoryData([historyData], [{ title: DEFAULT }]);
+        Promise.all([
+          request(`${END_POINT}/api/feedbacks?projectId=${selectedProject.id}`),
+          request(`${END_POINT}/api/dashboard/projects/summary`, {
+            method: "POST",
+            body: JSON.stringify({ projectId: id })
+          }),
+          request(`${END_POINT}/api/dashboard/projects/history`, {
+            method: "POST",
+            body: JSON.stringify({ projectId: id })
+          })
+        ])
+          .then(([feedback, overviewData, historyData]) => {
+            this.setOverviewData(overviewData);
+            this.setHistoryData([historyData], [{ title: DEFAULT }]);
 
-              this.survey = { ...survey, id: surveyId };
-
-              this.surveySections = survey.sections.map(section => {
-                return {
-                  ...section,
-                  title: this.sections.find(item => item.id === section.id)
-                    .title
-                };
-              });
-              // temp check feedback existed
-              if (feedback.id) {
-                this.feedback = feedback;
-                this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-                this.review = feedback.review;
-                this.eventName = feedback.event;
-
-                this.surveySections = this.surveySections.map(section => {
-                  return {
-                    ...section,
-                    questions: section.questions.map(q => {
-                      return {
-                        ...q,
-                        rating: this.getRating({
-                          ratings: feedback.ratings,
-                          section,
-                          question: q
-                        })
-                      };
-                    })
-                  };
-                });
-              } else {
-                this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
-                this.eventName = "";
-                this.review = "";
-              }
-              // trigger re-mount overview dashboard
-              this.key = Math.random();
-              this.isLoading = false;
-            })
-            .catch(e => {
-              console.log(e);
-              this.isLoading = false;
-              this.message.error(e);
-            });
-        } else {
-          this.message.error("Cannot retrieve survey");
-        }
+            if (feedback.id) {
+              this.feedback = feedback;
+              this.projectData = feedback;
+              this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+              this.review = feedback.review;
+              this.eventName = feedback.event;
+            } else {
+              this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
+              this.projectData = {};
+              this.eventName = "";
+              this.review = "";
+            }
+            // trigger re-mount overview dashboard
+            this.key = Math.random();
+            this.isLoading = false;
+          })
+          .catch(e => {
+            console.log(e);
+            this.isLoading = false;
+            this.message.error(e);
+          });
       }
     },
 
     handleRateChange({ sectionId, questionId, rating }) {
-      this.surveySections = this.surveySections.map(s => {
-        if (s.id === sectionId) {
-          return {
-            ...s,
-            questions: s.questions.map(q => {
-              if (q.id === questionId) {
-                return {
-                  ...q,
-                  rating
-                };
-              }
-              return q;
-            })
-          };
-        }
-        return s;
-      });
+      this.projectData = {
+        ...this.projectData,
+        sections: this.projectData.sections.map(s => {
+          if (s.id === sectionId) {
+            return {
+              ...s,
+              questions: s.questions.map(q => {
+                if (q.id === questionId) {
+                  return {
+                    ...q,
+                    rating
+                  };
+                }
+                return q;
+              })
+            };
+          }
+          return s;
+        })
+      };
     },
 
     handleSubmitProject({ event, review }) {
-      const { project, surveySections } = this;
+      const { project } = this;
       this.isLoading = true;
       const requestBody = {
-        surveyId: this.survey.id,
         projectId: project.id,
         review,
         event,
-        ratings: surveySections.map(s => ({
-          sectionId: s.id,
-          questions: s.questions.map(q => ({
-            questionId: q.id,
-            rating: q.rating
+        sections: this.projectData.sections.map(section => ({
+          title: section.title,
+          order: section.order,
+          questions: section.questions.map(question => ({
+            rating: question.rating,
+            text: question.text,
+            order: question.order,
           }))
         }))
       };
@@ -514,33 +518,19 @@ export default {
     handleCancelProject() {
       if (this.feedback.id) {
         this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-        this.surveySections = this.surveySections.map(section => {
-          return {
-            ...section,
-            questions: section.questions.map(q => {
-              return {
-                ...q,
-                rating: this.getRating({
-                  ratings: this.feedback.ratings,
-                  section,
-                  question: q
-                })
-              };
-            })
-          };
-        });
+        this.projectData = this.feedback
       } else {
         this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
       }
     },
 
-    changeOverviewSection({ sectionId }) {
+    changeOverviewSection({ sectionTitle }) {
       this.isLoading = true;
-      this.overviewSection = sectionId;
+      this.overviewSection = sectionTitle;
       request(`${END_POINT}/api/dashboard/projects/summary`, {
         method: "POST",
         body: JSON.stringify({
-          sectionId: sectionId === DEFAULT ? null : sectionId,
+          sectionTitle: sectionTitle === DEFAULT ? null : sectionTitle,
           projectId: this.project.id === DEFAULT ? null : this.project.id
         })
       })
@@ -563,7 +553,7 @@ export default {
             request(`${END_POINT}/api/dashboard/projects/history`, {
               method: "POST",
               body: JSON.stringify({
-                sectionId: section.id === DEFAULT ? null : section.id,
+                sectionTitle: section.title === DEFAULT ? null : section.title,
                 projectId: this.project.id === DEFAULT ? null : this.project.id
               })
             })

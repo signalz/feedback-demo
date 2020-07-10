@@ -15,7 +15,7 @@
       </div>
     </div>
     <div
-      v-for="section in sections"
+      v-for="section in projectData.sections || []"
       :key="section.id"
       class="project-feedback-section"
     >
@@ -83,7 +83,7 @@ export default {
     }
   },
   props: {
-    sections: Array,
+    projectData: Object,
     ratings: Array,
     state: String,
     event: String,

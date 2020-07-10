@@ -35,8 +35,8 @@ export default {
     historyData: Array
   },
   methods: {
-    handleChangeSection({ sectionId }) {
-      this.$emit("changeOverviewSection", { sectionId });
+    handleChangeSection({ sectionTitle }) {
+      this.$emit("changeOverviewSection", { sectionTitle });
     },
 
     handleChangeSectionHistory({ sections }) {

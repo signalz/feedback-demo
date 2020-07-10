@@ -24,11 +24,11 @@
           </Option>
           <Option
             v-for="section in sections"
-            :key="section.id"
-            :value="section.id"
+            :key="section.title"
+            :value="section.title"
             @click.native="handleSelect"
           >
-            <Checkbox :value="section.id">{{ section.title }}</Checkbox>
+            <Checkbox :value="section.title">{{ section.title }}</Checkbox>
           </Option>
         </Select>
       </Group>
@@ -100,7 +100,7 @@ export default {
       e.domEvent.preventDefault();
       if (e.key === "select-all") {
         this.checkboxesValues = this.sections
-          .map(section => section.id)
+          .map(section => section.title)
           .concat(DEFAULT);
       } else {
         if (this.checkboxesValues.includes(e.key)) {
@@ -118,7 +118,7 @@ export default {
           title:
             ckValue === DEFAULT
               ? DEFAULT
-              : this.sections.find(section => section.id === ckValue).title
+              : this.sections.find(section => section.title === ckValue).title
         }))
       });
     }

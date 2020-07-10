@@ -8,7 +8,7 @@
         @change="handleChangeSection"
       >
         <Option :key="defaultValue" :value="defaultValue">{{$t("dashboard.overview.default")}}</Option>
-        <Option v-for="section in sections" :key="section.id" :value="section.id">{{section.title}}</Option>
+        <Option v-for="section in sections" :key="section.title" :value="section.title">{{section.title}}</Option>
       </Select>
     </div>
     <PieChart
@@ -84,8 +84,8 @@ export default {
     };
   },
   methods: {
-    handleChangeSection(sectionId) {
-      this.$emit("changeSection", { sectionId });
+    handleChangeSection(sectionTitle) {
+      this.$emit("changeSection", { sectionTitle });
     }
   }
 };
