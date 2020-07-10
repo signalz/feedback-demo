@@ -79,6 +79,20 @@
             v-model="associateSearchModel"
           />
         </Item>
+        <Item class="form-item">
+          <div class="label-form">Description</div>
+          <Input
+            placeholder="Description"
+            v-decorator="[
+              'description',
+              {
+                rules: [
+                  { required: false, message: 'Please input your description!' }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
       </Form>
     </Modal>
     <Button @click="onClickAdd" class="add-btn" type="primary">Add Project</Button>
@@ -127,6 +141,11 @@ const columns = [
     key: "associate",
     dataIndex: "associate",
     scopedSlots: { customRender: "associate" }
+  },
+  {
+    title: "Description",
+    dataIndex: "description",
+    key: "description"
   },
   {
     title: "Action",
@@ -198,6 +217,9 @@ export default {
     this.form.getFieldDecorator("projectName", {
       initialValue: ""
     });
+    this.form.getFieldDecorator("description", {
+      initialValue: ""
+    });
     Promise.all([
       request(`${END_POINT}/api/projects`, {
         method: "GET"
@@ -255,7 +277,7 @@ export default {
   },
   methods: {
     handleColor() {
-        return "geekblue";
+      return "geekblue";
     },
 
     _reloadForm() {
@@ -440,6 +462,9 @@ export default {
       this.form.setFieldsValue({
         projectName: record.projectName
       });
+      this.form.setFieldsValue({
+        description: record.description
+      });
       if (Object.keys(record.manager).length > 0) {
         this.managerSelected = {
           name: record.managerName,
@@ -491,7 +516,8 @@ export default {
     onClickAdd() {
       this.typeDetailModal = "Add";
       this.form.setFieldsValue({
-        projectName: ""
+        projectName: "",
+        description: ""
       });
       this.managerSelected = {
         name: "",
@@ -511,7 +537,7 @@ export default {
     onConfirmDetail(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
-        const { projectName: name } = values;
+        const { projectName: name, description } = values;
         let associates = [];
         this.associateSelected.forEach(e => {
           associates.push(e.value);
@@ -520,7 +546,8 @@ export default {
           name,
           manager: this.managerSelected.value,
           associates,
-          surveyId: this.surveySelected.value
+          surveyId: this.surveySelected.value,
+          description
         };
         if (!err && obj.manager && obj.surveyId && obj.associates.length > 0) {
           if (this.typeDetailModal == "Add") {
@@ -605,8 +632,10 @@ export default {
     input {
       line-height: 35px;
       outline: none;
-      border: 1px solid black;
-      border-radius: 3px;
+      border-radius: 5px;
+      width: 100%;
+      border: 1px solid #d9d9d9;
+      padding: 0 10px;
     }
   }
 

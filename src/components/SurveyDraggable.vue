@@ -1,46 +1,71 @@
 <template>
   <div class="row">
-    <div class="col-1">
-      <button class="btn btn-secondary button" @click="add">Add</button>
+    <div class="col-2">
+      <div class="form-group">
+        <div
+          class="btn-group-vertical buttons"
+          role="group"
+          aria-label="Basic example"
+        >
+          <button class="btn btn-secondary" @click="add">Add</button>
+          <button class="btn btn-secondary" @click="replace">Replace</button>
+        </div>
+
+        <div class="form-check">
+          <input
+            id="disabled"
+            type="checkbox"
+            v-model="enabled"
+            class="form-check-input"
+          />
+          <label class="form-check-label" for="disabled">DnD enabled</label>
+        </div>
+      </div>
     </div>
 
-    <div class="col-7">
+    <div class="col-6">
       <h3>Draggable {{ draggingInfo }}</h3>
 
-      <draggable tag="ul" :list="list" class="list-group" handle=".handle">
-        <li class="list-group-item" v-for="(element, idx) in list" :key="element.name">
-          <i class="fa fa-align-justify handle"></i>
-
-          <span class="text">{{ element.name }}</span>
-
-          <input type="text" class="form-control" v-model="element.text" />
-
-          <i class="fa fa-times close" @click="removeAt(idx)"></i>
-        </li>
+      <draggable
+        :list="list"
+        :disabled="!enabled"
+        class="list-group"
+        ghost-class="ghost"
+        :move="checkMove"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <div
+          class="list-group-item"
+          v-for="element in list"
+          :key="element.name"
+        >
+          {{ element.name }}
+        </div>
       </draggable>
     </div>
 
-    <!--rawDisplayer class="col-3" :value="list" title="List" / -->
+    <rawDisplayer class="col-3" :value="list" title="List" />
   </div>
 </template>
 
 <script>
-let id = 3;
 import draggable from "vuedraggable";
+let id = 1;
 export default {
-  name: "handle",
-  display: "Handle",
-  instruction: "Drag using the handle icon",
-  order: 5,
+  name: "simple",
+  display: "Simple",
+  order: 0,
   components: {
     draggable
   },
   data() {
     return {
+      enabled: true,
       list: [
-        { name: "John", text: "", id: 0 },
-        { name: "Joao", text: "", id: 1 },
-        { name: "Jean", text: "", id: 2 }
+        { name: "John", id: 0 },
+        { name: "Joao", id: 1 },
+        { name: "Jean", id: 2 }
       ],
       dragging: false
     };
@@ -51,35 +76,24 @@ export default {
     }
   },
   methods: {
-    removeAt(idx) {
-      this.list.splice(idx, 1);
-    },
     add: function() {
-      id++;
-      this.list.push({ name: "Juan " + id, id, text: "" });
+      this.list.push({ name: "Juan " + id, id: id++ });
+    },
+    replace: function() {
+      this.list = [{ name: "Edgard", id: id++ }];
+    },
+    checkMove: function(e) {
+      window.console.log("Future index: " + e.draggedContext.futureIndex);
     }
   }
 };
 </script>
 <style scoped>
-.button {
+.buttons {
   margin-top: 35px;
 }
-.handle {
-  float: left;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-.close {
-  float: right;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-input {
-  display: inline-block;
-  width: 50%;
-}
-.text {
-  margin: 20px;
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
 }
 </style>

@@ -551,8 +551,9 @@ export default {
     input {
       line-height: 35px;
       outline: none;
-      border: 1px solid black;
-      border-radius: 3px;
+      border-radius: 5px;
+      border: 1px solid #d9d9d9;
+      padding: 0 10px;
     }
   }
 
