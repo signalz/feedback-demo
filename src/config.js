@@ -1,5 +1,6 @@
 // export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
 export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com";
+// export const END_POINT = "http://localhost:3000"
 
 export const ROLE_ADMIN = "ADMIN";
 
@@ -27,7 +28,7 @@ export const DASHBOARD_PIE_COLORS = [
   "#cd7f32 ",
   "#aaa9ad",
   "#faf369",
-  "#e5e4e2"
+  "#76bbe8"
 ];
 
 export const RATINGS_LABELS = {
