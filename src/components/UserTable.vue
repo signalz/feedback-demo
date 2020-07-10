@@ -513,6 +513,11 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+
+::placeholder {
+  color: #bfbfbf;
+}
+
 .table-wrapper {
   margin: 30px 0;
 }
