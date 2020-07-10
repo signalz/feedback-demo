@@ -318,22 +318,6 @@ export default {
       }
     },
 
-    // getRating({ ratings, section, question }) {
-    //   let rating;
-    //   const ratingSection = ratings.find(item => item.sectionId === section.id);
-    //   if (ratingSection) {
-    //     const { questions } = ratingSection;
-    //     const ratingQuestion = questions.find(
-    //       itemQ => itemQ.questionId === question.id
-    //     );
-
-    //     if (ratingQuestion) {
-    //       rating = ratingQuestion.rating;
-    //     }
-    //   }
-    //   return rating;
-    // },
-
     handleSelectProject({ id }) {
       if (this.project.id === id) {
         return;

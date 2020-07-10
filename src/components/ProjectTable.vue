@@ -112,8 +112,8 @@
       </span>
       <span slot="action" slot-scope="text, record">
         <a @click="onClickEdit(record)">Edit</a>
-        <Divider type="vertical" />
-        <a @click="onClickDelete(record)">Delete</a>
+        <!-- <Divider type="vertical" />
+        <a @click="onClickDelete(record)">Delete</a> -->
       </span>
     </Table>
   </div>
@@ -158,7 +158,7 @@ import {
   Table,
   Form,
   Tag,
-  Divider,
+  // Divider,
   Modal,
   AutoComplete,
   message
@@ -176,7 +176,7 @@ export default {
     Modal,
     Loading,
     Tag,
-    Divider,
+    // Divider,
     Form,
     Item
   },
@@ -553,7 +553,7 @@ export default {
           if (this.typeDetailModal == "Add") {
             request(`${END_POINT}/api/projects`, {
               method: "POST",
-              body: JSON.stringify([obj])
+              body: JSON.stringify(obj)
             })
               .then(() => {
                 this.detailModalVisible = false;

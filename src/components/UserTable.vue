@@ -1,13 +1,18 @@
 <template>
   <div>
     <Loading :isSpin="true" v-if="isLoading" class="menu-loading-wrapper" />
-    <Modal
-      @ok="onConfirmDelete"
-      v-model="deleteModalVisible"
-    >Are you sure to delete {{selectedUser}}?</Modal>
+    <Modal @ok="onConfirmDelete" v-model="deleteModalVisible"
+      >Are you sure to delete {{ selectedUser }}?</Modal
+    >
     <Modal @ok="onConfirmChangePass" v-model="changePassModalVisible">
-      <div class="change-modal-label">Change password for {{selectedUser}}</div>
-      <Form class="detail-form" :form="formChangePass" @submit="onConfirmChangePass">
+      <div class="change-modal-label">
+        Change password for {{ selectedUser }}
+      </div>
+      <Form
+        class="detail-form"
+        :form="formChangePass"
+        @submit="onConfirmChangePass"
+      >
         <Item v-if="false" class="form-item form-full-width">
           <div class="label-form">Old Password</div>
           <Input
@@ -17,9 +22,10 @@
               'passwordOld',
               {
                 rules: [
-                  { 
-                    required: true, message: 'Please input your old password!' 
-                  },
+                  {
+                    required: true,
+                    message: 'Please input your old password!'
+                  }
                 ]
               }
             ]"
@@ -34,12 +40,13 @@
               'password',
               {
                 rules: [
-                  { 
-                    required: true, message: 'Please input your password!' 
+                  {
+                    required: true,
+                    message: 'Please input your password!'
                   },
                   {
-                    validator: validateToNextPassword,
-                  },
+                    validator: validateToNextPassword
+                  }
                 ]
               }
             ]"
@@ -54,12 +61,13 @@
               'passwordConfirm',
               {
                 rules: [
-                  { 
-                    required: true, message: 'Please input your confirm password!' 
+                  {
+                    required: true,
+                    message: 'Please input your confirm password!'
                   },
                   {
-                    validator: compareToFirstPassword,
-                  },
+                    validator: compareToFirstPassword
+                  }
                 ]
               }
             ]"
@@ -68,24 +76,22 @@
       </Form>
     </Modal>
     <Modal @ok="onConfirmDetail" v-model="detailModalVisible">
-      <div class="form-header">{{typeDetailModal}}</div>
+      <div class="form-header">{{ typeDetailModal }}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
         <Item class="form-item form-full-width">
-          <div class="label-form">{{ $t('admin.email') }}</div>
+          <div class="label-form">{{ $t("admin.email") }}</div>
           <Input
             :placeholder="$t('admin.email')"
             v-decorator="[
               'username',
               {
-                rules: [
-                  { required: true, message: 'Please input your email!' }
-                ]
+                rules: [{ required: true, message: 'Please input your email!' }]
               }
             ]"
           ></Input>
         </Item>
         <Item v-if="false" class="form-item">
-          <div class="label-form">{{ $t('admin.phone') }}</div>
+          <div class="label-form">{{ $t("admin.phone") }}</div>
           <Input
             :placeholder="$t('admin.phone')"
             v-decorator="[
@@ -107,12 +113,13 @@
               'password',
               {
                 rules: [
-                  { 
-                    required: true, message: 'Please input your password!' 
+                  {
+                    required: true,
+                    message: 'Please input your password!'
                   },
                   {
-                    validator: validateToNextPassword,
-                  },
+                    validator: validateToNextPassword
+                  }
                 ]
               }
             ]"
@@ -127,12 +134,13 @@
               'passwordConfirm',
               {
                 rules: [
-                  { 
-                    required: true, message: 'Please input your confirm password!' 
+                  {
+                    required: true,
+                    message: 'Please input your confirm password!'
                   },
                   {
-                    validator: compareToFirstPassword,
-                  },
+                    validator: compareToFirstPassword
+                  }
                 ]
               }
             ]"
@@ -184,14 +192,20 @@
     >
       <a slot="username" slot-scope="text">{{ text }}</a>
       <span slot="roles" slot-scope="roles">
-        <Tag v-for="role in roles" :key="role" :color="handleColor(role)">{{ role.toUpperCase() }}</Tag>
+        <Tag v-for="role in roles" :key="role" :color="handleColor(role)">{{
+          role.toUpperCase()
+        }}</Tag>
       </span>
       <span slot="action" slot-scope="text, record">
-        <a v-if="record.roles.length == 1" @click="onClickChangePass(record)">Change Password</a>
+        <a v-if="record.roles.length == 1" @click="onClickChangePass(record)"
+          >Change Password</a
+        >
         <Divider v-if="record.roles.length == 1" type="vertical" />
         <a v-if="record.roles.length == 1" @click="onClickEdit(record)">Edit</a>
-        <Divider v-if="record.roles.length == 1" type="vertical" />
-        <a v-if="record.roles.length == 1" @click="onClickDelete(record)">Delete</a>
+        <!-- <Divider v-if="record.roles.length == 1" type="vertical" /> -->
+        <!-- <a v-if="record.roles.length == 1" @click="onClickDelete(record)"
+          >Delete</a
+        > -->
       </span>
     </Table>
   </div>
@@ -513,7 +527,6 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-
 ::placeholder {
   color: #bfbfbf;
 }
