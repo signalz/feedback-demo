@@ -352,7 +352,9 @@ export default {
         });
       } else {
         this.users.map(record => {
-          if (record.name.includes(value)) {
+          const recordName = record.name.toUpperCase();
+          const valueName = value.toUpperCase();
+          if (recordName.includes(valueName)) {
             result.push({
               value: record.id,
               text: record.name
@@ -377,7 +379,9 @@ export default {
         });
       } else {
         this.surveys.map(record => {
-          if (record.description.includes(value)) {
+          const recordDescription = record.description.toUpperCase();
+          const valueDescription = value.toUpperCase();
+          if (recordDescription.includes(valueDescription)) {
             result.push({
               value: record.id,
               text: record.description
@@ -402,7 +406,9 @@ export default {
         });
       } else {
         this.users.map(record => {
-          if (record.name.includes(value)) {
+          const recordName = record.name.toUpperCase();
+          const valueName = value.toUpperCase();
+          if (recordName.includes(valueName)) {
             result.push({
               value: record.id,
               text: record.name

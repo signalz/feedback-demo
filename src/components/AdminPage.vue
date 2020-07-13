@@ -2,7 +2,7 @@
   <div class="admin-page-wrapper">
     <Layout id="menu-layout">
       <Sider class="menu-sider" v-model="collapsed" :trigger="null" collapsible>
-        <div class="logo">Admin Page</div>
+        <div class="logo">Feedback Dashboard Admin</div>
         <Menu theme="dark" mode="inline" :default-selected-keys="['User']">
           <Item key="User" @click="onSelectMenuItem">
             <Icon type="user" />
@@ -32,15 +32,15 @@
           :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
         >
           <div v-if="menuSelected == 'User'  ">
-            <div class="content-label">User</div>
+            <div class="content-label">User Management</div>
             <UserTable></UserTable>
           </div>
           <div v-if="menuSelected == 'Project' ">
-            <div class="content-label">Project</div>
+            <div class="content-label">Project Management</div>
             <ProjectTable></ProjectTable>
           </div>
           <div v-if="menuSelected == 'Survey' ">
-            <div class="content-label">Survey</div>
+            <div class="content-label">Survey Management</div>
             <SurveyDraggable></SurveyDraggable>
           </div>
           <div v-if="false" class="suggest-banner">Please select an operator!</div>
@@ -120,7 +120,7 @@ export default {
   #menu-layout .logo {
     height: 60px;
     font-weight: bold;
-    font-size: 17px;
+    font-size: 15px;
     text-transform: uppercase;
     display: flex;
     justify-content: center;

@@ -135,6 +135,9 @@
               {
                 rules: [
                   {
+                    required: true, message: 'Please input your confirm password!'
+                  },
+                  {
                     required: true,
                     message: 'Please input your confirm password!'
                   },
