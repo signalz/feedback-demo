@@ -3,6 +3,7 @@
     <div class="side-menu-header">
       <div class="side-menu-app-name-first">{{$t('app.name.first')}}</div>
       <div class="side-menu-app-name-second">{{$t('app.name.second')}}</div>
+      <div class="side-menu-app-name-third">{{$t('app.name.third')}}</div>
     </div>
     <div class="side-menu-project-manager">
       <div class="side-menu-row">
@@ -22,21 +23,24 @@
         <input :placeholder="$t('menu.side.projects-search')" @input="debounceInput" />
       </div>
       <div class="side-menu-projects">
-        <SelectableItem
-          v-for="project in projects.filter(prj => prj.name.toLocaleLowerCase().includes(filterKey))"
-          :key="project.id"
-          :name="project.name"
-          :id="project.id"
-          :selected="project.id === selectedProject.id"
-          @itemSelect="handleProjectSelect"
-        />
-        <SelectableItem
-          :key="defaultValue"
-          :name="$t('menu.side.project-all')"
-          :id="defaultValue"
-          :selected="selectedProject.id === defaultValue"
-          @itemSelect="handleProjectSelect"
-        />
+        <div v-if="filterProject.length > 0">
+          <SelectableItem
+            v-for="project in filterProject"
+            :key="project.id"
+            :name="project.name"
+            :id="project.id"
+            :selected="project.id === selectedProject.id"
+            @itemSelect="handleProjectSelect"
+          />
+          <SelectableItem
+            :key="defaultValue"
+            :name="$t('menu.side.project-all')"
+            :id="defaultValue"
+            :selected="selectedProject.id === defaultValue"
+            @itemSelect="handleProjectSelect"
+          />
+        </div>
+        <div class="side-menu-no-data" v-else>{{$t('menu.side.no-data')}}</div>
       </div>
     </div>
   </div>
@@ -63,6 +67,13 @@ export default {
           manager: String
         };
       }
+    }
+  },
+  computed: {
+    filterProject() {
+      return this.projects.filter(prj =>
+        prj.name.toLocaleLowerCase().includes(this.filterKey)
+      );
     }
   },
   data: () => {
@@ -123,20 +134,26 @@ export default {
 
   .side-menu-header {
     display: flex;
-    margin: 20px 10px 20px 10px;
+    margin: 10px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
 
     .side-menu-app-name-first {
       text-transform: uppercase;
       font-size: 22px;
+      font-weight: bold;
     }
 
     .side-menu-app-name-second {
-      font-size: 26px;
+      font-size: 18px;
       text-transform: uppercase;
       font-weight: 600;
+    }
+
+    .side-menu-app-name-third {
+      font-size: 18px;
     }
   }
 
@@ -190,6 +207,13 @@ export default {
     background-color: #c6d9f1;
     border: 2px solid #16619c;
     border-radius: 5px;
+  }
+
+  .side-menu-no-data {
+    text-align: center;
+    color: #16619c;
+    font-size: 20px;
+    margin: 20px;
   }
 }
 

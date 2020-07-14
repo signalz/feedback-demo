@@ -1,8 +1,9 @@
 {
   "app": {
     "name": {
-      "first": "Vietnam shoring team",
-      "second": "evaluation tool"
+      "first": "NTT DATA EMEA",
+      "second": "IFI Solution Shoring Team",
+      "third": "Project Feedback Dashboard"
     }
   },
   "dashboard": {
@@ -23,14 +24,16 @@
     "bar": {
       "project-label": "Chosen project:",
       "no-project": "Not Selected",
-      "event-label": "Last evaluation event:",
+      "event-label": "Last feedback event:",
+      "no-event-label": "Last feedback on:",
       "no-event": "No event"
     },
     "side": {
       "manager": "Manager:",
       "projects-list": "Project list:",
       "projects-search": "Search a project",
-      "project-all": "All projects"
+      "project-all": "All projects",
+      "no-data": "No data available"
     }
   },
   "feedback": {
@@ -39,12 +42,14 @@
     "new-feedback": "Click New button to review this project",
     "dashboard": "Dashboard",
     "submit": "Submit",
-    "event": "Evaluation for event:",
-    "last-event": "Last evaluation event:",
+    "event": "Feedback for event:",
+    "last-event": "Last feedback event:",
+    "last-no-event": "Last feedback on:",
     "review": "Comment",
     "thanks": "Thanks for your review",
     "write-review": "Write a comment",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "milestone": "Milestone"
   },
   "login": {
     "login": "Login",

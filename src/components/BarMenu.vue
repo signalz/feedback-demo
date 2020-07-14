@@ -11,8 +11,14 @@
         <div class="bar-menu-project-name">{{project || $t('menu.bar.no-project')}}</div>
       </div>
       <div class="bar-menu-event">
-        <div class="bar-menu-event-label">{{$t('menu.bar.event-label')}}</div>
-        <div class="bar-menu-event-name">{{event || $t('menu.bar.no-event')}}</div>
+        <div class="bar-menu-event-container" v-if="event">
+          <div class="bar-menu-event-label">{{$t('menu.bar.event-label')}}</div>
+          <div class="bar-menu-event-name">{{event || $t('menu.bar.no-event')}}</div>
+        </div>
+        <div class="bar-menu-event-container" v-else>
+          <div class="bar-menu-event-label">{{$t('menu.bar.no-event-label')}}</div>
+          <div class="bar-menu-event-name">{{ createdAtValue }}</div>
+        </div>
         <Button class="logout-btn" @click="onClickLogout">{{$t('login.logout')}}</Button>
       </div>
     </div>
@@ -21,6 +27,7 @@
 <script>
 import MobileMenuButton from "./MobileMenuButton";
 import { Button } from "ant-design-vue";
+import moment from 'moment'
 
 export default {
   name: "BarMenu",
@@ -31,7 +38,13 @@ export default {
   props: {
     isOpen: Boolean,
     event: String,
-    project: String
+    project: String,
+    createdAt: String
+  },
+  computed: {
+    createdAtValue() {
+      return moment(this.createdAt).format('YYYY-MM-DD')
+    }
   },
   methods: {
     onMobileMenuClick() {
@@ -83,6 +96,10 @@ export default {
 
     .bar-menu-event {
       display: flex;
+
+      .bar-menu-event-container{
+        display: flex;
+      }
 
       .bar-menu-event-label {
         margin-right: 5px;
