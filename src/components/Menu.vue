@@ -7,6 +7,7 @@
       :isOpen="isOpen"
       :event="eventName"
       :createdAt="createdAt"
+      :state="state"
       @open="handleBarMenu"
     />
     <SideMenu
@@ -59,7 +60,8 @@ export default {
       }
     },
     createdAt: String,
-    eventName: String
+    eventName: String,
+    state: String
   },
   data: () => {
     return {

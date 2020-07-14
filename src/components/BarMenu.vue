@@ -11,11 +11,11 @@
         <div class="bar-menu-project-name">{{project || $t('menu.bar.no-project')}}</div>
       </div>
       <div class="bar-menu-event">
-        <div class="bar-menu-event-container" v-if="event">
+        <div class="bar-menu-event-container" v-if="event && state != feedbackStates.NEW_FEEDBACK">
           <div class="bar-menu-event-label">{{$t('menu.bar.event-label')}}</div>
           <div class="bar-menu-event-name">{{event || $t('menu.bar.no-event')}}</div>
         </div>
-        <div class="bar-menu-event-container" v-else>
+        <div class="bar-menu-event-container" v-else-if="state != feedbackStates.NEW_FEEDBACK">
           <div class="bar-menu-event-label">{{$t('menu.bar.no-event-label')}}</div>
           <div class="bar-menu-event-name">{{ createdAtValue }}</div>
         </div>
@@ -27,7 +27,8 @@
 <script>
 import MobileMenuButton from "./MobileMenuButton";
 import { Button } from "ant-design-vue";
-import moment from 'moment'
+import moment from "moment";
+import { FEEDBACK_STATE } from "../config"
 
 export default {
   name: "BarMenu",
@@ -35,15 +36,21 @@ export default {
     MobileMenuButton,
     Button
   },
+  data: () => {
+    return{
+      feedbackStates: FEEDBACK_STATE,
+    }
+  },
   props: {
     isOpen: Boolean,
     event: String,
+    state: String,
     project: String,
     createdAt: String
   },
   computed: {
     createdAtValue() {
-      return moment(this.createdAt).format('YYYY-MM-DD')
+      return moment(this.createdAt).format("YYYY-MM-DD");
     }
   },
   methods: {
@@ -97,7 +104,7 @@ export default {
     .bar-menu-event {
       display: flex;
 
-      .bar-menu-event-container{
+      .bar-menu-event-container {
         display: flex;
       }
 
