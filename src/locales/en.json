@@ -24,8 +24,8 @@
     "bar": {
       "project-label": "Chosen project:",
       "no-project": "Not Selected",
-      "event-label": "Last feedback event:",
-      "no-event-label": "Last feedback on:",
+      "event-label": "Feedback event:",
+      "no-event-label": "Feedback on:",
       "no-event": "No event"
     },
     "side": {
@@ -43,13 +43,15 @@
     "dashboard": "Dashboard",
     "submit": "Submit",
     "event": "Feedback for event:",
-    "last-event": "Last feedback event:",
-    "last-no-event": "Last feedback on:",
+    "last-event": "Feedback event:",
+    "last-no-event": "Feedback on:",
     "review": "Comment",
     "thanks": "Thanks for your review",
     "write-review": "Write a comment",
     "cancel": "Cancel",
-    "milestone": "Milestone"
+    "milestone": "Milestone",
+    "history": "History",
+    "history-modal-label": "History Feedback"
   },
   "login": {
     "login": "Login",
