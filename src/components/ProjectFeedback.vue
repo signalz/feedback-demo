@@ -2,16 +2,20 @@
   <div class="project-feedback-wrapper">
     <div>
       <div v-if="feedbackStates.LAST_FEEDBACK === state" class="project-feedback-event">
-        <div class="project-feedback-event-label">
-          {{ $t("feedback.last-event") }}
+        <div class="project-feedback-event-container" v-if="event">
+          <div class="project-feedback-event-label">{{ $t("feedback.last-event") }}</div>
+          <div class="project-feedback-event">{{ event }}</div>
         </div>
-        <div class="project-feedback-event">{{ event }}</div>
+        <div class="project-feedback-event-container" v-else>
+          <div class="project-feedback-event-label">{{ $t("feedback.last-no-event") }}</div>
+          <div class="project-feedback-event">{{ createdAt }}</div>
+        </div>
       </div>
       <div v-else class="project-feedback-event">
-        <div class="project-feedback-event-label">
-          {{ $t("feedback.event") }}
+        <div class="project-feedback-event-label">{{ $t("feedback.event") }}</div>
+        <div>
+          <Input v-model="eventName" :placeholder="$t('feedback.milestone')" />
         </div>
-        <div><Input v-model="eventName" /></div>
       </div>
     </div>
     <div
@@ -31,9 +35,7 @@
       </div>
     </div>
     <div class="project-feedback-review">
-      <div class="project-feedback-section-header">
-        {{ $t("feedback.review") }}
-      </div>
+      <div class="project-feedback-section-header">{{ $t("feedback.review") }}</div>
       <TextArea
         v-if="feedbackStates.NEW_FEEDBACK === state"
         v-model="reviewText"
@@ -44,21 +46,23 @@
         <div>{{ review }}</div>
       </div>
     </div>
-    <div
-      class="feedback-button-wrapper"
-      v-if="feedbackStates.LAST_FEEDBACK !== state"
-    >
-      <Button type="primary" class="feedback-button" @click="handleCancel">{{
+    <div class="feedback-button-wrapper" v-if="feedbackStates.LAST_FEEDBACK !== state">
+      <Button type="primary" class="feedback-button" @click="handleCancel">
+        {{
         $t("feedback.cancel")
-      }}</Button>
-      <Button type="primary" class="feedback-button" @click="handleSubmit">{{
+        }}
+      </Button>
+      <Button type="primary" class="feedback-button" @click="handleSubmit">
+        {{
         $t("feedback.submit")
-      }}</Button>
+        }}
+      </Button>
     </div>
   </div>
 </template>
 <script>
 import { Button, Input } from "ant-design-vue";
+import moment from "moment";
 
 import QuestionRow from "./QuestionRow";
 
@@ -80,6 +84,11 @@ export default {
         this.eventName = "";
         this.reviewText = "";
       }
+    }
+  },
+  computed: {
+    createdAt() {
+      return moment(this.projectData.createdAt).format("YYYY-MM-DD");
     }
   },
   props: {
@@ -118,7 +127,7 @@ export default {
 .project-feedback-wrapper {
   color: rgba(0, 0, 0, 0.65);
 
-  @media screen and (max-width: 576px){
+  @media screen and (max-width: 576px) {
     .project-feedback-event {
       flex-direction: column;
       align-items: normal !important;
@@ -128,6 +137,11 @@ export default {
   .project-feedback-event {
     display: flex;
     align-items: center;
+
+    .project-feedback-event-container {
+      display: flex;
+      align-items: center;
+    }
 
     .project-feedback-event-label {
       margin-right: 10px;

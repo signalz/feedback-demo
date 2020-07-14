@@ -3,6 +3,7 @@
     <Menu
       :projects="projects"
       :selectedProject="project"
+      :createdAt="projectData.createdAt"
       @selectProject="handleSelectProject"
       :eventName="eventName"
     />
