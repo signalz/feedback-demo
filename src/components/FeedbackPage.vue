@@ -258,7 +258,7 @@ export default {
       });
   },
   methods: {
-    viewDetailHistory(history){
+    viewDetailHistory(history) {
       this.projectData = history;
       this.eventName = history.event;
       this.review = history.review;
@@ -519,7 +519,13 @@ export default {
                   projectId:
                     this.project.id === DEFAULT ? null : this.project.id
                 })
-              })
+              }),
+              request(
+                `${END_POINT}/api/feedbacks/history?projectId=`+this.project.id,
+                {
+                  method: "GET"
+                }
+              )
             ].concat(
               this.historySections.length > 0
                 ? this.historySections.map(section =>
@@ -535,7 +541,10 @@ export default {
                 : []
             )
           )
-            .then(([overviewData, ...historyData]) => {
+            .then(([overviewData, allHistoryData, ...historyData]) => {
+              if(allHistoryData && allHistoryData.length > 0){
+                this.allHistoryData = allHistoryData;
+              }
               this.setOverviewData(overviewData);
               this.setHistoryData(historyData, this.historySections);
               this.isLoading = false;
