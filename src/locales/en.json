@@ -60,7 +60,8 @@
     "username": "Username",
     "pass": "Password",
     "wrong-user-pass": "Incorrect username or password!",
-    "missing-user-pass": "Enter your username and password!"
+    "missing-username": "Please input your username!",
+    "missing-password": "'Please input your password!"
   },
   "admin": {
     "first-name": "First Name",
