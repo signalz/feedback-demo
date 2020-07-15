@@ -1,8 +1,10 @@
 <template>
   <div class="side-menu-wrapper">
+    <!--
     <div class="side-menu-logo">
       <img :src="nttLogo" />
     </div>
+    -->
     <div class="side-menu-header">
       <div class="side-menu-app-name-first">{{$t('app.name.first')}}</div>
       <div class="side-menu-app-name-second">{{$t('app.name.second')}}</div>
@@ -173,7 +175,7 @@ export default {
   }
 
   .side-menu-project-manager {
-    margin-top: 10px;
+    margin-top: 100px;
     display: flex;
     padding: 0 10px 0 10px;
     font-size: 16px;
