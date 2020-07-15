@@ -146,7 +146,6 @@ export default {
         text-transform: uppercase;
         background: $dark-blue-color;
         border: 0;
-        padding: 15px;
         color: #ffffff;
         font-size: 14px;
         outline: 0;
