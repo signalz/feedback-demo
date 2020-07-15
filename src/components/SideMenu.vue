@@ -156,7 +156,6 @@ export default {
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin-top: 0;
 
     .side-menu-app-name-first {
       text-transform: uppercase;
