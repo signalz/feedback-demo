@@ -124,17 +124,27 @@ const columns = [
     dataIndex: "projectName",
     key: "projectName",
     title: "Project Name",
-    scopedSlots: { customRender: "projectName" }
+    scopedSlots: { customRender: "projectName" },
+    defaultSortOrder: "ascend",
+    sorter: (a, b) => {
+      return a.projectName.localeCompare(b.projectName);
+    }
   },
   {
     title: "Manager",
     dataIndex: "managerName",
-    key: "managerName"
+    key: "managerName",
+    sorter: (a, b) => {
+      return a.managerName.localeCompare(b.managerName);
+    }
   },
   {
     title: "Survey",
     dataIndex: "surveyName",
-    key: "surveyName"
+    key: "surveyName",
+    sorter: (a, b) => {
+      return a.surveyName.localeCompare(b.surveyName);
+    }
   },
   {
     title: "Associate",
@@ -145,7 +155,10 @@ const columns = [
   {
     title: "Description",
     dataIndex: "description",
-    key: "description"
+    key: "description",
+    sorter: (a, b) => {
+      return a.description.localeCompare(b.description);
+    }
   },
   {
     title: "Action",
