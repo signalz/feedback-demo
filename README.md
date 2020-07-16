@@ -30,8 +30,11 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Prod deployment
 
+- require node 14 and npm 6
+- npm i -g yarn
+- npm i -g live-server
 - yarn install
-- Change end point in config.js
+- Change END_POINT in config.js
 - yarn build
 - cd ./dist
 - live-server --port=3080 --entry-file=./index.html

@@ -16,6 +16,10 @@
             <Icon type="unordered-list" />
             <span>Survey</span>
           </Item>
+          <Item key="History" @click="onSelectMenuItem">
+            <Icon type="history" />
+            <span>History</span>
+          </Item>
         </Menu>
       </Sider>
       <Layout>
@@ -43,6 +47,10 @@
             <div class="content-label">Survey Management</div>
             <SurveyDraggable></SurveyDraggable>
           </div>
+          <div v-if="menuSelected == 'History' ">
+            <div class="content-label">History Management</div>
+            <FeedbackHistory></FeedbackHistory>
+          </div>
           <div v-if="false" class="suggest-banner">Please select an operator!</div>
         </Content>
       </Layout>
@@ -54,6 +62,7 @@ import { Layout, Menu, Icon, Button } from "ant-design-vue";
 import UserTable from "./UserTable.vue";
 import ProjectTable from "./ProjectTable.vue"
 import SurveyDraggable from "./SurveyDraggable.vue"
+import FeedbackHistory from "./FeedbackHistory.vue"
 const { Header, Content, Sider } = Layout;
 const { Item } = Menu;
 
@@ -63,6 +72,7 @@ export default {
     UserTable,
     ProjectTable,
     SurveyDraggable,
+    FeedbackHistory,
     Layout,
     Menu,
     Icon,

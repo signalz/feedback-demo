@@ -270,12 +270,19 @@ export default {
       });
       this.columnsHistoryTable = [
         {
-          title: "Milestone",
-          dataIndex: "event"
+          title: "Event",
+          dataIndex: "event",
+          defaultSortOrder: "ascend",
+          sorter: (a, b) => {
+            return a.event.localeCompare(b.event);
+          }
         },
         {
           title: "Created Time",
-          dataIndex: "createTime"
+          dataIndex: "createTime",
+          sorter: (a, b) => {
+            return a.createTime.localeCompare(b.createTime);
+          }
         },
         {
           title: "Action",
@@ -376,11 +383,15 @@ export default {
           }),
           request(`${END_POINT}/api/dashboard/projects/history`, {
             method: "POST"
-          })
+          }),
+          request(`${END_POINT}/api/sections`)
         ])
-          .then(([overviewData, historyData]) => {
+          .then(([overviewData, historyData, sections]) => {
             this.setOverviewData(overviewData);
             this.setHistoryData([historyData], [{ title: DEFAULT }]);
+            if (sections && sections.length > 0) {
+              this.sections = sections;
+            }
             // trigger re-mount overview dashboard
             this.key = Math.random();
             this.isLoading = false;
@@ -418,31 +429,44 @@ export default {
             {
               method: "GET"
             }
-          )
+          ),
+          request(`${END_POINT}/api/sections?projectId=${selectedProject.id}`)
         ])
-          .then(([feedback, overviewData, historyData, allHistoryData]) => {
-            this.setOverviewData(overviewData);
-            this.setHistoryData([historyData], [{ title: DEFAULT }]);
-            if (allHistoryData && allHistoryData.length > 0) {
-              this.allHistoryData = allHistoryData;
-            }
+          .then(
+            ([
+              feedback,
+              overviewData,
+              historyData,
+              allHistoryData,
+              sections
+            ]) => {
+              this.setOverviewData(overviewData);
+              this.setHistoryData([historyData], [{ title: DEFAULT }]);
+              if (allHistoryData && allHistoryData.length > 0) {
+                this.allHistoryData = allHistoryData;
+              }
 
-            if (feedback.id) {
-              this.feedback = feedback;
-              this.projectData = feedback;
-              this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-              this.review = feedback.review;
-              this.eventName = feedback.event;
-            } else {
-              this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
-              this.projectData = {};
-              this.eventName = "";
-              this.review = "";
+              if (sections && sections.length > 0) {
+                this.sections = sections;
+              }
+
+              if (feedback.id) {
+                this.feedback = feedback;
+                this.projectData = feedback;
+                this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+                this.review = feedback.review;
+                this.eventName = feedback.event;
+              } else {
+                this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
+                this.projectData = {};
+                this.eventName = "";
+                this.review = "";
+              }
+              // trigger re-mount overview dashboard
+              this.key = Math.random();
+              this.isLoading = false;
             }
-            // trigger re-mount overview dashboard
-            this.key = Math.random();
-            this.isLoading = false;
-          })
+          )
           .catch(e => {
             console.log(e);
             this.isLoading = false;
@@ -518,7 +542,8 @@ export default {
                 })
               }),
               request(
-                `${END_POINT}/api/feedbacks/history?projectId=`+this.project.id,
+                `${END_POINT}/api/feedbacks/history?projectId=` +
+                  this.project.id,
                 {
                   method: "GET"
                 }
@@ -539,7 +564,7 @@ export default {
             )
           )
             .then(([overviewData, allHistoryData, ...historyData]) => {
-              if(allHistoryData && allHistoryData.length > 0){
+              if (allHistoryData && allHistoryData.length > 0) {
                 this.allHistoryData = allHistoryData;
               }
               this.setOverviewData(overviewData);
@@ -620,7 +645,7 @@ export default {
 <style scoped lang="scss">
 .feedback-page-wrapper {
   .feedback-page-content {
-    padding-top: 59px;
+    padding-top: $header-height;
     display: flex;
     position: relative;
     &::before {
