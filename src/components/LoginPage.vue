@@ -52,7 +52,7 @@
 import { Button, Form, Icon, Input, message } from "ant-design-vue";
 
 import { request } from "../api";
-import { END_POINT } from "../config";
+import { END_POINT, UNAUTHORIZED_CODE } from "../config";
 import Loading from "./Loading";
 
 const { Item } = Form;
@@ -98,7 +98,7 @@ export default {
             })
             .catch(e => {
               this.isLoading = false;
-              if (e.response && e.response.status === 401) {
+              if (e.response && e.response.status === UNAUTHORIZED_CODE) {
                 // unauthorized
                 this.message.error(this.$t("login.wrong-user-pass"));
               } else {
