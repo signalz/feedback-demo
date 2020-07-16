@@ -114,7 +114,11 @@ const { Panel } = Collapse;
 const columns = [
   {
     title: "Survey Name",
-    dataIndex: "description"
+    dataIndex: "description",
+    defaultSortOrder: "ascend",
+    sorter: (a, b) => {
+      return a.description.localeCompare(b.description);
+    }
   },
   {
     title: "Action",

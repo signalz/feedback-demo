@@ -219,28 +219,33 @@ const columns = [
     dataIndex: "username",
     key: "username",
     title: "Email",
-    scopedSlots: { customRender: "username" }
+    scopedSlots: { customRender: "username" },
+    defaultSortOrder: "ascend",
+    sorter: (a, b) => {
+      return a.username.localeCompare(b.username);
+    }
   },
   {
     title: "First Name",
     dataIndex: "firstName",
-    key: "firstName"
+    key: "firstName",
+    sorter: (a, b) => {
+      return a.firstName.localeCompare(b.firstName);
+    }
   },
   {
     title: "Last Name",
     dataIndex: "lastName",
-    key: "lastName"
-  },
-  {
-    dataIndex: "email",
-    key: "email",
-    title: "Phone"
+    key: "lastName",
+    sorter: (a, b) => {
+      return a.lastName.localeCompare(b.lastName);
+    }
   },
   {
     title: "Roles",
     key: "roles",
     dataIndex: "roles",
-    scopedSlots: { customRender: "roles" }
+    scopedSlots: { customRender: "roles" },
   },
   {
     title: "Action",
