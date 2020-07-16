@@ -49,7 +49,7 @@
     "thanks": "Thanks for your review",
     "write-review": "Write a comment",
     "cancel": "Cancel",
-    "milestone": "Milestone",
+    "milestone": "Ex: Milestone, Sprint, Release...",
     "history": "History",
     "history-modal-label": "History Feedback"
   },

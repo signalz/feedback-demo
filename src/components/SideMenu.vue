@@ -1,5 +1,10 @@
 <template>
   <div class="side-menu-wrapper">
+    <!--
+    <div class="side-menu-logo">
+      <img :src="nttLogo" />
+    </div>
+    -->
     <div class="side-menu-header">
       <div class="side-menu-app-name-first">{{$t('app.name.first')}}</div>
       <div class="side-menu-app-name-second">{{$t('app.name.second')}}</div>
@@ -49,6 +54,7 @@
 <script>
 import { DEFAULT } from "../config";
 import SelectableItem from "./SelectableItem";
+import nttLogo from "../assets/nttdata-logo.png";
 
 export default {
   name: "SideMenu",
@@ -80,7 +86,8 @@ export default {
     return {
       filterKey: "",
       timeout: undefined,
-      defaultValue: DEFAULT
+      defaultValue: DEFAULT,
+      nttLogo
     };
   },
   methods: {
@@ -127,10 +134,20 @@ export default {
 
 .side-menu-wrapper {
   background-color: $primary-color;
-  height: 100vh;
+  height: 100%;
   z-index: 99;
   position: fixed;
   width: $side-menu-width;
+
+  .side-menu-logo {
+    height: 60px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    img {
+      width: 150px;
+    }
+  }
 
   .side-menu-header {
     display: flex;
@@ -142,13 +159,12 @@ export default {
 
     .side-menu-app-name-first {
       text-transform: uppercase;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: bold;
     }
 
     .side-menu-app-name-second {
       font-size: 18px;
-      text-transform: uppercase;
       font-weight: 600;
     }
 

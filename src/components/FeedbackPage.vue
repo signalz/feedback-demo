@@ -379,11 +379,15 @@ export default {
           }),
           request(`${END_POINT}/api/dashboard/projects/history`, {
             method: "POST"
-          })
+          }),
+          request(`${END_POINT}/api/sections`),
         ])
-          .then(([overviewData, historyData]) => {
+          .then(([overviewData, historyData, sections]) => {
             this.setOverviewData(overviewData);
             this.setHistoryData([historyData], [{ title: DEFAULT }]);
+            if (sections && sections.length > 0) {
+              this.sections = sections;
+            }
             // trigger re-mount overview dashboard
             this.key = Math.random();
             this.isLoading = false;
@@ -421,13 +425,18 @@ export default {
             {
               method: "GET"
             }
-          )
+          ),
+          request(`${END_POINT}/api/sections?projectId=${selectedProject.id}`),
         ])
-          .then(([feedback, overviewData, historyData, allHistoryData]) => {
+          .then(([feedback, overviewData, historyData, allHistoryData, sections]) => {
             this.setOverviewData(overviewData);
             this.setHistoryData([historyData], [{ title: DEFAULT }]);
             if (allHistoryData && allHistoryData.length > 0) {
               this.allHistoryData = allHistoryData;
+            }
+
+            if (sections && sections.length > 0) {
+              this.sections = sections;
             }
 
             if (feedback.id) {
@@ -623,7 +632,7 @@ export default {
 <style scoped lang="scss">
 .feedback-page-wrapper {
   .feedback-page-content {
-    padding-top: 59px;
+    padding-top: $header-height;
     display: flex;
     position: relative;
     &::before {

@@ -11,11 +11,11 @@
         <div class="bar-menu-project-name">{{project || $t('menu.bar.no-project')}}</div>
       </div>
       <div class="bar-menu-event">
-        <div class="bar-menu-event-container" v-if="event && state != feedbackStates.NEW_FEEDBACK">
+        <div class="bar-menu-event-container" v-if="event && state != feedbackStates.NEW_FEEDBACK && project">
           <div class="bar-menu-event-label">{{$t('menu.bar.event-label')}}</div>
           <div class="bar-menu-event-name">{{event || $t('menu.bar.no-event')}}</div>
         </div>
-        <div class="bar-menu-event-container" v-else-if="state != feedbackStates.NEW_FEEDBACK">
+        <div class="bar-menu-event-container" v-else-if="state != feedbackStates.NEW_FEEDBACK && project">
           <div class="bar-menu-event-label">{{$t('menu.bar.no-event-label')}}</div>
           <div class="bar-menu-event-name">{{ createdAtValue }}</div>
         </div>
@@ -28,7 +28,7 @@
 import MobileMenuButton from "./MobileMenuButton";
 import { Button } from "ant-design-vue";
 import moment from "moment";
-import { FEEDBACK_STATE } from "../config"
+import { FEEDBACK_STATE } from "../config";
 
 export default {
   name: "BarMenu",
@@ -37,9 +37,9 @@ export default {
     Button
   },
   data: () => {
-    return{
-      feedbackStates: FEEDBACK_STATE,
-    }
+    return {
+      feedbackStates: FEEDBACK_STATE
+    };
   },
   props: {
     isOpen: Boolean,
