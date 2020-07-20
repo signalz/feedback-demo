@@ -267,6 +267,8 @@ import Loading from "./Loading";
 import { request } from "../api";
 import { END_POINT } from "../config";
 import Vue from "vue";
+import { handleError } from "../utils";
+
 const { Button: radioButton, Group } = Radio;
 const { Item } = Form;
 Vue.use(Modal);
@@ -342,7 +344,7 @@ export default {
       })
       .catch(e => {
         this.isLoading = false;
-        this.message.error(e);
+        handleError(e, this.$router, this.$t("expired"));
       });
   },
   methods: {
@@ -361,6 +363,8 @@ export default {
       }).then(resultGetAllUser => {
         this.isLoading = false;
         this.users = resultGetAllUser;
+      }).catch(e => {
+        handleError(e, this.$router, this.$t("expired"));
       });
     },
 
@@ -424,9 +428,9 @@ export default {
               this.changePassModalVisible = false;
               this.message.info("Change password successful!");
             })
-            .catch(() => {
+            .catch((e) => {
               this.changePassModalVisible = false;
-              this.message.error("Change password fail!");
+              handleError(e, this.$router, this.$t("expired"));
             });
         }
       });
@@ -460,9 +464,9 @@ export default {
           this._reloadForm();
           this.message.info("Delete user successful!");
         })
-        .catch(() => {
+        .catch((e) => {
           this.deleteModalVisible = false;
-          this.message.error("Delete user fail!");
+          handleError(e, this.$router, this.$t("expired"));
         });
     },
 
@@ -509,9 +513,9 @@ export default {
                 this._reloadForm();
                 this.message.info("Add new user successful!");
               })
-              .catch(() => {
+              .catch((e) => {
                 this.detailModalVisible = false;
-                this.message.error("Add new user fail!");
+                handleError(e, this.$router, this.$t("expired"));
               });
           } else {
             delete obj.password;
@@ -524,9 +528,9 @@ export default {
                 this._reloadForm();
                 this.message.info("Edit user successful!");
               })
-              .catch(() => {
+              .catch((e) => {
                 this.detailModalVisible = false;
-                this.message.error("Edit user fail!");
+                handleError(e, this.$router, this.$t("expired"));
               });
           }
         } else {
