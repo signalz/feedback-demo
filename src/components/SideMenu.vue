@@ -116,6 +116,10 @@ export default {
   .side-menu-wrapper {
     width: $minimum-side-menu-width !important;
 
+    .side-menu-project-manager{
+      margin-top: 40px !important;
+    }
+
     .side-menu-header {
       .side-menu-app-name-third {
         font-size: 16px !important;
@@ -170,7 +174,7 @@ export default {
   }
 
   .side-menu-project-manager {
-    margin-top: 100px;
+    margin-top: 80px;
     display: flex;
     padding: 0 10px 0 10px;
     font-size: 16px;
@@ -188,7 +192,7 @@ export default {
 
   .side-menu-search {
     margin: 0 10px 20px 10px;
-    height: calc(100% - 300px);
+    height: calc(100% - 350px);
 
     .side-menu-search-box {
       display: flex;
