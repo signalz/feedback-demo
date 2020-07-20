@@ -523,10 +523,10 @@ export default {
     },
 
     onConfirmDelete() {
-      this.deleteModalVisible = false;
       request(`${END_POINT}/api/projects/` + this.selectedID, {
         method: "DELETE"
       }).then(() => {
+        this.deleteModalVisible = false;
         this._reloadForm();
         this.message.info("Delete project successful!");
       });
