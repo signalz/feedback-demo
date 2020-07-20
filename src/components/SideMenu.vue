@@ -117,12 +117,8 @@ export default {
     width: $minimum-side-menu-width !important;
 
     .side-menu-header {
-      .side-menu-app-name-first {
-        font-size: 18px !important;
-      }
-
-      .side-menu-app-name-second {
-        font-size: 24px !important;
+      .side-menu-app-name-third {
+        font-size: 16px !important;
       }
     }
   }
@@ -192,7 +188,7 @@ export default {
 
   .side-menu-search {
     margin: 0 10px 20px 10px;
-    height: 70%;
+    height: calc(100% - 300px);
 
     .side-menu-search-box {
       display: flex;
