@@ -9,22 +9,6 @@
       :state="feedbackState"
     />
     <Loading isSpin v-if="isLoading" />
-    <!-- <Modal v-model="historyModal">
-      <template slot="footer">
-        <Button key="back" @click="historyModal = false">Close</Button>
-      </template>
-      <div class="modal-label">{{ $t("feedback.history-modal-label") }}</div>
-      <Table
-        :columns="columnsHistoryTable"
-        :row-key="record => record.id"
-        :data-source="allHistoryData"
-        class="table-wrapper"
-      >
-        <span slot="action" slot-scope="text, record">
-          <a @click="viewDetailHistory(record)">View Detail</a>
-        </span>
-      </Table>
-    </Modal> -->
     <FeedbackHistoryModal
       :feedbacks="feedbacksHistory"
       :isVisible="isFeedbacksHistoryVisible"
@@ -450,7 +434,6 @@ export default {
               feedback,
               overviewData,
               historyData,
-              // allHistoryData,
               sections
             ]) => {
               this.setOverviewData(overviewData);
@@ -746,15 +729,4 @@ export default {
 .feedback-page-wrapper:focus {
   outline: none;
 }
-
-// .modal-label {
-//   font-size: 20px;
-//   color: black;
-//   font-weight: bold;
-//   margin-top: 10px;
-// }
-
-// .table-wrapper {
-//   margin: 10px 0;
-// }
 </style>

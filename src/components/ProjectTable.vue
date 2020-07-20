@@ -1,12 +1,11 @@
 <template>
   <div>
     <Loading :isSpin="true" v-if="isLoading" class="menu-loading-wrapper" />
-    <Modal
-      @ok="onConfirmDelete"
-      v-model="deleteModalVisible"
-    >Are you sure to delete {{selectedUser}}?</Modal>
+    <Modal @ok="onConfirmDelete" v-model="deleteModalVisible"
+      >Are you sure to delete {{ selectedUser }}?</Modal
+    >
     <Modal @ok="onConfirmDetail" v-model="detailModalVisible">
-      <div class="form-header">{{typeDetailModal}}</div>
+      <div class="form-header">{{ typeDetailModal }}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
         <Item class="form-item">
           <div class="label-form">Project Name</div>
@@ -20,7 +19,7 @@
                 ]
               }
             ]"
-          ></Input>
+          />
         </Item>
         <Item class="form-item">
           <div class="label-form">
@@ -30,7 +29,8 @@
               :color="handleColor(managerSelected.name)"
               closable
               @close="clearSelectedManager"
-            >{{ managerSelected.name }}</Tag>
+              >{{ managerSelected.name }}</Tag
+            >
           </div>
           <AutoComplete
             @search="handleSearchManager"
@@ -48,7 +48,8 @@
               :color="handleColor(surveySelected.name)"
               closable
               @close="clearSelectedSurvey"
-            >{{ surveySelected.name }}</Tag>
+              >{{ surveySelected.name }}</Tag
+            >
           </div>
           <AutoComplete
             @search="handleSearchSurvey"
@@ -68,7 +69,8 @@
                 :color="handleColor(user.name)"
                 closable
                 @close="popTag(user.value, associateSelected)"
-              >{{ user.name }}</Tag>
+                >{{ user.name }}</Tag
+              >
             </div>
           </div>
           <AutoComplete
@@ -91,11 +93,13 @@
                 ]
               }
             ]"
-          ></Input>
+          />
         </Item>
       </Form>
     </Modal>
-    <Button @click="onClickAdd" class="add-btn" type="primary">Add Project</Button>
+    <Button @click="onClickAdd" class="add-btn" type="primary"
+      >Add Project</Button
+    >
     <Table
       :columns="columns"
       :row-key="record => record.key"
@@ -104,11 +108,9 @@
     >
       <a slot="projectName" slot-scope="text">{{ text }}</a>
       <span slot="associate" slot-scope="associate">
-        <Tag
-          v-for="user in associate"
-          :key="user"
-          :color="handleColor(user)"
-        >{{ user.toUpperCase() }}</Tag>
+        <Tag v-for="user in associate" :key="user" :color="handleColor(user)">{{
+          user.toUpperCase()
+        }}</Tag>
       </span>
       <span slot="action" slot-scope="text, record">
         <a @click="onClickEdit(record)">Edit</a>
