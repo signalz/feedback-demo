@@ -421,9 +421,11 @@ export default {
             body: JSON.stringify(obj)
           })
             .then(() => {
+              this.changePassModalVisible = false;
               this.message.info("Change password successful!");
             })
             .catch(() => {
+              this.changePassModalVisible = false;
               this.message.error("Change password fail!");
             });
         }
@@ -450,15 +452,16 @@ export default {
     },
 
     onConfirmDelete() {
-      this.deleteModalVisible = false;
       request(`${END_POINT}/api/users/` + this.selectedID, {
         method: "DELETE"
       })
         .then(() => {
+          this.deleteModalVisible = false;
           this._reloadForm();
           this.message.info("Delete user successful!");
         })
         .catch(() => {
+          this.deleteModalVisible = false;
           this.message.error("Delete user fail!");
         });
     },
