@@ -10,12 +10,12 @@
               'username',
               {
                 rules: [
-                  { required: true, message: 'Please input your username!' }
+                  { required: true, message: $t('login.missing-username') }
                 ]
               }
             ]"
           >
-            <Icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
+            <Icon slot="prefix" type="user" class="icon" />
           </Input>
         </Item>
         <Item>
@@ -26,12 +26,12 @@
               'password',
               {
                 rules: [
-                  { required: true, message: 'Please input your password!' }
+                  { required: true, message: $t('login.missing-password') }
                 ]
               }
             ]"
           >
-            <Icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
+            <Icon slot="prefix" type="lock" class="icon" />
           </Input>
         </Item>
         <Item>
@@ -44,16 +44,15 @@
           >
         </Item>
       </Form>
-      <div class="message" v-if="isShowMessage">{{ messageToShow }}</div>
     </div>
-    <Loading :isSpin="true" v-if="isLoading" class="menu-loading-wrapper" />
+    <Loading :isSpin="true" v-if="isLoading" />
   </div>
 </template>
 <script>
 import { Button, Form, Icon, Input, message } from "ant-design-vue";
 
 import { request } from "../api";
-import { END_POINT } from "../config";
+import { END_POINT, UNAUTHORIZED_CODE } from "../config";
 import Loading from "./Loading";
 
 const { Item } = Form;
@@ -74,7 +73,6 @@ export default {
   data: () => {
     return {
       isLoading: false,
-      isShowMessage: false,
       form: {},
       message
     };
@@ -100,11 +98,11 @@ export default {
             })
             .catch(e => {
               this.isLoading = false;
-              if (e.response && e.response.status === 401) {
+              if (e.response && e.response.status === UNAUTHORIZED_CODE) {
                 // unauthorized
                 this.message.error(this.$t("login.wrong-user-pass"));
               } else {
-                this.message.error(e)
+                this.message.error(e.message);
               }
             });
         }
@@ -174,6 +172,10 @@ export default {
       position: absolute;
       bottom: 15px;
       left: 95px;
+    }
+
+    .icon {
+      color: rgba(0, 0, 0, 0.25);
     }
   }
 }

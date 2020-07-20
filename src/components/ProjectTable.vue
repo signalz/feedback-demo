@@ -4,9 +4,9 @@
     <Modal
       @ok="onConfirmDelete"
       v-model="deleteModalVisible"
-    >Are you sure to delete {{selectedUser}}?</Modal>
+    >Are you sure to delete {{ selectedUser }}?</Modal>
     <Modal @ok="onConfirmDetail" v-model="detailModalVisible">
-      <div class="form-header">{{typeDetailModal}}</div>
+      <div class="form-header">{{ typeDetailModal }}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
         <Item class="form-item">
           <div class="label-form">Project Name</div>
@@ -20,7 +20,7 @@
                 ]
               }
             ]"
-          ></Input>
+          />
         </Item>
         <Item class="form-item">
           <div class="label-form">
@@ -91,7 +91,7 @@
                 ]
               }
             ]"
-          ></Input>
+          />
         </Item>
       </Form>
     </Modal>
@@ -104,16 +104,16 @@
     >
       <a slot="projectName" slot-scope="text">{{ text }}</a>
       <span slot="associate" slot-scope="associate">
-        <Tag
-          v-for="user in associate"
-          :key="user"
-          :color="handleColor(user)"
-        >{{ user.toUpperCase() }}</Tag>
+        <Tag v-for="user in associate" :key="user" :color="handleColor(user)">
+          {{
+          user.toUpperCase()
+          }}
+        </Tag>
       </span>
       <span slot="action" slot-scope="text, record">
         <a @click="onClickEdit(record)">Edit</a>
         <!-- <Divider type="vertical" />
-        <a @click="onClickDelete(record)">Delete</a> -->
+        <a @click="onClickDelete(record)">Delete</a>-->
       </span>
     </Table>
   </div>
@@ -179,6 +179,7 @@ import {
 import Loading from "./Loading";
 import { request } from "../api";
 import { END_POINT } from "../config";
+import { handleError } from "../utils";
 import Vue from "vue";
 const { Item } = Form;
 Vue.use(Modal);
@@ -285,7 +286,7 @@ export default {
       })
       .catch(e => {
         this.isLoading = false;
-        this.message.error(e);
+        handleError(e, this.$router, this.$t("expired"));
       });
   },
   methods: {
@@ -297,31 +298,35 @@ export default {
       this.isLoading = true;
       request(`${END_POINT}/api/projects`, {
         method: "GET"
-      }).then(projects => {
-        projects.forEach(e => {
-          e.key = e.id;
-          e.projectName = e.name;
-          if (Object.keys(e.manager).length > 0) {
-            e.managerName = e.manager.firstName + " " + e.manager.lastName;
-          } else {
-            e.managerName = "";
-          }
-          if (Object.keys(e.survey).length > 0) {
-            e.surveyName = e.survey.description;
-          } else {
-            e.surveyName = "";
-          }
-          e.associate = [];
-          if (e.associates.length > 0) {
-            e.associates.forEach(record => {
-              const name = record.firstName + " " + record.lastName;
-              e.associate.push(name);
-            });
-          }
+      })
+        .then(projects => {
+          projects.forEach(e => {
+            e.key = e.id;
+            e.projectName = e.name;
+            if (Object.keys(e.manager).length > 0) {
+              e.managerName = e.manager.firstName + " " + e.manager.lastName;
+            } else {
+              e.managerName = "";
+            }
+            if (Object.keys(e.survey).length > 0) {
+              e.surveyName = e.survey.description;
+            } else {
+              e.surveyName = "";
+            }
+            e.associate = [];
+            if (e.associates.length > 0) {
+              e.associates.forEach(record => {
+                const name = record.firstName + " " + record.lastName;
+                e.associate.push(name);
+              });
+            }
+          });
+          this.projects = projects;
+          this.isLoading = false;
+        })
+        .catch(e => {
+          handleError(e, this.$router, this.$t("expired"));
         });
-        this.projects = projects;
-        this.isLoading = false;
-      });
     },
 
     popTag(id, array) {
@@ -525,11 +530,15 @@ export default {
     onConfirmDelete() {
       request(`${END_POINT}/api/projects/` + this.selectedID, {
         method: "DELETE"
-      }).then(() => {
-        this.deleteModalVisible = false;
-        this._reloadForm();
-        this.message.info("Delete project successful!");
-      });
+      })
+        .then(() => {
+          this.deleteModalVisible = false;
+          this._reloadForm();
+          this.message.info("Delete project successful!");
+        })
+        .catch(e => {
+          handleError(e, this.$router, this.$t("expired"));
+        });
     },
 
     onClickAdd() {
@@ -581,7 +590,7 @@ export default {
               })
               .catch(e => {
                 this.detailModalVisible = false;
-                this.message.error("Add project fail!");
+                handleError(e, this.$router, this.$t("expired"));
                 console.log(e);
               });
           } else {
@@ -596,8 +605,7 @@ export default {
               })
               .catch(e => {
                 this.detailModalVisible = false;
-                this.message.error("Edit project fail!");
-                console.log(e);
+                handleError(e, this.$router, this.$t("expired"));
               });
           }
         } else {

@@ -109,6 +109,7 @@ import { request } from "../api";
 import { END_POINT } from "../config";
 import Loading from "./Loading";
 import { Collapse, Input, Button, Icon, message, Table } from "ant-design-vue";
+import { handleError } from "../utils";
 
 const { Panel } = Collapse;
 const columns = [
@@ -187,7 +188,7 @@ export default {
           }
         })
         .catch(e => {
-          console.log(e);
+          handleError(e, this.$router, this.$t("expired"));
         });
     },
 
@@ -274,8 +275,8 @@ export default {
             this._loadTableForm();
             this.message.info("Save survey successful!");
           })
-          .catch(() => {
-            this.message.error("Save survey fail!");
+          .catch((e) => {
+            handleError(e, this.$router, this.$t("expired"));
           });
         console.log(objSurvey);
       }

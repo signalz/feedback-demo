@@ -9,42 +9,39 @@
       :state="feedbackState"
     />
     <Loading isSpin v-if="isLoading" />
-    <Modal v-model="historyModal">
-      <template slot="footer">
-        <Button key="back" @click="historyModal = false">Close</Button>
-      </template>
-      <div class="modal-label">{{ $t("feedback.history-modal-label") }}</div>
-      <Table
-        :columns="columnsHistoryTable"
-        :row-key="record => record.id"
-        :data-source="allHistoryData"
-        class="table-wrapper"
-      >
-        <span slot="action" slot-scope="text, record">
-          <a @click="viewDetailHistory(record)">View Detail</a>
-        </span>
-      </Table>
-    </Modal>
+    <FeedbackHistoryModal
+      :feedbacks="feedbacksHistory"
+      :isVisible="isFeedbacksHistoryVisible"
+      @close="isFeedbacksHistoryVisible = false"
+      @viewDetail="viewDetailFeedback"
+    />
     <mq-layout :mq="`${screenBreakpoints.md}+`">
       <div class="feedback-page-content">
         <div class="feedback-page-content-left">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <Button
               v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
-            >{{ $t("feedback.new") }}</Button>
+              >{{ $t("feedback.new") }}</Button
+            >
             <Button
-              v-if="project.id !== defaultValue && allHistoryData.length > 0"
+              v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickHistory"
-            >{{ $t("feedback.history") }}</Button>
+              >{{ $t("feedback.history") }}</Button
+            >
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -65,12 +62,16 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >{{ $t("feedback.new-feedback") }}</div>
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
           </div>
           <Dashboard
             :key="key"
@@ -83,33 +84,43 @@
         </div>
       </div>
     </mq-layout>
-    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
+    <mq-layout
+      :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]"
+    >
       <div class="feedback-page-content">
         <div class="feedback-page-content-left" v-if="showOverview">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <div>
               <Button
                 v-if="project.id !== defaultValue"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
-              >{{ $t("feedback.new") }}</Button>
+                >{{ $t("feedback.new") }}</Button
+              >
               <Button
-                v-if="project.id !== defaultValue && allHistoryData.length > 0"
+                v-if="project.id !== defaultValue"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickHistory"
-              >{{ $t("feedback.history") }}</Button>
+                >{{ $t("feedback.history") }}</Button
+              >
               <Button
                 type="primary"
                 class="feedback-page-content-left-header-dashboard"
                 @click="onClickChangeSection"
-              >{{ $t("feedback.dashboard") }}</Button>
+                >{{ $t("feedback.dashboard") }}</Button
+              >
             </div>
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -130,17 +141,22 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >{{ $t("feedback.new-feedback") }}</div>
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right" v-if="!showOverview">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
             <Button
               type="primary"
               class="feedback-page-content-right-header-feedback"
               @click="onClickChangeSection"
-            >{{ $t("feedback.feedback") }}</Button>
+              >{{ $t("feedback.feedback") }}</Button
+            >
           </div>
           <Dashboard
             :sections="sections"
@@ -156,10 +172,11 @@
 </template>
 
 <script>
-import { message, Button, Modal, Table } from "ant-design-vue";
+import { message, Button } from "ant-design-vue";
 import moment from "moment";
 
 import Dashboard from "./Dashboard";
+import FeedbackHistoryModal from "./FeedbackHistoryModal";
 import Loading from "./Loading";
 import Menu from "./Menu";
 import OverviewTable from "./OverviewTable";
@@ -170,10 +187,11 @@ import {
   END_POINT,
   DASHBOARD_LABELS_LIST,
   DEFAULT,
-  SCREEN_BREAK_POINTS_DEFINITION,
+  FEEDBACK_STATE,
   RATINGS,
-  FEEDBACK_STATE
+  SCREEN_BREAK_POINTS_DEFINITION
 } from "../config";
+import { handleError } from "../utils";
 
 const DATE_FORMAT = "YYYY-MM-DD";
 
@@ -182,12 +200,11 @@ export default {
   components: {
     Button,
     Dashboard,
-    Modal,
+    FeedbackHistoryModal,
     Loading,
     Menu,
     OverviewTable,
-    ProjectFeedback,
-    Table
+    ProjectFeedback
   },
   data: () => {
     return {
@@ -200,17 +217,12 @@ export default {
       screenBreakpoints: SCREEN_BREAK_POINTS_DEFINITION,
       defaultValue: DEFAULT,
       sections: [],
-      ratings: [],
-      surveys: [],
-      survey: {},
+      ratings: RATINGS,
       message,
       isLoading: true,
       showOverview: true,
-      historyModal: false,
       overviewData: [],
       historyData: [],
-      allHistoryData: [],
-      surveySections: [],
       feedbackStates: FEEDBACK_STATE,
       feedbackState: FEEDBACK_STATE.NO_FEEDBACK,
       key: Math.random(),
@@ -220,7 +232,9 @@ export default {
       // keep dashboard selection
       overviewSection: DEFAULT,
       historySections: [{ title: DEFAULT }],
-      projectData: {}
+      projectData: {},
+      isFeedbacksHistoryVisible: false,
+      feedbacksHistory: []
     };
   },
   mounted() {
@@ -243,8 +257,6 @@ export default {
 
         this.setHistoryData([historyData], [{ title: DEFAULT }]);
 
-        this.ratings = RATINGS;
-
         if (projects && projects.length > 0) {
           this.projects = projects;
         }
@@ -254,47 +266,35 @@ export default {
       .then(() => this.getOverviewTableData())
       .catch(e => {
         this.isLoading = false;
-        this.message.error(e);
+        handleError(e, this.$router, this.$t("expired"));
       });
   },
   methods: {
-    viewDetailHistory(history) {
-      this.projectData = history;
-      this.eventName = history.event;
-      this.review = history.review;
-      this.historyModal = false;
+    viewDetailFeedback({ feedback }) {
+      this.projectData = feedback;
+      this.eventName = feedback.event;
+      this.review = feedback.review;
+      this.isFeedbacksHistoryVisible = false;
       this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
     },
 
     onClickHistory() {
       this.isLoading = true;
-      this.allHistoryData.forEach(e => {
-        e.createTime = moment(e.createdAt).format("YYYY-MM-DD");
-      });
-      this.columnsHistoryTable = [
-        {
-          title: "Event",
-          dataIndex: "event",
-          defaultSortOrder: "ascend",
-          sorter: (a, b) => {
-            return a.event.localeCompare(b.event);
+      request(`${END_POINT}/api/feedbacks/history?projectId=${this.project.id}`)
+        .then(data => {
+          if (data && data.length > 0) {
+            this.feedbacksHistory = data.map(feedback => ({
+              ...feedback,
+              createdDate: moment(feedback.createdAt).format(DATE_FORMAT)
+            }));
           }
-        },
-        {
-          title: "Created Time",
-          dataIndex: "createTime",
-          sorter: (a, b) => {
-            return a.createTime.localeCompare(b.createTime);
-          }
-        },
-        {
-          title: "Action",
-          key: "action",
-          scopedSlots: { customRender: "action" }
-        }
-      ];
-      this.isLoading = false;
-      this.historyModal = true;
+          this.isLoading = false;
+          this.isFeedbacksHistoryVisible = true;
+        })
+        .catch(e => {
+          this.isLoading = false;
+          handleError(e, this.$router, this.$t("expired"));
+        });
     },
 
     onClickChangeSection() {
@@ -427,12 +427,6 @@ export default {
             method: "POST",
             body: JSON.stringify({ projectId: id })
           }),
-          request(
-            `${END_POINT}/api/feedbacks/history?projectId=${selectedProject.id}`,
-            {
-              method: "GET"
-            }
-          ),
           request(`${END_POINT}/api/sections?projectId=${selectedProject.id}`)
         ])
           .then(
@@ -440,14 +434,10 @@ export default {
               feedback,
               overviewData,
               historyData,
-              allHistoryData,
               sections
             ]) => {
               this.setOverviewData(overviewData);
               this.setHistoryData([historyData], [{ title: DEFAULT }]);
-              if (allHistoryData && allHistoryData.length > 0) {
-                this.allHistoryData = allHistoryData;
-              }
 
               if (sections && sections.length > 0) {
                 this.sections = sections;
@@ -473,7 +463,7 @@ export default {
           .catch(e => {
             console.log(e);
             this.isLoading = false;
-            this.message.error(e);
+            handleError(e, this.$router, this.$t("expired"));
           });
       }
     },
@@ -543,14 +533,7 @@ export default {
                   projectId:
                     this.project.id === DEFAULT ? null : this.project.id
                 })
-              }),
-              request(
-                `${END_POINT}/api/feedbacks/history?projectId=` +
-                  this.project.id,
-                {
-                  method: "GET"
-                }
-              )
+              })
             ].concat(
               this.historySections.length > 0
                 ? this.historySections.map(section =>
@@ -566,22 +549,19 @@ export default {
                 : []
             )
           )
-            .then(([overviewData, allHistoryData, ...historyData]) => {
-              if (allHistoryData && allHistoryData.length > 0) {
-                this.allHistoryData = allHistoryData;
-              }
+            .then(([overviewData, ...historyData]) => {
               this.setOverviewData(overviewData);
               this.setHistoryData(historyData, this.historySections);
               this.isLoading = false;
             })
             .catch(error => {
               this.isLoading = false;
-              this.message.error(error);
+              handleError(error, this.$router, this.$t("expired"));
             });
         })
         .catch(e => {
           this.isLoading = false;
-          this.message.error(e);
+          handleError(e, this.$router, this.$t("expired"));
         });
     },
 
@@ -610,7 +590,7 @@ export default {
         })
         .catch(e => {
           this.isLoading = false;
-          this.message.error(e);
+          handleError(e, this.$router, this.$t("expired"));
         });
     },
 
@@ -635,7 +615,7 @@ export default {
           })
           .catch(e => {
             this.isLoading = false;
-            this.message.error(e);
+            handleError(e, this.$router, this.$t("expired"));
           });
       } else {
         this.historyData = [];
@@ -748,16 +728,5 @@ export default {
 
 .feedback-page-wrapper:focus {
   outline: none;
-}
-
-.modal-label {
-  font-size: 20px;
-  color: black;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.table-wrapper {
-  margin: 10px 0;
 }
 </style>

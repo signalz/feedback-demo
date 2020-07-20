@@ -1,4 +1,3 @@
-// export const END_POINT = "https://serene-dusk-06867.herokuapp.com";
 export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com";
 // export const END_POINT = "http://localhost:3000"
 
@@ -71,3 +70,5 @@ export const FEEDBACK_STATE = {
 };
 
 export const DEFAULT = "default";
+
+export const UNAUTHORIZED_CODE = 401
