@@ -74,5 +74,13 @@
     "delete": "Delete",
     "pass-confirm": "Confirm Password",
     "pass-old": "Old Password"
+  },
+  "expired": "Your session is expired. Please login again!",
+  "feedback-history": {
+    "close": "Close",
+    "view-detail": "View Detail",
+    "event": "Event",
+    "created-date": "Created Date",
+    "action": "Action"
   }
 }

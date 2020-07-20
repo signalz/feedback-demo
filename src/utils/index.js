@@ -27,10 +27,12 @@ export function getIconImgSrc(type, selected) {
   }
 }
 
-export function handleUnauthorized(err, router, errorMessage) {
+export function handleError(err, router, errorMessage) {
   // "Your session is expired. Please login again!"
   if (err.response && err.response.status === UNAUTHORIZED_CODE) {
     router.push("/login");
     message.error(errorMessage);
+  } else {
+    message.error(err.message)
   }
 }
