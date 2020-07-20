@@ -188,7 +188,6 @@
 </template>
 
 <script>
-// import { message, Button, Modal, Table } from "ant-design-vue";
 import { message, Button } from "ant-design-vue";
 import moment from "moment";
 
@@ -220,10 +219,8 @@ export default {
     FeedbackHistoryModal,
     Loading,
     Menu,
-    // Modal,
     OverviewTable,
     ProjectFeedback
-    // Table
   },
   data: () => {
     return {
@@ -446,12 +443,6 @@ export default {
             method: "POST",
             body: JSON.stringify({ projectId: id })
           }),
-          // request(
-          //   `${END_POINT}/api/feedbacks/history?projectId=${selectedProject.id}`,
-          //   {
-          //     method: "GET"
-          //   }
-          // ),
           request(`${END_POINT}/api/sections?projectId=${selectedProject.id}`)
         ])
           .then(
@@ -464,9 +455,6 @@ export default {
             ]) => {
               this.setOverviewData(overviewData);
               this.setHistoryData([historyData], [{ title: DEFAULT }]);
-              // if (allHistoryData && allHistoryData.length > 0) {
-              //   this.allHistoryData = allHistoryData;
-              // }
 
               if (sections && sections.length > 0) {
                 this.sections = sections;
@@ -492,7 +480,6 @@ export default {
           .catch(e => {
             console.log(e);
             this.isLoading = false;
-            // this.message.error(e);
             handleError(e, this.$router, this.$t("expired"));
           });
       }
@@ -564,9 +551,6 @@ export default {
                     this.project.id === DEFAULT ? null : this.project.id
                 })
               })
-              // request(
-              //   `${END_POINT}/api/feedbacks/history?projectId=${this.project.id}`,
-              // )
             ].concat(
               this.historySections.length > 0
                 ? this.historySections.map(section =>
@@ -582,23 +566,19 @@ export default {
                 : []
             )
           )
-            // .then(([overviewData, allHistoryData, ...historyData]) => {
             .then(([overviewData, ...historyData]) => {
-              // if (allHistoryData && allHistoryData.length > 0) {
-              //   this.allHistoryData = allHistoryData;
-              // }
               this.setOverviewData(overviewData);
               this.setHistoryData(historyData, this.historySections);
               this.isLoading = false;
             })
             .catch(error => {
               this.isLoading = false;
-              this.message.error(error);
+              handleError(error, this.$router, this.$t("expired"));
             });
         })
         .catch(e => {
           this.isLoading = false;
-          this.message.error(e);
+          handleError(e, this.$router, this.$t("expired"));
         });
     },
 
@@ -627,7 +607,7 @@ export default {
         })
         .catch(e => {
           this.isLoading = false;
-          this.message.error(e);
+          handleError(e, this.$router, this.$t("expired"));
         });
     },
 
@@ -652,7 +632,7 @@ export default {
           })
           .catch(e => {
             this.isLoading = false;
-            this.message.error(e);
+            handleError(e, this.$router, this.$t("expired"));
           });
       } else {
         this.historyData = [];
