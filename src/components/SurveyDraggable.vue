@@ -3,11 +3,11 @@
     <Loading :isSpin="true" v-if="isLoading" class="menu-loading-wrapper" />
     <div v-if="viewDetailMode" class="survey-detail-content">
       <div class="save-btn-wrapper">
-        <Button class="save-btn" @click="onClickBackSurvey">Back to Survey table</Button>
+        <Button class="save-btn" @click="onClickBackSurvey">{{$t('admin.back-to-survey')}}</Button>
       </div>
       <div class="name-survey">
         <div class="name-label">
-          Name of Survey:
+          {{$t('admin.name-of-survey')}}:
           <span v-if="!nameSurvey" style="color: red">*</span>
         </div>
         <Input v-model="nameSurvey" />
@@ -16,9 +16,12 @@
         <draggable :list="survey" ghost-class="ghost">
           <div class="survey-item" v-for="(element, index) in survey" :key="index">
             <Collapse>
-              <Panel class="survey-header" :header="'Section ' + (index + 1)+ ': ' + element.name">
+              <Panel
+                class="survey-header"
+                :header=" $t('admin.section') + ' ' + (index + 1)+ ': ' + element.name"
+              >
                 <div class="section-title-wrapper">
-                  <div class="section-title">Section title:</div>
+                  <div class="section-title">{{$t('admin.section-title')}}:</div>
                   <Input v-model="element.name" />
                 </div>
                 <div>
@@ -33,7 +36,7 @@
                       v-for="(question, index) in element.questions"
                       :key="index"
                     >
-                      <div class="question-label">Question {{index + 1}}:</div>
+                      <div class="question-label">{{$t('admin.question')}} {{index + 1}}:</div>
                       <Input v-model="question.questionName" />
                       <Icon
                         @click="onClickDeleteQuestion(element.questions, index)"
@@ -45,7 +48,7 @@
                   </draggable>
                 </div>
                 <div class="add-btn-wrapper">
-                  <div class="add-label">Add a question:</div>
+                  <div class="add-label">{{$t('admin.add-question')}}:</div>
                   <Icon
                     @click="addQuestion(element, element.name)"
                     type="plus-circle"
@@ -67,7 +70,7 @@
         </draggable>
       </div>
       <div class="add-btn-wrapper">
-        <div class="add-label">Add a section:</div>
+        <div class="add-label">{{$t('admin.add-section')}}:</div>
         <Icon
           @click="addSection"
           v-bind:class="{ disabled: !addSectionModel }"
@@ -82,12 +85,12 @@
           class="save-btn"
           v-bind:class="disabledSaveButton"
           @click="onClickSaveSurvey"
-        >Save survey</Button>
+        >{{$t('admin.save-survey')}}</Button>
       </div>
     </div>
     <div v-if="!viewDetailMode" class="survey-table">
       <div style="margin-bottom: 30px;" class="save-btn-wrapper">
-        <Button class="save-btn" @click="onClickAddSurvey">Add new Survey</Button>
+        <Button class="save-btn" @click="onClickAddSurvey">{{$t('admin.add-survey')}}</Button>
       </div>
       <Table
         :columns="columns"
@@ -96,7 +99,7 @@
         class="table-wrapper"
       >
         <span slot="action" slot-scope="text, record">
-          <a @click="viewDetailSurvey(record)">View Detail</a>
+          <a @click="viewDetailSurvey(record)">{{$t('admin.view-detail')}}</a>
         </span>
       </Table>
     </div>
@@ -112,21 +115,6 @@ import { Collapse, Input, Button, Icon, message, Table } from "ant-design-vue";
 import { handleError } from "../utils";
 
 const { Panel } = Collapse;
-const columns = [
-  {
-    title: "Survey Name",
-    dataIndex: "description",
-    defaultSortOrder: "ascend",
-    sorter: (a, b) => {
-      return a.description.localeCompare(b.description);
-    }
-  },
-  {
-    title: "Action",
-    key: "action",
-    scopedSlots: { customRender: "action" }
-  }
-];
 
 export default {
   components: {
@@ -154,6 +142,24 @@ export default {
       return {
         disabled: flag
       };
+    },
+
+    columns() {
+      return [
+        {
+          title: this.$t('admin.survey-name'),
+          dataIndex: "description",
+          defaultSortOrder: "ascend",
+          sorter: (a, b) => {
+            return a.description.localeCompare(b.description);
+          }
+        },
+        {
+          title: this.$t('admin.actions'),
+          key: "action",
+          scopedSlots: { customRender: "action" }
+        }
+      ];
     }
   },
   data() {
@@ -161,7 +167,6 @@ export default {
       survey: [],
       surveys: [],
       surveyId: "",
-      columns,
       isLoading: true,
       abstractModel: {},
       addSectionModel: "",
@@ -275,10 +280,9 @@ export default {
             this._loadTableForm();
             this.message.info("Save survey successful!");
           })
-          .catch((e) => {
+          .catch(e => {
             handleError(e, this.$router, this.$t("expired"));
           });
-        console.log(objSurvey);
       }
     }
   }

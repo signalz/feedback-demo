@@ -19,29 +19,22 @@
       <div class="feedback-page-content">
         <div class="feedback-page-content-left">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">
-              {{ $t("feedback.feedback") }}
-            </div>
+            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <Button
               v-if="project.id !== defaultValue && !isSupervisor"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
-              >{{ $t("feedback.new") }}</Button
-            >
+            >{{ $t("feedback.new") }}</Button>
             <Button
               v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickHistory"
-              >{{ $t("feedback.history") }}</Button
-            >
+            >{{ $t("feedback.history") }}</Button>
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable
-              :sections="sections"
-              v-if="project.id === defaultValue"
-            />
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -60,18 +53,23 @@
               class="feedback-page-content-new"
               v-if="
                 project.id !== defaultValue &&
-                  feedbackState === feedbackStates.NO_FEEDBACK
+                  feedbackState === feedbackStates.NO_FEEDBACK &&
+                  !isSupervisor
               "
-            >
-              {{ $t("feedback.new-feedback") }}
-            </div>
+            >{{ $t("feedback.new-feedback") }}</div>
+            <div
+              class="feedback-page-content-new"
+              v-if="
+                project.id !== defaultValue &&
+                  feedbackState === feedbackStates.NO_FEEDBACK &&
+                  isSupervisor
+              "
+            >{{ $t("feedback.no-data") }}</div>
           </div>
         </div>
         <div class="feedback-page-content-right">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">
-              {{ $t("feedback.dashboard") }}
-            </div>
+            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
           </div>
           <Dashboard
             :key="key"
@@ -84,43 +82,33 @@
         </div>
       </div>
     </mq-layout>
-    <mq-layout
-      :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]"
-    >
+    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
       <div class="feedback-page-content">
         <div class="feedback-page-content-left" v-if="showOverview">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">
-              {{ $t("feedback.feedback") }}
-            </div>
+            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <div>
               <Button
                 v-if="project.id !== defaultValue && !isSupervisor"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
-                >{{ $t("feedback.new") }}</Button
-              >
+              >{{ $t("feedback.new") }}</Button>
               <Button
                 v-if="project.id !== defaultValue"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickHistory"
-                >{{ $t("feedback.history") }}</Button
-              >
+              >{{ $t("feedback.history") }}</Button>
               <Button
                 type="primary"
                 class="feedback-page-content-left-header-dashboard"
                 @click="onClickChangeSection"
-                >{{ $t("feedback.dashboard") }}</Button
-              >
+              >{{ $t("feedback.dashboard") }}</Button>
             </div>
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable
-              :sections="sections"
-              v-if="project.id === defaultValue"
-            />
+            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -141,22 +129,17 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >
-              {{ $t("feedback.new-feedback") }}
-            </div>
+            >{{ $t("feedback.new-feedback") }}</div>
           </div>
         </div>
         <div class="feedback-page-content-right" v-if="!showOverview">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">
-              {{ $t("feedback.dashboard") }}
-            </div>
+            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
             <Button
               type="primary"
               class="feedback-page-content-right-header-feedback"
               @click="onClickChangeSection"
-              >{{ $t("feedback.feedback") }}</Button
-            >
+            >{{ $t("feedback.feedback") }}</Button>
           </div>
           <Dashboard
             :sections="sections"
@@ -272,7 +255,7 @@ export default {
   },
   computed: {
     isSupervisor() {
-      return this.$store.state.user.roles.includes(ROLE_SUPERVISOR)
+      return this.$store.state.user.roles.includes(ROLE_SUPERVISOR);
     }
   },
   methods: {
@@ -435,37 +418,30 @@ export default {
           }),
           request(`${END_POINT}/api/sections?projectId=${selectedProject.id}`)
         ])
-          .then(
-            ([
-              feedback,
-              overviewData,
-              historyData,
-              sections
-            ]) => {
-              this.setOverviewData(overviewData);
-              this.setHistoryData([historyData], [{ title: DEFAULT }]);
+          .then(([feedback, overviewData, historyData, sections]) => {
+            this.setOverviewData(overviewData);
+            this.setHistoryData([historyData], [{ title: DEFAULT }]);
 
-              if (sections && sections.length > 0) {
-                this.sections = sections;
-              }
-
-              if (feedback.id) {
-                this.feedback = feedback;
-                this.projectData = feedback;
-                this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-                this.review = feedback.review;
-                this.eventName = feedback.event;
-              } else {
-                this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
-                this.projectData = {};
-                this.eventName = "";
-                this.review = "";
-              }
-              // trigger re-mount overview dashboard
-              this.key = Math.random();
-              this.isLoading = false;
+            if (sections && sections.length > 0) {
+              this.sections = sections;
             }
-          )
+
+            if (feedback.id) {
+              this.feedback = feedback;
+              this.projectData = feedback;
+              this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
+              this.review = feedback.review;
+              this.eventName = feedback.event;
+            } else {
+              this.feedbackState = FEEDBACK_STATE.NO_FEEDBACK;
+              this.projectData = {};
+              this.eventName = "";
+              this.review = "";
+            }
+            // trigger re-mount overview dashboard
+            this.key = Math.random();
+            this.isLoading = false;
+          })
           .catch(e => {
             console.log(e);
             this.isLoading = false;

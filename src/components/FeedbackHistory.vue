@@ -29,47 +29,6 @@
   </div>
 </template>
 <script>
-const columnsHistoryTable = [
-  {
-    title: "Project",
-    dataIndex: "projectName",
-    scopedSlots: { customRender: "projectName" },
-    defaultSortOrder: "ascend",
-    sorter: (a, b) => {
-      return a.projectName.localeCompare(b.projectName);
-    }
-  },
-  {
-    title: "Event",
-    dataIndex: "event",
-    sorter: (a, b) => {
-      return a.event.localeCompare(b.event);
-    }
-  },
-  {
-    title: "Created By",
-    dataIndex: "createdBy",
-    scopedSlots: { customRender: "createdBy" },
-    sorter: (a, b) => {
-      return a.createdBy.localeCompare(b.createdBy);
-    }
-  },
-  {
-    title: "Created Time",
-    dataIndex: "createdTime",
-    sorter: (a, b) => {
-      return a.createdTime.localeCompare(b.createdTime);
-    }
-  },
-  {
-    title: "Comment",
-    dataIndex: "review",
-    sorter: (a, b) => {
-      return a.review.localeCompare(b.review);
-    }
-  }
-];
-
 import { Table, Tag, message } from "ant-design-vue";
 import QuestionRow from "./QuestionRow";
 import Loading from "./Loading";
@@ -83,9 +42,52 @@ export default {
     Loading,
     Tag
   },
+  computed: {
+    columnsHistoryTable() {
+      return [
+        {
+          title: this.$t("admin.project"),
+          dataIndex: "projectName",
+          scopedSlots: { customRender: "projectName" },
+          defaultSortOrder: "ascend",
+          sorter: (a, b) => {
+            return a.projectName.localeCompare(b.projectName);
+          }
+        },
+        {
+          title: this.$t("admin.event"),
+          dataIndex: "event",
+          sorter: (a, b) => {
+            return a.event.localeCompare(b.event);
+          }
+        },
+        {
+          title: this.$t("admin.created-by"),
+          dataIndex: "createdBy",
+          scopedSlots: { customRender: "createdBy" },
+          sorter: (a, b) => {
+            return a.createdBy.localeCompare(b.createdBy);
+          }
+        },
+        {
+          title: this.$t("admin.created-time"),
+          dataIndex: "createdTime",
+          sorter: (a, b) => {
+            return a.createdTime.localeCompare(b.createdTime);
+          }
+        },
+        {
+          title: this.$t("admin.comment"),
+          dataIndex: "review",
+          sorter: (a, b) => {
+            return a.review.localeCompare(b.review);
+          }
+        }
+      ];
+    }
+  },
   data() {
     return {
-      columnsHistoryTable,
       isLoading: true,
       deleteModalVisible: false,
       changePassModalVisible: false,
