@@ -4,19 +4,19 @@
     <Modal
       @ok="onConfirmDelete"
       v-model="deleteModalVisible"
-    >Are you sure to delete {{ selectedUser }}?</Modal>
+    >{{$t('admin.confirm-delete')}} {{ selectedUser }}?</Modal>
     <Modal @ok="onConfirmDetail" v-model="detailModalVisible">
       <div class="form-header">{{ typeDetailModal }}</div>
       <Form class="detail-form" :form="form" @submit="onConfirmDetail">
         <Item class="form-item">
-          <div class="label-form">Project Name</div>
+          <div class="label-form">{{$t('admin.project-name')}}</div>
           <Input
-            placeholder="Project Name"
+            :placeholder="$t('admin.project-name')"
             v-decorator="[
               'projectName',
               {
                 rules: [
-                  { required: true, message: 'Please input your project name!' }
+                  { required: true, message: $t('admin.missing-project-name') }
                 ]
               }
             ]"
@@ -24,7 +24,7 @@
         </Item>
         <Item class="form-item">
           <div class="label-form">
-            Manager:
+            {{$t('admin.manager')}}:
             <Tag
               v-if="managerSelected.name != ''"
               :color="handleColor(managerSelected.name)"
@@ -35,14 +35,14 @@
           <AutoComplete
             @search="handleSearchManager"
             @select="handleSelectManager"
-            placeholder="Seach manager"
+            :placeholder="$t('admin.seach-manager')"
             :dataSource="resultManager"
             v-model="managerSearchModel"
           />
         </Item>
         <Item class="form-item">
           <div class="label-form">
-            Survey:
+            {{$t('admin.survey')}}:
             <Tag
               v-if="surveySelected.name != ''"
               :color="handleColor(surveySelected.name)"
@@ -53,14 +53,14 @@
           <AutoComplete
             @search="handleSearchSurvey"
             @select="handleSelectSurvey"
-            placeholder="Seach survey"
+            :placeholder="$t('admin.seach-survey')"
             :dataSource="resultSurvey"
             v-model="surveySearchModel"
           />
         </Item>
         <Item class="form-item">
           <div class="label-form">
-            Associate:
+            {{$t('admin.associate')}}:
             <div v-if="associateSelected.length > 0">
               <Tag
                 v-for="user in associateSelected"
@@ -74,20 +74,20 @@
           <AutoComplete
             @search="handleSearchAssociate"
             @select="handleSelectAssociate"
-            placeholder="Seach associate"
+            :placeholder="$t('admin.seach-associate')"
             :dataSource="resultAssociate"
             v-model="associateSearchModel"
           />
         </Item>
         <Item class="form-item">
-          <div class="label-form">Description</div>
+          <div class="label-form">{{$t('admin.description')}}</div>
           <Input
-            placeholder="Description"
+            :placeholder="$t('admin.description')"
             v-decorator="[
               'description',
               {
                 rules: [
-                  { required: false, message: 'Please input your description!' }
+                  { required: false, message: $t('admin.missing-description') }
                 ]
               }
             ]"
@@ -95,7 +95,7 @@
         </Item>
       </Form>
     </Modal>
-    <Button @click="onClickAdd" class="add-btn" type="primary">Add Project</Button>
+    <Button @click="onClickAdd" class="add-btn" type="primary">{{$t('admin.add-project')}}</Button>
     <Table
       :columns="columns"
       :row-key="record => record.key"
@@ -111,7 +111,7 @@
         </Tag>
       </span>
       <span slot="action" slot-scope="text, record">
-        <a @click="onClickEdit(record)">Edit</a>
+        <a @click="onClickEdit(record)">{{$t('admin.edit')}}</a>
         <!-- <Divider type="vertical" />
         <a @click="onClickDelete(record)">Delete</a>-->
       </span>
@@ -119,54 +119,6 @@
   </div>
 </template>
 <script>
-const columns = [
-  {
-    dataIndex: "projectName",
-    key: "projectName",
-    title: "Project Name",
-    scopedSlots: { customRender: "projectName" },
-    defaultSortOrder: "ascend",
-    sorter: (a, b) => {
-      return a.projectName.localeCompare(b.projectName);
-    }
-  },
-  {
-    title: "Manager",
-    dataIndex: "managerName",
-    key: "managerName",
-    sorter: (a, b) => {
-      return a.managerName.localeCompare(b.managerName);
-    }
-  },
-  {
-    title: "Survey",
-    dataIndex: "surveyName",
-    key: "surveyName",
-    sorter: (a, b) => {
-      return a.surveyName.localeCompare(b.surveyName);
-    }
-  },
-  {
-    title: "Associate",
-    key: "associate",
-    dataIndex: "associate",
-    scopedSlots: { customRender: "associate" }
-  },
-  {
-    title: "Description",
-    dataIndex: "description",
-    key: "description",
-    sorter: (a, b) => {
-      return a.description.localeCompare(b.description);
-    }
-  },
-  {
-    title: "Action",
-    key: "action",
-    scopedSlots: { customRender: "action" }
-  }
-];
-
 import {
   Table,
   Form,
@@ -194,9 +146,59 @@ export default {
     Form,
     Item
   },
+  computed: {
+    columns() {
+      return [
+        {
+          dataIndex: "projectName",
+          key: "projectName",
+          title: this.$t("admin.project-name"),
+          scopedSlots: { customRender: "projectName" },
+          defaultSortOrder: "ascend",
+          sorter: (a, b) => {
+            return a.projectName.localeCompare(b.projectName);
+          }
+        },
+        {
+          title: this.$t("admin.manager"),
+          dataIndex: "managerName",
+          key: "managerName",
+          sorter: (a, b) => {
+            return a.managerName.localeCompare(b.managerName);
+          }
+        },
+        {
+          title: this.$t("admin.survey"),
+          dataIndex: "surveyName",
+          key: "surveyName",
+          sorter: (a, b) => {
+            return a.surveyName.localeCompare(b.surveyName);
+          }
+        },
+        {
+          title: this.$t("admin.associate"),
+          key: "associate",
+          dataIndex: "associate",
+          scopedSlots: { customRender: "associate" }
+        },
+        {
+          title: this.$t("admin.description"),
+          dataIndex: "description",
+          key: "description",
+          sorter: (a, b) => {
+            return a.description.localeCompare(b.description);
+          }
+        },
+        {
+          title: this.$t("admin.actions"),
+          key: "action",
+          scopedSlots: { customRender: "action" }
+        }
+      ];
+    }
+  },
   data() {
     return {
-      columns,
       isLoading: true,
       deleteModalVisible: false,
       changePassModalVisible: false,
@@ -228,12 +230,6 @@ export default {
   },
   mounted() {
     this.form = this.$form.createForm(this, { name: "detail" });
-    this.form.getFieldDecorator("projectName", {
-      initialValue: ""
-    });
-    this.form.getFieldDecorator("description", {
-      initialValue: ""
-    });
     Promise.all([
       request(`${END_POINT}/api/projects`, {
         method: "GET"
@@ -484,9 +480,7 @@ export default {
       this.typeDetailModal = "Edit";
       this.selectedID = record.id;
       this.form.setFieldsValue({
-        projectName: record.projectName
-      });
-      this.form.setFieldsValue({
+        projectName: record.projectName,
         description: record.description
       });
       if (Object.keys(record.manager).length > 0) {
@@ -543,10 +537,7 @@ export default {
 
     onClickAdd() {
       this.typeDetailModal = "Add";
-      this.form.setFieldsValue({
-        projectName: "",
-        description: ""
-      });
+      this.form.resetFields();
       this.managerSelected = {
         name: "",
         value: ""
@@ -591,7 +582,6 @@ export default {
               .catch(e => {
                 this.detailModalVisible = false;
                 handleError(e, this.$router, this.$t("expired"));
-                console.log(e);
               });
           } else {
             request(`${END_POINT}/api/projects/` + this.selectedID, {
