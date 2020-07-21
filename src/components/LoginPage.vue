@@ -52,7 +52,8 @@
 import { Button, Form, Icon, Input, message } from "ant-design-vue";
 
 import { request } from "../api";
-import { END_POINT, UNAUTHORIZED_CODE } from "../config";
+import { END_POINT, JWT, UNAUTHORIZED_CODE } from "../config";
+import { LOGIN_ACTION } from '../store'
 import Loading from "./Loading";
 
 const { Item } = Form;
@@ -92,12 +93,14 @@ export default {
             })
           })
             .then(data => {
-              localStorage.setItem("jwt", data.token);
+              localStorage.setItem(JWT, data.token);
+              this.$store.commit(LOGIN_ACTION, data)
               this.isLoading = false;
               this.$router.push("/");
             })
             .catch(e => {
               this.isLoading = false;
+              this.$store.commit(LOGIN_ACTION, {})
               if (e.response && e.response.status === UNAUTHORIZED_CODE) {
                 // unauthorized
                 this.message.error(this.$t("login.wrong-user-pass"));

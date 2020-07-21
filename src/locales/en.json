@@ -72,8 +72,17 @@
     "add-user": "Add User",
     "edit": "Edit",
     "delete": "Delete",
+    "banner":"Feedback Dashboard Admin",
     "pass-confirm": "Confirm Password",
-    "pass-old": "Old Password"
+    "pass-old": "Old Password",
+    "user": "User",
+    "user-label": "User Management",
+    "project": "Project",
+    "project-label": "Project Management",
+    "survey": "Survey",
+    "survey-label": "Survey Management",
+    "history": "History",
+    "history-label": "History Management"
   },
   "expired": "Your session is expired. Please login again!",
   "feedback-history": {

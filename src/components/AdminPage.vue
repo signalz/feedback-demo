@@ -1,24 +1,16 @@
 <template>
   <div class="admin-page-wrapper">
-    <Layout id="menu-layout">
+    <Layout class="admin-page-menu-layout">
       <Sider class="menu-sider" v-model="collapsed" :trigger="null" collapsible>
-        <div class="logo">Feedback Dashboard Admin</div>
-        <Menu theme="dark" mode="inline" :default-selected-keys="['User']">
-          <Item key="User" @click="onSelectMenuItem">
-            <Icon type="user" />
-            <span>User</span>
-          </Item>
-          <Item key="Project" @click="onSelectMenuItem">
-            <Icon type="project" />
-            <span>Project</span>
-          </Item>
-          <Item key="Survey" @click="onSelectMenuItem">
-            <Icon type="unordered-list" />
-            <span>Survey</span>
-          </Item>
-          <Item key="History" @click="onSelectMenuItem">
-            <Icon type="history" />
-            <span>History</span>
+        <div class="logo">{{$t('admin.banner')}}</div>
+        <Menu theme="dark" mode="inline" :default-selected-keys="[menu[0].key]">
+          <Item
+            v-for="component in menu"
+            :key="component.key"
+            @click="onSelectMenuItem"
+          >
+            <Icon :type="component.type" />
+            <span>{{ $t(component.text) }}</span>
           </Item>
         </Menu>
       </Sider>
@@ -29,77 +21,98 @@
             :type="collapsed ? 'menu-unfold' : 'menu-fold'"
             @click="() => (collapsed = !collapsed)"
           />
-          <Button class="logout-btn" @click="onClickLogout">{{$t('login.logout')}}</Button>
+          <Button class="logout-btn" @click="onClickLogout">{{
+            $t("login.logout")
+          }}</Button>
         </Header>
-        <Content
-          class="content-wrapper"
-          :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
-        >
-          <div v-if="menuSelected == 'User'  ">
-            <div class="content-label">User Management</div>
-            <UserTable></UserTable>
+        <Content class="content-wrapper">
+          <div>
+            <div class="content-label">{{$t(selectedItem.label)}}</div>
+            <component :is="selectedItem.component" />
           </div>
-          <div v-if="menuSelected == 'Project' ">
-            <div class="content-label">Project Management</div>
-            <ProjectTable></ProjectTable>
-          </div>
-          <div v-if="menuSelected == 'Survey' ">
-            <div class="content-label">Survey Management</div>
-            <SurveyDraggable></SurveyDraggable>
-          </div>
-          <div v-if="menuSelected == 'History' ">
-            <div class="content-label">History Management</div>
-            <FeedbackHistory></FeedbackHistory>
-          </div>
-          <div v-if="false" class="suggest-banner">Please select an operator!</div>
         </Content>
       </Layout>
     </Layout>
   </div>
 </template>
 <script>
-import { Layout, Menu, Icon, Button } from "ant-design-vue";
+import { Button, Icon, Layout, Menu } from "ant-design-vue";
+
+import { JWT } from "../config";
+import { LOGIN_ACTION } from "../store";
+
+import FeedbackHistory from "./FeedbackHistory.vue";
+import ProjectTable from "./ProjectTable.vue";
+import SurveyDraggable from "./SurveyDraggable.vue";
 import UserTable from "./UserTable.vue";
-import ProjectTable from "./ProjectTable.vue"
-import SurveyDraggable from "./SurveyDraggable.vue"
-import FeedbackHistory from "./FeedbackHistory.vue"
-const { Header, Content, Sider } = Layout;
+
+const { Content, Header, Sider } = Layout;
 const { Item } = Menu;
+
+const ADMIN_MENU = [
+  {
+    key: "USER",
+    type: "user",
+    text: "admin.user",
+    label: "admin.user-label",
+    component: UserTable
+  },
+  {
+    key: "PROJECT",
+    type: "project",
+    text: "admin.project",
+    label: "admin.project-label",
+    component: ProjectTable
+  },
+  {
+    key: "SURVEY",
+    type: "unordered-list",
+    text: "admin.survey",
+    label: "admin.survey-label",
+    component: SurveyDraggable
+  },
+  {
+    key: "HISTORY",
+    type: "history",
+    text: "admin.history",
+    label: "admin.history-label",
+    component: FeedbackHistory
+  }
+];
 
 export default {
   name: "Admin",
   components: {
-    UserTable,
-    ProjectTable,
-    SurveyDraggable,
-    FeedbackHistory,
+    Button,
+    Content,
+    Header,
+    Icon,
+    Item,
     Layout,
     Menu,
-    Icon,
-    Header,
     Sider,
-    Content,
-    Item,
-    Button
   },
   data: () => {
     return {
       collapsed: false,
-      menuSelected: "User"
+      menuSelected: ADMIN_MENU[0].key,
+      menu: ADMIN_MENU
     };
+  },
+  computed: {
+    selectedItem() {
+      return ADMIN_MENU.find(item => item.key === this.menuSelected)
+    }
   },
   methods: {
     onClickLogout() {
-      localStorage.removeItem("jwt");
+      localStorage.removeItem(JWT);
+      this.$store.commit(LOGIN_ACTION, {});
       this.$router.push("/login");
     },
 
     handleBarMenu({ isOpen }) {
       this.isOpen = isOpen;
-    },
-
-    onChangeOperator(e) {
-      console.log(e);
     },
 
     onSelectMenuItem({ key }) {
@@ -118,7 +131,7 @@ export default {
   right: 0;
   bottom: 0;
   display: flex;
-  #menu-layout .trigger {
+  .admin-page-menu-layout .trigger {
     font-size: 18px;
     line-height: 64px;
     padding: 0 24px;
@@ -127,7 +140,7 @@ export default {
     color: white;
   }
 
-  #menu-layout .logo {
+  .admin-page-menu-layout .logo {
     height: 60px;
     font-weight: bold;
     font-size: 15px;
@@ -178,6 +191,10 @@ export default {
   .content-wrapper {
     color: black;
     overflow: auto;
+    margin: 24px 16px;
+    padding: 24px;
+    background: #fff;
+    min-height: 280px;
 
     .group-label {
       font-size: 18px;

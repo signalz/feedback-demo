@@ -2,7 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 
 import { request } from "../api";
-import { END_POINT, ROLE_ADMIN } from "../config";
+import { END_POINT, JWT, ROLE_ADMIN } from "../config";
+import $store, { LOGIN_ACTION } from "../store";
 
 import FeedbackPage from "../components/FeedbackPage.vue";
 import LoginPage from "../components/LoginPage.vue";
@@ -48,7 +49,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const jwt = localStorage.getItem("jwt");
+  const jwt = localStorage.getItem(JWT);
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (jwt === null) {
       next({
@@ -58,7 +59,9 @@ router.beforeEach((to, from, next) => {
     } else {
       request(`${END_POINT}/signin-with-token`, { method: "POST" })
         .then(user => {
+          $store.commit(LOGIN_ACTION, user)
           if (to.matched.some(record => record.meta.isAdmin)) {
+            // if (user.roles.includes(ROLE_ADMIN) || user.roles.includes(ROLE_SUPERVISOR)) {
             if (user.roles.includes(ROLE_ADMIN)) {
               next();
             } else {
@@ -69,7 +72,8 @@ router.beforeEach((to, from, next) => {
           }
         })
         .catch(e => {
-          localStorage.removeItem("jwt");
+          localStorage.removeItem(JWT);
+          $store.commit(LOGIN_ACTION, {})
           next({
             path: "/login",
             params: { nextUrl: to.fullPath }
@@ -90,7 +94,8 @@ router.beforeEach((to, from, next) => {
             });
           })
           .catch(e => {
-            localStorage.removeItem("jwt");
+            localStorage.removeItem(JWT);
+            $store.commit(LOGIN_ACTION, {})
             next({
               path: "/login",
               params: { nextUrl: to.fullPath }

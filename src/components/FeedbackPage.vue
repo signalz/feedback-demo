@@ -23,7 +23,7 @@
               {{ $t("feedback.feedback") }}
             </div>
             <Button
-              v-if="project.id !== defaultValue"
+              v-if="project.id !== defaultValue && !isSupervisor"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
@@ -95,7 +95,7 @@
             </div>
             <div>
               <Button
-                v-if="project.id !== defaultValue"
+                v-if="project.id !== defaultValue && !isSupervisor"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
@@ -189,7 +189,8 @@ import {
   DEFAULT,
   FEEDBACK_STATE,
   RATINGS,
-  SCREEN_BREAK_POINTS_DEFINITION
+  SCREEN_BREAK_POINTS_DEFINITION,
+  ROLE_SUPERVISOR
 } from "../config";
 import { handleError } from "../utils";
 
@@ -268,6 +269,11 @@ export default {
         this.isLoading = false;
         handleError(e, this.$router, this.$t("expired"));
       });
+  },
+  computed: {
+    isSupervisor() {
+      return this.$store.state.user.roles.includes(ROLE_SUPERVISOR)
+    }
   },
   methods: {
     viewDetailFeedback({ feedback }) {

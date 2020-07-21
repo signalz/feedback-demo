@@ -7,28 +7,48 @@
     />
     <div class="bar-menu-information">
       <div class="bar-menu-project">
-        <div class="bar-menu-project-label">{{$t('menu.bar.project-label')}}</div>
-        <div class="bar-menu-project-name">{{project || $t('menu.bar.no-project')}}</div>
+        <div class="bar-menu-project-label">
+          {{ $t("menu.bar.project-label") }}
+        </div>
+        <div class="bar-menu-project-name">
+          {{ project || $t("menu.bar.no-project") }}
+        </div>
       </div>
       <div class="bar-menu-event">
-        <div class="bar-menu-event-container" v-if="event && state != feedbackStates.NEW_FEEDBACK && project">
-          <div class="bar-menu-event-label">{{$t('menu.bar.event-label')}}</div>
-          <div class="bar-menu-event-name">{{event || $t('menu.bar.no-event')}}</div>
+        <div
+          class="bar-menu-event-container"
+          v-if="event && state != feedbackStates.NEW_FEEDBACK && project"
+        >
+          <div class="bar-menu-event-label">
+            {{ $t("menu.bar.event-label") }}
+          </div>
+          <div class="bar-menu-event-name">
+            {{ event || $t("menu.bar.no-event") }}
+          </div>
         </div>
-        <div class="bar-menu-event-container" v-else-if="state != feedbackStates.NEW_FEEDBACK && project">
-          <div class="bar-menu-event-label">{{$t('menu.bar.no-event-label')}}</div>
+        <div
+          class="bar-menu-event-container"
+          v-else-if="state != feedbackStates.NEW_FEEDBACK && project"
+        >
+          <div class="bar-menu-event-label">
+            {{ $t("menu.bar.no-event-label") }}
+          </div>
           <div class="bar-menu-event-name">{{ createdAtValue }}</div>
         </div>
-        <Button class="logout-btn" @click="onClickLogout">{{$t('login.logout')}}</Button>
+        <Button class="logout-btn" @click="onClickLogout">{{
+          $t("login.logout")
+        }}</Button>
       </div>
     </div>
   </div>
 </template>
 <script>
-import MobileMenuButton from "./MobileMenuButton";
 import { Button } from "ant-design-vue";
 import moment from "moment";
-import { FEEDBACK_STATE } from "../config";
+
+import { FEEDBACK_STATE, JWT } from "../config";
+import { LOGIN_ACTION } from "../store";
+import MobileMenuButton from "./MobileMenuButton";
 
 export default {
   name: "BarMenu",
@@ -59,7 +79,8 @@ export default {
     },
 
     onClickLogout() {
-      localStorage.removeItem("jwt");
+      localStorage.removeItem(JWT);
+      this.$store.commit(LOGIN_ACTION, {});
       this.$router.push("/login");
     }
   }

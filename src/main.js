@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import VueMq from 'vue-mq'
+
 import App from './App.vue'
-import router from './router'
 import i18n from './i18n'
+import router from './router'
+import store from './store'
+
 
 import { SCREEN_BREAK_POINTS_DEFINITION, SCREEN_BREAK_POINTS_VALUE } from './config'
 
@@ -23,6 +26,7 @@ Vue.use(VueMq, {
 
 new Vue({
   router,
+  store,
   i18n,
   render: h => h(App)
 }).$mount('#app')

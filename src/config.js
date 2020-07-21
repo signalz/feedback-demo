@@ -1,7 +1,8 @@
 export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com";
-// export const END_POINT = "http://localhost:3000"
+// export const END_POINT = "http://localhost:3000";
 
 export const ROLE_ADMIN = "ADMIN";
+export const ROLE_SUPERVISOR = "SUPERVISOR";
 
 export const SCREEN_BREAK_POINTS_DEFINITION = {
   xxs: "xxs",
@@ -71,4 +72,6 @@ export const FEEDBACK_STATE = {
 
 export const DEFAULT = "default";
 
-export const UNAUTHORIZED_CODE = 401
+export const UNAUTHORIZED_CODE = 401;
+
+export const JWT = "jwt";
