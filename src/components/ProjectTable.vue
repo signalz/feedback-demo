@@ -80,6 +80,27 @@
           />
         </Item>
         <Item class="form-item">
+          <div class="label-form">
+            {{$t('admin.view')}}:
+            <div v-if="viewSelected.length > 0">
+              <Tag
+                v-for="user in viewSelected"
+                :key="user.value"
+                :color="handleColor(user.name)"
+                closable
+                @close="popTag(user.value, viewSelected)"
+              >{{ user.name }}</Tag>
+            </div>
+          </div>
+          <AutoComplete
+            @search="handleSearchView"
+            @select="handleSelectView"
+            :placeholder="$t('admin.seach-view')"
+            :dataSource="resultView"
+            v-model="viewSearchModel"
+          />
+        </Item>
+        <Item class="form-item">
           <div class="label-form">{{$t('admin.description')}}</div>
           <Input
             :placeholder="$t('admin.description')"
@@ -105,6 +126,13 @@
       <a slot="projectName" slot-scope="text">{{ text }}</a>
       <span slot="associate" slot-scope="associate">
         <Tag v-for="user in associate" :key="user" :color="handleColor(user)">
+          {{
+          user.toUpperCase()
+          }}
+        </Tag>
+      </span>
+      <span slot="view" slot-scope="view">
+        <Tag v-for="user in view" :key="user" :color="handleColor(user)">
           {{
           user.toUpperCase()
           }}
@@ -182,6 +210,12 @@ export default {
           scopedSlots: { customRender: "associate" }
         },
         {
+          title: this.$t("admin.view"),
+          key: "view",
+          dataIndex: "view",
+          scopedSlots: { customRender: "view" }
+        },
+        {
           title: this.$t("admin.description"),
           dataIndex: "description",
           key: "description",
@@ -214,6 +248,7 @@ export default {
       resultManager: [],
       resultSurvey: [],
       resultAssociate: [],
+      resultView: [],
       managerSelected: {
         value: "",
         name: ""
@@ -223,7 +258,9 @@ export default {
         name: ""
       },
       associateSelected: [],
+      viewSelected: [],
       associateSearchModel: "",
+      viewSearchModel: "",
       managerSearchModel: "",
       surveySearchModel: ""
     };
@@ -249,6 +286,7 @@ export default {
           this.users = users;
           this.handleSearchManager();
           this.handleSearchAssociate();
+          this.handleSearchView();
         }
         if (surveys && surveys.length > 0) {
           this.surveys = surveys;
@@ -269,10 +307,17 @@ export default {
               e.surveyName = "";
             }
             e.associate = [];
-            if (e.associates.length > 0) {
+            if (e.associates || e.associates.length > 0) {
               e.associates.forEach(record => {
                 const name = record.firstName + " " + record.lastName;
                 e.associate.push(name);
+              });
+            }
+            e.view = [];
+            if (e.views || e.views.length > 0) {
+              e.views.forEach(record => {
+                const name = record.firstName + " " + record.lastName;
+                e.view.push(name);
               });
             }
           });
@@ -316,6 +361,13 @@ export default {
                 e.associate.push(name);
               });
             }
+            e.view = [];
+            if (e.views.length > 0) {
+              e.views.forEach(record => {
+                const name = record.firstName + " " + record.lastName;
+                e.view.push(name);
+              });
+            }
           });
           this.projects = projects;
           this.isLoading = false;
@@ -336,6 +388,7 @@ export default {
       );
       if (array.length == 0) {
         this.handleSearchAssociate();
+        this.handleSearchView();
       }
     },
 
@@ -436,6 +489,33 @@ export default {
       this.resultAssociate = result;
     },
 
+    handleSearchView(value) {
+      let result = [];
+      if (!value) {
+        this.users.map(record => {
+          result.push({
+            value: record.id,
+            text: record.name
+          });
+        });
+      } else {
+        this.users.map(record => {
+          const recordName = record.name.toUpperCase();
+          const valueName = value.toUpperCase();
+          if (recordName.includes(valueName)) {
+            result.push({
+              value: record.id,
+              text: record.name
+            });
+          }
+        });
+      }
+      if (result.length > 5) {
+        result.splice(5, result.length - 5);
+      }
+      this.resultView = result;
+    },
+
     handleSelectAssociate(value) {
       const selectedObj = this.users.filter(e => {
         return e.id == value;
@@ -446,7 +526,13 @@ export default {
           existAssociate = true;
         }
       });
-      if (!existAssociate) {
+      const inView = this.viewSelected
+        .map(function(e) {
+          return e.value;
+        })
+        .indexOf(value);
+      const inManager = this.managerSelected.value == value ? 1 : -1;
+      if (!existAssociate && inView == -1 && inManager == -1) {
         this.associateSelected.push({
           value: selectedObj[0].id,
           name: selectedObj[0].name
@@ -456,12 +542,50 @@ export default {
       this.handleSearchAssociate();
     },
 
+    handleSelectView(value) {
+      const selectedObj = this.users.filter(e => {
+        return e.id == value;
+      });
+      let existView = false;
+      this.viewSelected.filter(e => {
+        if (e.value == value) {
+          existView = true;
+        }
+      });
+      const inAssociate = this.associateSelected
+        .map(function(e) {
+          return e.value;
+        })
+        .indexOf(value);
+      const inManager = this.managerSelected.value == value ? 1 : -1;
+      if (!existView && inAssociate == -1 && inManager == -1) {
+        this.viewSelected.push({
+          value: selectedObj[0].id,
+          name: selectedObj[0].name
+        });
+      }
+      this.viewSearchModel = "";
+      this.handleSearchView();
+    },
+
     handleSelectManager(value) {
       const selectedObj = this.users.filter(e => {
         return e.id == value;
       });
-      this.managerSelected.value = selectedObj[0].id;
-      this.managerSelected.name = selectedObj[0].name;
+      const inAssociate = this.associateSelected
+        .map(function(e) {
+          return e.value;
+        })
+        .indexOf(value);
+      const inView = this.viewSelected
+        .map(function(e) {
+          return e.value;
+        })
+        .indexOf(value);
+      if (inAssociate == -1 && inView == -1) {
+        this.managerSelected.value = selectedObj[0].id;
+        this.managerSelected.name = selectedObj[0].name;
+      }
       this.managerSearchModel = "";
       this.handleSearchManager();
     },
@@ -479,6 +603,8 @@ export default {
     onClickEdit(record) {
       this.typeDetailModal = "Edit";
       this.selectedID = record.id;
+      this.form.getFieldDecorator("projectName", { initialValue: "" });
+      this.form.getFieldDecorator("description", { initialValue: "" });
       this.form.setFieldsValue({
         projectName: record.projectName,
         description: record.description
@@ -496,11 +622,22 @@ export default {
       }
       this.managerSearchModel = "";
       this.associateSearchModel = "";
+      this.viewSearchModel = "";
       this.associateSelected = [];
-      if (record.associates.length > 0) {
+      if (record.associates && record.associates.length > 0) {
         record.associates.forEach(e => {
           const name = e.firstName + " " + e.lastName;
           this.associateSelected.push({
+            value: e.id,
+            name: name
+          });
+        });
+      }
+      this.viewSelected = [];
+      if (record.views && record.views.length > 0) {
+        record.views.forEach(e => {
+          const name = e.firstName + " " + e.lastName;
+          this.viewSelected.push({
             value: e.id,
             name: name
           });
@@ -545,6 +682,8 @@ export default {
       this.managerSearchModel = "";
       this.associateSearchModel = "";
       this.associateSelected = [];
+      this.viewSearchModel = "";
+      this.viewSelected = [];
       this.surveySearchModel = "";
       this.surveySelected = {
         name: "",
@@ -561,14 +700,19 @@ export default {
         this.associateSelected.forEach(e => {
           associates.push(e.value);
         });
+        let views = [];
+        this.viewSelected.forEach(e => {
+          views.push(e.value);
+        });
         const obj = {
           name,
           manager: this.managerSelected.value,
           associates,
+          views,
           surveyId: this.surveySelected.value,
           description
         };
-        if (!err && obj.manager && obj.surveyId && obj.associates.length > 0) {
+        if (!err && obj.manager && obj.surveyId) {
           if (this.typeDetailModal == "Add") {
             request(`${END_POINT}/api/projects`, {
               method: "POST",
@@ -599,7 +743,7 @@ export default {
               });
           }
         } else {
-          this.message.error("Please fill all the fields!");
+          this.message.error("Please fill all fields: Project Name, Manager and Survey!");
         }
       });
     }

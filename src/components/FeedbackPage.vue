@@ -21,7 +21,7 @@
           <div class="feedback-page-content-left-header">
             <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <Button
-              v-if="project.id !== defaultValue && !isSupervisor"
+              v-if="project.id !== defaultValue && !isSupervisor && visibleNewButton"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
@@ -89,7 +89,7 @@
             <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <div>
               <Button
-                v-if="project.id !== defaultValue && !isSupervisor"
+                v-if="project.id !== defaultValue && !isSupervisor && visibleNewButton"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
@@ -173,7 +173,8 @@ import {
   FEEDBACK_STATE,
   RATINGS,
   SCREEN_BREAK_POINTS_DEFINITION,
-  ROLE_SUPERVISOR
+  ROLE_SUPERVISOR,
+  ROLE_ADMIN
 } from "../config";
 import { handleError } from "../utils";
 
@@ -203,6 +204,7 @@ export default {
       sections: [],
       ratings: RATINGS,
       message,
+      visibleNewButton: true,
       isLoading: true,
       showOverview: true,
       overviewData: [],
@@ -276,6 +278,8 @@ export default {
               ...feedback,
               createdDate: moment(feedback.createdAt).format(DATE_FORMAT)
             }));
+          }else{
+            this.feedbacksHistory = [];
           }
           this.isLoading = false;
           this.isFeedbacksHistoryVisible = true;
@@ -395,6 +399,12 @@ export default {
           });
       } else {
         const selectedProject = this.projects.find(p => p.id === id);
+        const userInViews = selectedProject.views.map(function(e) { return e.id; }).indexOf(this.$store.state.user.id);
+        if(userInViews != -1 && !this.$store.state.user.roles.includes(ROLE_ADMIN)){
+          this.visibleNewButton = false;
+        }else{
+          this.visibleNewButton = true;
+        }
         let managerName = "";
         if (selectedProject.manager) {
           managerName =

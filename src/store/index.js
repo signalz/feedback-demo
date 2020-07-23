@@ -9,7 +9,8 @@ export default new Vuex.Store({
       firstName: '',
       lastName: '',
       roles: [],
-      username: ''
+      username: '',
+      id: ''
     }
   },
   mutations: {

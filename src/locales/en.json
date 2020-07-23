@@ -80,13 +80,14 @@
     "seach-manager": "Seach manager",
     "seach-survey": "Seach survey",
     "seach-associate": "Seach associate",
+    "seach-view": "Search view",
     "edit": "Edit",
     "delete": "Delete",
     "banner":"Feedback Dashboard Admin",
     "pass-confirm": "Confirm Password",
     "pass-old": "Old Password",
     "admin": "Admin",
-    "supervisor": "Super Visor",
+    "supervisor": "Supervisor",
     "user": "User",
     "user-label": "User Management",
     "project": "Project",
@@ -121,7 +122,8 @@
     "event": "Event",
     "created-by": "Created By",
     "created-time": "Created Time",
-    "comment": "Comment"
+    "comment": "Comment",
+    "view": "View"
   },
   "expired": "Your session is expired. Please login again!",
   "feedback-history": {
