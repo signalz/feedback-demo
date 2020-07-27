@@ -221,7 +221,7 @@ import {
 } from "ant-design-vue";
 import Loading from "./Loading";
 import { request } from "../api";
-import { END_POINT } from "../config";
+import { END_POINT, ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_SUPERVISOR } from "../config";
 import { handleError } from "../utils";
 const { Button: RadioButton, Group } = Radio;
 const { Item } = Form;
@@ -321,10 +321,10 @@ export default {
   },
   methods: {
     handleColor(role) {
-      if (role.includes("ADMIN")) {
+      if (role === ROLE_ADMIN || role === ROLE_SUPERADMIN) {
         return "green";
       }
-      if (role.includes("VISOR")) {
+      if (role === ROLE_SUPERVISOR) {
         return "pink";
       } else {
         return "geekblue";
@@ -373,9 +373,9 @@ export default {
     },
 
     onClickChangePass(record) {
+      this.formChangePass.resetFields();
       this.selectedID = record.id;
       this.selectedUser = record.username;
-      this.formChangePass.resetFields();
       this.changePassModalVisible = true;
     },
 
@@ -412,13 +412,15 @@ export default {
     onClickEdit(record) {
       this.typeDetailModal = "Edit";
       this.selectedID = record.id;
+      this.roleModel = record.roles[0];
+      this.form.getFieldDecorator("username", { initialValue: "" });
+      this.form.getFieldDecorator("firstName", { initialValue: "" });
+      this.form.getFieldDecorator("lastName", { initialValue: "" });
       this.form.setFieldsValue({
         username: record.username,
         firstName: record.firstName,
-        lastName: record.lastName,
-        email: record.email
+        lastName: record.lastName
       });
-      this.roleModel = record.roles[0];
       this.detailModalVisible = true;
     },
 

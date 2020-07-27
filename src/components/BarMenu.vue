@@ -28,7 +28,7 @@
         </div>
         <div
           class="bar-menu-event-container"
-          v-else-if="state != feedbackStates.NEW_FEEDBACK && project"
+          v-else-if="state != feedbackStates.NEW_FEEDBACK && project && state != feedbackStates.NO_FEEDBACK"
         >
           <div class="bar-menu-event-label">
             {{ $t("menu.bar.no-event-label") }}

@@ -1,7 +1,8 @@
 export const END_POINT = "https://ngocsonzz-feedback-demo.herokuapp.com";
-// export const END_POINT = "http://localhost:3000";
+//export const END_POINT = "http://localhost:3000";
 
 export const ROLE_ADMIN = "ADMIN";
+export const ROLE_SUPERADMIN = "SUPER_ADMIN";
 export const ROLE_SUPERVISOR = "SUPERVISOR";
 
 export const SCREEN_BREAK_POINTS_DEFINITION = {

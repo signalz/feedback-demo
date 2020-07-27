@@ -21,7 +21,7 @@
           <div class="feedback-page-content-left-header">
             <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <Button
-              v-if="project.id !== defaultValue && !isSupervisor"
+              v-if="project.id !== defaultValue && isCreatable"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
@@ -54,7 +54,7 @@
               v-if="
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK &&
-                  !isSupervisor
+                  isCreatable
               "
             >{{ $t("feedback.new-feedback") }}</div>
             <div
@@ -62,7 +62,7 @@
               v-if="
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK &&
-                  isSupervisor
+                  !isCreatable
               "
             >{{ $t("feedback.no-data") }}</div>
           </div>
@@ -89,7 +89,7 @@
             <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
             <div>
               <Button
-                v-if="project.id !== defaultValue && !isSupervisor"
+                v-if="project.id !== defaultValue && isCreatable"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
@@ -173,7 +173,8 @@ import {
   FEEDBACK_STATE,
   RATINGS,
   SCREEN_BREAK_POINTS_DEFINITION,
-  ROLE_SUPERVISOR
+  ROLE_SUPERVISOR,
+  ROLE_ADMIN
 } from "../config";
 import { handleError } from "../utils";
 
@@ -254,8 +255,30 @@ export default {
       });
   },
   computed: {
-    isSupervisor() {
-      return this.$store.state.user.roles.includes(ROLE_SUPERVISOR);
+    isCreatable() {
+      if (this.$store.state.user.roles.includes(ROLE_SUPERVISOR)) {
+        return false;
+      }
+      if (this.project.id == DEFAULT) {
+        return false;
+      } else {
+        let userInViews = -1;
+        if (this.project.views && this.project.views.length > 0) {
+          userInViews = this.project.views
+            .map(function(e) {
+              return e.id;
+            })
+            .indexOf(this.$store.state.user.id);
+        }
+        if (
+          userInViews != -1 &&
+          !this.$store.state.user.roles.includes(ROLE_ADMIN)
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      }
     }
   },
   methods: {
@@ -276,6 +299,8 @@ export default {
               ...feedback,
               createdDate: moment(feedback.createdAt).format(DATE_FORMAT)
             }));
+          } else {
+            this.feedbacksHistory = [];
           }
           this.isLoading = false;
           this.isFeedbacksHistoryVisible = true;
