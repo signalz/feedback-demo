@@ -12,14 +12,22 @@
     </div>
     <div class="side-menu-project-manager">
       <div class="side-menu-row">
-        <div class="side-menu-project-manager-label manager-mobile">{{$t('menu.bar.event-label')}}</div>
-        <div
-          class="side-menu-project-manager-name manager-mobile"
-        >{{event || $t('menu.bar.no-event')}}</div>
-      </div>
-      <div class="side-menu-row">
         <div class="side-menu-project-manager-label">{{$t('menu.side.manager')}}</div>
         <div class="side-menu-project-manager-name">{{selectedProject.manager}}</div>
+      </div>
+      <div
+        class="side-menu-row"
+        v-if="event && state != feedbackStates.NEW_FEEDBACK && projectName"
+      >
+        <div class="side-menu-project-manager-label">{{$t('menu.bar.event-label')}}</div>
+        <div class="side-menu-project-manager-name">{{event || $t('menu.bar.no-event')}}</div>
+      </div>
+      <div
+        class="side-menu-row"
+        v-else-if="state != feedbackStates.NEW_FEEDBACK && projectName && state != feedbackStates.NO_FEEDBACK"
+      >
+        <div class="side-menu-project-manager-label">{{$t('menu.bar.no-event-label')}}</div>
+        <div class="side-menu-project-manager-name">{{createdAtValue}}</div>
       </div>
     </div>
     <div class="side-menu-search">
@@ -52,18 +60,23 @@
 </template>
 
 <script>
-import { DEFAULT } from "../config";
+import { DEFAULT, FEEDBACK_STATE } from "../config";
 import SelectableItem from "./SelectableItem";
+import moment from "moment";
 import nttLogo from "../assets/nttdata-logo.png";
+
 
 export default {
   name: "SideMenu",
   components: {
-    SelectableItem
+    SelectableItem,
   },
   props: {
     projects: Array,
     event: String,
+    state: String,
+    createdAt: String,
+    projectName: String,
     selectedProject: {
       type: Object,
       default: () => {
@@ -80,6 +93,10 @@ export default {
       return this.projects.filter(prj =>
         prj.name.toLocaleLowerCase().includes(this.filterKey)
       );
+    },
+
+    createdAtValue() {
+      return moment(this.createdAt).format("YYYY-MM-DD");
     }
   },
   data: () => {
@@ -87,7 +104,8 @@ export default {
       filterKey: "",
       timeout: undefined,
       defaultValue: DEFAULT,
-      nttLogo
+      nttLogo,
+      feedbackStates: FEEDBACK_STATE
     };
   },
   methods: {
@@ -106,17 +124,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@media screen and (max-width: $desktop-width) {
-  .manager-mobile {
-    display: block !important;
-  }
-}
-
 @media screen and (max-width: $extra-small-phone-width) {
   .side-menu-wrapper {
     width: $minimum-side-menu-width !important;
 
-    .side-menu-project-manager{
+    .side-menu-project-manager {
       margin-top: 40px !important;
     }
 
@@ -126,10 +138,6 @@ export default {
       }
     }
   }
-}
-
-.manager-mobile {
-  display: none;
 }
 
 .side-menu-wrapper {
