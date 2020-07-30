@@ -3,18 +3,18 @@
     <BarMenu
       class="bar-menu"
       v-bind:class="{sideBarOpen: isOpen}"
-      :project="projectName"
       :isOpen="isOpen"
-      :event="eventName"
-      :createdAt="createdAt"
-      :state="state"
       @open="handleBarMenu"
+      :project="projectName"
     />
     <SideMenu
       class="side-menu"
       v-bind:class="{visible: isOpen}"
       :projects="projects"
       :event="eventName"
+      :createdAt="createdAt"
+      :projectName="projectName"
+      :state="state"
       :selectedProject="selectedProject"
       @selectProject="handleSelectProject"
     />

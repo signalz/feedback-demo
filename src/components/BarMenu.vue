@@ -1,5 +1,73 @@
 <template>
   <div class="bar-menu-wrapper">
+    <Modal v-model="visibleProfileModal" @ok="onConfirmChangePass">
+      <Form class="detail-form" :form="formChangePass">
+        <Item class="form-item form-full-width">
+          <div class="label-form">{{$t('admin.pass-old')}}</div>
+          <Input
+            :placeholder="$t('admin.pass-old')"
+            type="password"
+            v-decorator="[
+              'passwordOld',
+              {
+                rules: [
+                  {
+                    required: true,
+                    min: 6,
+                    message: $t('admin.missing-old-pass')
+                  }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item">
+          <div class="label-form">{{$t('login.pass')}}</div>
+          <Input
+            :placeholder="$t('login.pass')"
+            type="password"
+            v-decorator="[
+              'password',
+              {
+                rules: [
+                  {
+                    required: true,
+                    min: 6,
+                    message: $t('admin.missing-pass')
+                  },
+                  {
+                    validator: validateToNextPassword
+                  }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+        <Item class="form-item">
+          <div class="label-form">{{$t('admin.pass-confirm')}}</div>
+          <Input
+            :placeholder="$t('admin.pass-confirm')"
+            type="password"
+            v-decorator="[
+              'passwordConfirm',
+              {
+                rules: [
+                  {
+                    required: true,
+                    min: 6,
+                    message: $t('admin.missing-confirm-pass')
+                  },
+                  {
+                    validator: compareToFirstPassword
+                  }
+                ]
+              }
+            ]"
+          ></Input>
+        </Item>
+      </Form>
+    </Modal>
+
     <MobileMenuButton
       class="bar-menu-button"
       :isClicked="isOpen"
@@ -7,81 +75,152 @@
     />
     <div class="bar-menu-information">
       <div class="bar-menu-project">
-        <div class="bar-menu-project-label">
-          {{ $t("menu.bar.project-label") }}
-        </div>
-        <div class="bar-menu-project-name">
-          {{ project || $t("menu.bar.no-project") }}
-        </div>
+        <div class="bar-menu-project-label">{{ $t("menu.bar.project-label") }}</div>
+        <div class="bar-menu-project-name">{{ project || $t("menu.bar.no-project") }}</div>
       </div>
       <div class="bar-menu-event">
-        <div
-          class="bar-menu-event-container"
-          v-if="event && state != feedbackStates.NEW_FEEDBACK && project"
-        >
-          <div class="bar-menu-event-label">
-            {{ $t("menu.bar.event-label") }}
-          </div>
-          <div class="bar-menu-event-name">
-            {{ event || $t("menu.bar.no-event") }}
-          </div>
+        <div>
+          <Dropdown :trigger="['click']" placement="bottomRight">
+            <a class="bar-menu-profile-action" @click="e => e.preventDefault()">
+              {{this.$store.state.user.firstName}} {{this.$store.state.user.lastName}}
+              <Icon type="down" />
+            </a>
+            <Menu slot="overlay">
+              <MenuItem key="0">
+                <a @click="onClickChangePass">Change Password</a>
+              </MenuItem>
+              <MenuItem key="1">
+                <a @click="onClickLogout">{{$t("login.logout")}}</a>
+              </MenuItem>
+            </Menu>
+          </Dropdown>
         </div>
-        <div
-          class="bar-menu-event-container"
-          v-else-if="state != feedbackStates.NEW_FEEDBACK && project && state != feedbackStates.NO_FEEDBACK"
-        >
-          <div class="bar-menu-event-label">
-            {{ $t("menu.bar.no-event-label") }}
-          </div>
-          <div class="bar-menu-event-name">{{ createdAtValue }}</div>
-        </div>
-        <Button class="logout-btn" @click="onClickLogout">{{
-          $t("login.logout")
-        }}</Button>
+        <Button v-if="false" class="logout-btn" @click="onClickLogout">{{$t("login.logout")}}</Button>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { Button } from "ant-design-vue";
-import moment from "moment";
-
-import { FEEDBACK_STATE, JWT } from "../config";
+import {
+  Button,
+  Dropdown,
+  Menu,
+  Icon,
+  message,
+  Modal,
+  Input,
+  Form
+} from "ant-design-vue";
+import { JWT, END_POINT } from "../config";
 import { LOGIN_ACTION } from "../store";
+import { request } from "../api";
+import { handleError } from "../utils";
 import MobileMenuButton from "./MobileMenuButton";
+const { Item: MenuItem } = Menu;
+const { Item } = Form;
 
 export default {
   name: "BarMenu",
   components: {
     MobileMenuButton,
-    Button
+    Button,
+    Dropdown,
+    Menu,
+    Item,
+    MenuItem,
+    Icon,
+    Modal,
+    Input,
+    Form
   },
+
   data: () => {
     return {
-      feedbackStates: FEEDBACK_STATE
+      visibleProfileModal: false,
+      formChangePass: {},
+      message
     };
   },
+
   props: {
     isOpen: Boolean,
     event: String,
-    state: String,
-    project: String,
-    createdAt: String
+    project: String
   },
-  computed: {
-    createdAtValue() {
-      return moment(this.createdAt).format("YYYY-MM-DD");
-    }
+
+  mounted() {
+    this.formChangePass = this.$form.createForm(this, { name: "changePass" });
   },
+
   methods: {
+    onConfirmChangePass(e) {
+      e.preventDefault();
+      this.formChangePass.validateFields((err, values) => {
+        const {
+          passwordOld: password,
+          password: newPassword,
+          passwordConfirm: confirmNewPassword
+        } = values;
+        const obj = {
+          password,
+          newPassword,
+          confirmNewPassword
+        };
+        if (!err) {
+          request(`${END_POINT}/api/users/password`, {
+            method: "POST",
+            body: JSON.stringify(obj)
+          })
+            .then(() => {
+              this.visibleProfileModal = false;
+              this.message.info("Change password successful!");
+            })
+            .catch(e => {
+              if (e.response.status === 409) {
+                this.message.error("Incorrect password!");
+                this.formChangePass.setFieldsValue({
+                  passwordOld: ""
+                });
+                this.formChangePass.validateFields(["passwordOld"], () => {});
+              } else {
+                this.visibleProfileModal = false;
+                handleError(e, this.$router, this.$t("expired"));
+              }
+            });
+        }
+      });
+    },
+
     onMobileMenuClick() {
       this.$emit("open", { isOpen: !this.isOpen });
+    },
+
+    onClickChangePass() {
+      this.formChangePass.resetFields();
+      this.visibleProfileModal = true;
     },
 
     onClickLogout() {
       localStorage.removeItem(JWT);
       this.$store.commit(LOGIN_ACTION, {});
       this.$router.push("/login");
+    },
+
+    compareToFirstPassword(rule, value, callback) {
+      const form = this.formChangePass;
+      if (value && value !== form.getFieldValue("password")) {
+        callback("Two passwords that you enter is inconsistent!");
+      } else {
+        callback();
+      }
+    },
+
+    validateToNextPassword(rule, value, callback) {
+      const form = this.formChangePass;
+      if (value && this.confirmDirty) {
+        form.validateFields(["confirm"], { force: true });
+      }
+      callback();
     }
   }
 };
@@ -124,6 +263,10 @@ export default {
 
     .bar-menu-event {
       display: flex;
+
+      .bar-menu-profile-action {
+        color: white;
+      }
 
       .bar-menu-event-container {
         display: flex;

@@ -731,6 +731,16 @@ export default {
       padding-left: $side-menu-width;
     }
   }
+
+  @media screen and (max-width: $ipad-witdth) {
+    .feedback-page-content-left-header {
+      flex-wrap: wrap;
+
+      .feedback-page-content-left-header-text {
+        width: 100%;
+      }
+    }
+  }
 }
 
 .feedback-page-wrapper:focus {

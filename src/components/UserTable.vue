@@ -19,6 +19,7 @@
                 rules: [
                   {
                     required: true,
+                    min: 6,
                     message: $t('admin.missing-old-pass')
                   }
                 ]
@@ -37,6 +38,7 @@
                 rules: [
                   {
                     required: true,
+                    min: 6,
                     message: $t('admin.missing-pass')
                   },
                   {
@@ -58,6 +60,7 @@
                 rules: [
                   {
                     required: true,
+                    min: 6,
                     message: $t('admin.missing-confirm-pass')
                   },
                   {
@@ -110,6 +113,7 @@
                 rules: [
                   {
                     required: true,
+                    min: 6,
                     message: $t('admin.missing-pass')
                   },
                   {
@@ -130,7 +134,9 @@
               {
                 rules: [
                   {
-                    required: true, message: $t('admin.missing-confirm-pass')
+                    min: 6,
+                    required: true,
+                    message: $t('admin.missing-confirm-pass')
                   },
                   {
                     validator: compareToFirstPassword
@@ -221,7 +227,12 @@ import {
 } from "ant-design-vue";
 import Loading from "./Loading";
 import { request } from "../api";
-import { END_POINT, ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_SUPERVISOR } from "../config";
+import {
+  END_POINT,
+  ROLE_ADMIN,
+  ROLE_SUPERADMIN,
+  ROLE_SUPERVISOR
+} from "../config";
 import { handleError } from "../utils";
 const { Button: RadioButton, Group } = Radio;
 const { Item } = Form;
