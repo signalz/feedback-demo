@@ -1,9 +1,7 @@
 <template>
   <div>
     <div class="history-dashboard-description">
-      <div class="history-dashboard-description-label">
-        {{ $t("dashboard.history.sections") }}
-      </div>
+      <div class="history-dashboard-description-label">{{ $t("dashboard.history.sections") }}</div>
       <Group :value="checkboxesValues">
         <Select
           :open="isOpen"
@@ -13,14 +11,18 @@
           class="history-dashboard-description-select"
         >
           <Option value="select-all" @click.native="handleSelect">
-            <Button type="primary" style="width: 100%">{{
+            <Button type="primary" style="width: 100%">
+              {{
               $t("dashboard.history.select-all")
-            }}</Button>
+              }}
+            </Button>
           </Option>
           <Option :value="defaultValue" @click.native="handleSelect">
-            <Checkbox :value="defaultValue">{{
+            <Checkbox :value="defaultValue">
+              {{
               $t("dashboard.history.default")
-            }}</Checkbox>
+              }}
+            </Checkbox>
           </Option>
           <Option
             v-for="section in sections"
@@ -40,9 +42,7 @@
       :width="300"
       :height="300"
     />
-    <div v-else class="history-dashboard-no-data">
-      {{ $t("dashboard.history.no-data") }}
-    </div>
+    <div v-else class="history-dashboard-no-data">{{ $t("dashboard.history.no-data") }}</div>
   </div>
 </template>
 
@@ -162,6 +162,7 @@ export default {
     return {
       lineChartOptions: {
         maintainAspectRatio: false,
+        responsive: true,
         scales: {
           yAxes: [
             {
@@ -169,7 +170,27 @@ export default {
                 min: 1
               }
             }
+          ],
+          xAxes: [
+            {
+              type: "time",
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 5
+              }
+            }
           ]
+        },
+        pan: {
+          enabled: true,
+          mode: "x"
+        },
+        zoom: {
+          enabled: true,
+          mode: "x",
+          speed: 0.1,
+          threshold: 2,
+          sensitivity: 2,
         }
       },
       checkboxesValues: [DEFAULT],
