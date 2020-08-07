@@ -8,6 +8,7 @@ import $store, { LOGIN_ACTION } from "../store";
 import FeedbackPage from "../components/FeedbackPage.vue";
 import LoginPage from "../components/LoginPage.vue";
 import AdminPage from "../components/AdminPage.vue";
+import ResetPassword from "../components/ResetPassword.vue";
 
 Vue.use(VueRouter);
 
@@ -24,6 +25,11 @@ const routes = [
     path: "/login",
     name: "Login",
     component: LoginPage
+  },
+  {
+    path: "/reset",
+    name: "Reset Password",
+    component: ResetPassword
   },
   {
     path: "/admin",

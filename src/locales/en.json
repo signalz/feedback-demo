@@ -62,7 +62,18 @@
     "pass": "Password",
     "wrong-user-pass": "Incorrect username or password!",
     "missing-username": "Please input your username!",
-    "missing-password": "'Please input your password!"
+    "missing-password": "Please input your password!",
+    "forget-password": "Forgot the password?",
+    "fill-email": "Please fill the email:",
+    "email": "Email address",
+    "description": "We will send to you an URL for reset your password. The URL only avaiable for 2 hours!",
+    "apply": "apply",
+    "reset": "Reset Password"
+  },
+  "reset": {
+    "changed-success": "Your password has been changed successfully!",
+    "hello": "Hello",
+    "content-description": "Your password will be change after you select the apply button."
   },
   "admin": {
     "first-name": "First Name",
