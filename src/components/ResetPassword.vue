@@ -1,39 +1,33 @@
 <template>
   <div class="login-wrapper">
-    <Modal @ok="onConfirmForgetModal" v-model="forgetModal">
+    <Modal v-model="redirectModal">
       <div class="modal-wrapper">
-        <div class="label">{{ $t("login.fill-email") }}</div>
-        <Input v-model="forgetEmailModel" :placeholder="$t('login.email')" />
-        <div class="description">{{ $t("login.description") }}</div>
+        <div class="label">{{ $t("reset.changed-success") }}</div>
       </div>
     </Modal>
     <div class="login-container">
-      <div class="login-label">{{ $t("login.login-form") }}</div>
+      <div class="login-label">{{ $t("login.reset") }}</div>
+      <div class="welcome-label">
+        {{ $t("reset.hello") }} {{ this.username }},<br />
+        {{ $t("reset.content-description") }}
+      </div>
       <Form class="login-form" :form="form" @submit="handleSubmit">
-        <Item>
+        <Item class="form-item">
           <Input
-            :placeholder="$t('login.username')"
-            v-decorator="[
-              'username',
-              {
-                rules: [
-                  { required: true, message: $t('login.missing-username') }
-                ]
-              }
-            ]"
-          >
-            <Icon slot="prefix" type="user" class="icon" />
-          </Input>
-        </Item>
-        <Item>
-          <Input
-            type="password"
             :placeholder="$t('login.pass')"
+            type="password"
             v-decorator="[
               'password',
               {
                 rules: [
-                  { required: true, message: $t('login.missing-password') }
+                  {
+                    required: true,
+                    min: 6,
+                    message: $t('admin.missing-pass')
+                  },
+                  {
+                    validator: validateToNextPassword
+                  }
                 ]
               }
             ]"
@@ -41,18 +35,39 @@
             <Icon slot="prefix" type="lock" class="icon" />
           </Input>
         </Item>
+        <Item class="form-item">
+          <Input
+            :placeholder="$t('admin.pass-confirm')"
+            type="password"
+            v-decorator="[
+              'passwordConfirm',
+              {
+                rules: [
+                  {
+                    required: true,
+                    min: 6,
+                    message: $t('admin.missing-confirm-pass')
+                  },
+                  {
+                    validator: compareToFirstPassword
+                  }
+                ]
+              }
+            ]"
+          >
+            <Icon slot="prefix" type="lock" class="icon" />
+          </Input>
+        </Item>
+
         <Item>
           <Button
             @click="handleSubmit"
             class="login-btn"
             type="primary"
             html-type="submit"
-            >{{ $t("login.login") }}</Button
+            >{{ $t("login.apply") }}</Button
           >
         </Item>
-        <div @click="openForgetModal" class="forget-pass-btn">
-          {{ $t("login.forget-password") }}
-        </div>
       </Form>
     </div>
     <Loading :isSpin="true" v-if="isLoading" />
@@ -60,13 +75,12 @@
 </template>
 <script>
 import { Button, Form, Icon, Input, message, Modal } from "ant-design-vue";
-import EmailValidator from "email-validator";
 import { request } from "../api";
-import { END_POINT, JWT, UNAUTHORIZED_CODE } from "../config";
-import { LOGIN_ACTION } from "../store";
+import { END_POINT } from "../config";
 import Loading from "./Loading";
 
 const { Item } = Form;
+const { success } = Modal;
 
 export default {
   name: "LoginPage",
@@ -81,14 +95,22 @@ export default {
   },
   beforeMount() {
     this.form = this.$form.createForm(this, { name: "login" });
+    this.username = this.$route.query.username;
+    this.key = this.$route.query.key;
+    if(!this.username || !this.key){
+      this.redirectToLoginPage();
+    }
   },
   data: () => {
     return {
       isLoading: false,
       form: {},
       message,
-      forgetModal: false,
-      forgetEmailModel: ""
+      success,
+      redirectModal: false,
+      forgetEmailModel: "",
+      username: "",
+      key: ""
     };
   },
   methods: {
@@ -96,58 +118,55 @@ export default {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
-          const { username, password } = values;
+          const { password, passwordConfirm } = values;
+          const bodyObj = {
+            newPassword: password,
+            confirmNewPassword: passwordConfirm,
+            username: this.username,
+            key: this.key
+          };
           this.isLoading = true;
-          request(`${END_POINT}/signin`, {
-            method: "POST",
-            body: JSON.stringify({
-              username,
-              password
-            })
+          request(`${END_POINT}/api/reset-password/`, {
+            method: "PATCH",
+            body: JSON.stringify(bodyObj)
           })
-            .then(data => {
-              localStorage.setItem(JWT, data.token);
-              this.$store.commit(LOGIN_ACTION, data);
+            .then(() => {
               this.isLoading = false;
-              this.$router.push("/");
+              this.success({
+                title: "Changed password",
+                content: "Your password has been changed successfully!",
+                onOk: this.redirectToLoginPage,
+                onCancel: this.redirectToLoginPage
+              });
             })
             .catch(e => {
               this.isLoading = false;
-              this.$store.commit(LOGIN_ACTION, {});
-              if (e.response && e.response.status === UNAUTHORIZED_CODE) {
-                // unauthorized
-                this.message.error(this.$t("login.wrong-user-pass"));
-              } else {
-                this.message.error(e.message);
-              }
+              console.log(e);
+              this.message.error(e.message);
             });
         }
       });
     },
 
-    openForgetModal() {
-      this.forgetEmailModel = "";
-      this.forgetModal = true;
+    redirectToLoginPage() {
+      this.$router.push("/");
     },
 
-    onConfirmForgetModal() {
-      if (
-        this.forgetEmailModel &&
-        EmailValidator.validate(this.forgetEmailModel)
-      ) {
-        this.forgetModal = false;
-        this.message.info(
-          "An email was sent to " +
-            this.forgetEmailModel +
-            ". Please check the email!"
-        );
-        request(`${END_POINT}/api/reset-password/` + this.forgetEmailModel, {
-          method: "GET"
-        });
-        //todo send request to the server and more detail modal
+    compareToFirstPassword(rule, value, callback) {
+      const form = this.form;
+      if (value && value !== form.getFieldValue("password")) {
+        callback("Two passwords that you enter is inconsistent!");
       } else {
-        this.message.error("Please fill the correct email.");
+        callback();
       }
+    },
+
+    validateToNextPassword(rule, value, callback) {
+      const form = this.form;
+      if (value && this.confirmDirty) {
+        form.validateFields(["confirm"], { force: true });
+      }
+      callback();
     }
   }
 };
@@ -170,13 +189,26 @@ export default {
     width: 450px;
     position: relative;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+
+    .welcome-label {
+      font-size: 15px;
+      padding: 0 40px;
+      padding-top: 20px;
+      font-weight: bold;
+      color: black;
+
+      @media screen and (max-width: $phone-width) {
+        font-size: 13px;
+      }
+    }
+
     .login-form {
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       width: 100%;
-      height: 250px;
-      padding: 40px;
+      height: 230px;
+      padding: 25px 40px;
       input {
         background: #f2f2f2;
         border: 0;
