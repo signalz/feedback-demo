@@ -15,26 +15,39 @@
       @close="isFeedbacksHistoryVisible = false"
       @viewDetail="viewDetailFeedback"
     />
+    <FeedbackNotificationModal
+      :answersChanged="answersChanged"
+      :isVisibleNotification="isVisibleNotification"
+      @cancel="cancelSurveyNotification"
+      @ok="sendSurveyNotification"
+    />
     <mq-layout :mq="`${screenBreakpoints.md}+`">
       <div class="feedback-page-content">
         <div class="feedback-page-content-left">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <Button
               v-if="project.id !== defaultValue && isCreatable"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickNew"
-            >{{ $t("feedback.new") }}</Button>
+              >{{ $t("feedback.new") }}</Button
+            >
             <Button
               v-if="project.id !== defaultValue"
               type="primary"
               class="feedback-page-content-left-header-new"
               @click="onClickHistory"
-            >{{ $t("feedback.history") }}</Button>
+              >{{ $t("feedback.history") }}</Button
+            >
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -56,7 +69,9 @@
                   feedbackState === feedbackStates.NO_FEEDBACK &&
                   isCreatable
               "
-            >{{ $t("feedback.new-feedback") }}</div>
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
             <div
               class="feedback-page-content-new"
               v-if="
@@ -64,12 +79,16 @@
                   feedbackState === feedbackStates.NO_FEEDBACK &&
                   !isCreatable
               "
-            >{{ $t("feedback.no-data") }}</div>
+            >
+              {{ $t("feedback.no-data") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
           </div>
           <Dashboard
             :key="key"
@@ -82,33 +101,43 @@
         </div>
       </div>
     </mq-layout>
-    <mq-layout :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]">
+    <mq-layout
+      :mq="[screenBreakpoints.xxs, screenBreakpoints.xs, screenBreakpoints.sm]"
+    >
       <div class="feedback-page-content">
         <div class="feedback-page-content-left" v-if="showOverview">
           <div class="feedback-page-content-left-header">
-            <div class="feedback-page-content-left-header-text">{{ $t("feedback.feedback") }}</div>
+            <div class="feedback-page-content-left-header-text">
+              {{ $t("feedback.feedback") }}
+            </div>
             <div>
               <Button
                 v-if="project.id !== defaultValue && isCreatable"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickNew"
-              >{{ $t("feedback.new") }}</Button>
+                >{{ $t("feedback.new") }}</Button
+              >
               <Button
                 v-if="project.id !== defaultValue"
                 type="primary"
                 class="feedback-page-content-left-header-new"
                 @click="onClickHistory"
-              >{{ $t("feedback.history") }}</Button>
+                >{{ $t("feedback.history") }}</Button
+              >
               <Button
                 type="primary"
                 class="feedback-page-content-left-header-dashboard"
                 @click="onClickChangeSection"
-              >{{ $t("feedback.dashboard") }}</Button>
+                >{{ $t("feedback.dashboard") }}</Button
+              >
             </div>
           </div>
           <div class="feedback-page-content-left-section">
-            <OverviewTable :sections="sections" v-if="project.id === defaultValue" />
+            <OverviewTable
+              :sections="sections"
+              v-if="project.id === defaultValue"
+            />
             <ProjectFeedback
               v-if="
                 project.id !== defaultValue &&
@@ -129,17 +158,22 @@
                 project.id !== defaultValue &&
                   feedbackState === feedbackStates.NO_FEEDBACK
               "
-            >{{ $t("feedback.new-feedback") }}</div>
+            >
+              {{ $t("feedback.new-feedback") }}
+            </div>
           </div>
         </div>
         <div class="feedback-page-content-right" v-if="!showOverview">
           <div class="feedback-page-content-right-header">
-            <div class="feedback-page-content-right-header-text">{{ $t("feedback.dashboard") }}</div>
+            <div class="feedback-page-content-right-header-text">
+              {{ $t("feedback.dashboard") }}
+            </div>
             <Button
               type="primary"
               class="feedback-page-content-right-header-feedback"
               @click="onClickChangeSection"
-            >{{ $t("feedback.feedback") }}</Button>
+              >{{ $t("feedback.feedback") }}</Button
+            >
           </div>
           <Dashboard
             :sections="sections"
@@ -155,11 +189,12 @@
 </template>
 
 <script>
-import { message, Button } from "ant-design-vue";
+import { message, Button, Modal } from "ant-design-vue";
 import moment from "moment";
 
 import Dashboard from "./Dashboard";
 import FeedbackHistoryModal from "./FeedbackHistoryModal";
+import FeedbackNotificationModal from "./FeedbackNotificationModal";
 import Loading from "./Loading";
 import Menu from "./Menu";
 import OverviewTable from "./OverviewTable";
@@ -179,6 +214,7 @@ import {
 import { handleError } from "../utils";
 
 const DATE_FORMAT = "YYYY-MM-DD";
+const { success } = Modal;
 
 export default {
   name: "FeedbackPage",
@@ -186,6 +222,7 @@ export default {
     Button,
     Dashboard,
     FeedbackHistoryModal,
+    FeedbackNotificationModal,
     Loading,
     Menu,
     OverviewTable,
@@ -194,16 +231,19 @@ export default {
   data: () => {
     return {
       projects: [],
+      answersChanged: [],
       project: {
         id: DEFAULT,
         name: DEFAULT
       },
+      feedbackForCommentId: "",
       columnsHistoryTable: [],
       screenBreakpoints: SCREEN_BREAK_POINTS_DEFINITION,
       defaultValue: DEFAULT,
       sections: [],
       ratings: RATINGS,
       message,
+      success,
       isLoading: true,
       showOverview: true,
       overviewData: [],
@@ -213,6 +253,7 @@ export default {
       key: Math.random(),
       eventName: "",
       review: "",
+      isVisibleNotification: false,
       feedback: {},
       // keep dashboard selection
       overviewSection: DEFAULT,
@@ -282,6 +323,52 @@ export default {
     }
   },
   methods: {
+    cancelSurveyNotification() {
+      this.isVisibleNotification = false;
+    },
+
+    findSurveyComment(text) {
+      const pos = this.answersChanged.map(function(e) { return e.question; }).indexOf(text);
+      if(pos === -1) {
+        return ''
+      } else {
+        return this.answersChanged[pos].comment
+      }
+    },
+
+    sendSurveyNotification() {
+      this.isVisibleNotification = false;
+      const requestBody = {
+        feedbackId: this.feedbackForCommentId,
+        sections: this.projectData.sections.map(section => ({
+          title: section.title,
+          order: section.order,
+          questions: section.questions.map(question => ({
+            rating: question.rating,
+            text: question.text,
+            order: question.order,
+            comment: this.findSurveyComment(question.text)
+          }))
+        }))
+      };
+      this.isLoading = true;
+      request(`${END_POINT}/api/feedbacks`, {
+        method: "PUT",
+        body: JSON.stringify(requestBody)
+      })
+        .then(() => {
+          this.isLoading = false;
+          this.success({
+            title: this.$t("feedback.thanks"),
+            content: ""
+          });
+        })
+        .catch(e => {
+          this.isLoading = false;
+          handleError(e, this.$router, this.$t("expired"));
+        });
+    },
+
     viewDetailFeedback({ feedback }) {
       this.projectData = feedback;
       this.eventName = feedback.event;
@@ -468,7 +555,6 @@ export default {
             this.isLoading = false;
           })
           .catch(e => {
-            console.log(e);
             this.isLoading = false;
             handleError(e, this.$router, this.$t("expired"));
           });
@@ -520,11 +606,23 @@ export default {
         method: "POST",
         body: JSON.stringify(requestBody)
       })
-        .then(() => {
+        .then(res => {
           this.eventName = event;
           this.review = review;
           this.feedbackState = FEEDBACK_STATE.LAST_FEEDBACK;
-          this.message.success(this.$t("feedback.thanks"));
+          //this.message.success(this.$t("feedback.thanks"));
+          if (res.answersChanged.length == 0) {
+            this.feedbackForCommentId = "";
+            this.answersChanged = [];
+            this.success({
+              title: this.$t("feedback.thanks"),
+              content: ""
+            });
+          } else {
+            this.feedbackForCommentId = res.id;
+            this.answersChanged = res.answersChanged;
+            this.isVisibleNotification = true;
+          }
         })
         .then(() => {
           // load dashboard data again

@@ -9,7 +9,7 @@
     >
       <a slot="projectName" slot-scope="text">{{ text }}</a>
       <span slot="createdBy" slot-scope="createdBy">
-        <Tag color="geekblue">{{createdBy}}</Tag>
+        <Tag color="geekblue">{{ createdBy }}</Tag>
       </span>
       <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <div
@@ -19,8 +19,17 @@
         >
           <div class="project-feedback-section-header">{{ section.title }}</div>
           <div>
-            <div v-for="(question, qIdx) in section.questions" :key="question.id">
-              <QuestionRow :question="{ ...question, index: qIdx + 1 }" :ratings="ratings" />
+            <div
+              v-for="(question, qIdx) in section.questions"
+              :key="question.id"
+            >
+              <QuestionRow
+                :question="{ ...question, index: qIdx + 1 }"
+                :ratings="ratings"
+              />
+              <div :v-if="question.comment" class="question-comment">
+                {{ question.comment }}
+              </div>
             </div>
           </div>
         </div>
@@ -49,7 +58,6 @@ export default {
           title: this.$t("admin.project"),
           dataIndex: "projectName",
           scopedSlots: { customRender: "projectName" },
-          defaultSortOrder: "ascend",
           sorter: (a, b) => {
             return a.projectName.localeCompare(b.projectName);
           }
@@ -72,6 +80,7 @@ export default {
         {
           title: this.$t("admin.created-time"),
           dataIndex: "createdTime",
+          defaultSortOrder: "descend",
           sorter: (a, b) => {
             return a.createdTime.localeCompare(b.createdTime);
           }
@@ -136,5 +145,10 @@ export default {
 .project-feedback-section-header {
   font-size: 22px;
   color: #22282d;
+}
+
+.question-comment {
+  font-style: italic;
+  margin-bottom: 10px;
 }
 </style>

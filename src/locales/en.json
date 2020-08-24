@@ -52,7 +52,10 @@
     "milestone": "Ex: Milestone, Sprint, Release...",
     "history": "History",
     "history-modal-label": "History Feedback",
-    "no-data": "No data available"
+    "no-data": "No data available",
+    "description-survey": "We recognize some points on your feedback are changed with the last feedback. Could you help us to fill the quick survey for improving further?",
+    "changed-comment": "Comment your opinion for the changing.",
+    "sent-feedback": "Feedback was sent!"
   },
   "login": {
     "login": "Login",
