@@ -11,7 +11,7 @@
   "dependencies": {
     "ant-design-vue": "^1.6.1",
     "babel-plugin-import": "^1.13.0",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "chartjs-plugin-zoom": "^0.7.7",
     "core-js": "^3.6.5",
     "email-validator": "^2.0.4",
